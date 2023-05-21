@@ -29,7 +29,7 @@ const IndexPage: React.FC<PageProps<IndexPageProps>> = () => {
           style={{ marginBottom: `var(--theme-space-3)` }}
         />
         <h1>
-          Welcome to <b>imjosh.in</b>
+          I'm <b>joshin</b>
         </h1>
       </div>
     </Layout>
