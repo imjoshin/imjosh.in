@@ -25,7 +25,7 @@ const IndexPage = () => {
           quality={95}
           formats={["auto", "webp", "avif"]}
           alt=""
-          style={{ marginBottom: `var(--space-3)` }}
+          style={{ marginBottom: `var(--theme-space-3)` }}
         />
         <h1>
           Welcome to <b>Gatsby!</b>

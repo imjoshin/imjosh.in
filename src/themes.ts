@@ -7,6 +7,20 @@ const DEFAULT_THEME = {
         primary: '#0000FF',
         background: '#FFFFFF',
         text: '#000000',
+    },
+    font: {
+        large: '18px',
+        medium: '16px',
+        small: '14px',
+        xsmall: '12px',
+    },
+    size: {
+        'space-1': '4px',
+        'space-2': '8px',
+        'space-3': '16px',
+        'space-4': '24x',
+        'space-5': '32px',
+        'space-6': '64px',
     }
 }
 

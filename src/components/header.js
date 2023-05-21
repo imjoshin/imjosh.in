@@ -5,7 +5,7 @@ const Header = ({ siteTitle }) => (
   <header
     style={{
       margin: `0 auto`,
-      padding: `var(--space-4) var(--size-gutter)`,
+      padding: `var(--theme-size-space-4) var(--theme-size-space-5)`,
       display: `flex`,
       alignItems: `center`,
       justifyContent: `space-between`,
@@ -14,7 +14,7 @@ const Header = ({ siteTitle }) => (
     <Link
       to="/"
       style={{
-        fontSize: `var(--font-sm)`,
+        fontSize: `var(--theme-font-small)`,
         textDecoration: `none`,
       }}
     >

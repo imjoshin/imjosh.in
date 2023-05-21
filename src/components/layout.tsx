@@ -30,15 +30,15 @@ const Layout = ({ children }) => {
         style={{
           margin: `0 auto`,
           maxWidth: `var(--size-content)`,
-          padding: `var(--size-gutter)`,
+          padding: `var(--theme-size-space-5)`,
         }
         }
       >
         <main>{children} </main>
         <footer
           style={{
-            marginTop: `var(--space-5)`,
-            fontSize: `var(--font-sm)`,
+            marginTop: `var(--theme-space-5)`,
+            fontSize: `var(--theme-font-small)`,
           }}
         >
           © {new Date().getFullYear()} & middot; Built with
