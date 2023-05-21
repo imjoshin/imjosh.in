@@ -1,5 +1,6 @@
-import * as React from "react"
-import { useStaticQuery, graphql } from "gatsby"
+import * as React from "react";
+import { graphql } from "gatsby";
+import { useSiteMetadata } from "../hooks/useSiteMetadata";
 
 interface SEOProps {
   title?: string,
@@ -9,25 +10,11 @@ interface SEOProps {
 }
 
 export const SEO = ({ title, description, path, children }: SEOProps) => {
-  const { title: defaultTitle, description: defaultDescription, image, siteUrl, author } = useStaticQuery(
-    graphql`
-      query {
-        site {
-          siteMetadata {
-            title
-            description
-            author
-            image
-            siteUrl
-          }
-        }
-      }
-    `
-  )
+  const { title: defaultTitle, description: defaultDescription, image, siteUrl, author } = useSiteMetadata();
 
   const finalTitle = !title || title === defaultTitle
     ? defaultTitle
-    : `${title} | ${defaultTitle}`
+    : `${title} | ${defaultTitle}`;
 
   const seo = {
     title: finalTitle,
@@ -35,7 +22,9 @@ export const SEO = ({ title, description, path, children }: SEOProps) => {
     image: `${siteUrl}${image}`,
     url: `${siteUrl}${path || ``}`,
     author,
-  }
+  };
+
+  console.log({ seo });
 
   return (
     <>
@@ -54,5 +43,5 @@ export const SEO = ({ title, description, path, children }: SEOProps) => {
       <meta name="twitter:creator" content={seo.author} />
       {children}
     </>
-  )
-}
+  );
+};
