@@ -1,14 +1,16 @@
 import React, { createContext, useState } from 'react';
 import { ThemeNameType } from '../themes';
+import { useLocalStorage } from './useLocalStorage';
 
 
-const ThemeNameContext = createContext<[themeName: ThemeNameType, setThemeName: (themeName: ThemeNameType) => void]>(["light", () => {}]);
+const ThemeNameContext = createContext<[themeName: ThemeNameType, setThemeName: (themeName: ThemeNameType) => void]>(["light", () => { }]);
 
 function ThemeNameProvider({ children }: { children: React.ReactNode }) {
-  const [themeName, setThemeName] = useState<ThemeNameType>("light");
+  const [themeName, setThemeName] = useLocalStorage("theme", "light");
+  const themeNameCasted: ThemeNameType = (themeName === "light" || themeName === "dark") ? themeName : "light";
 
   return (
-    <ThemeNameContext.Provider value={[themeName, setThemeName]}>
+    <ThemeNameContext.Provider value={[themeNameCasted, setThemeName]}>
       {children}
     </ThemeNameContext.Provider>
   );
