@@ -4,7 +4,7 @@ import { useLocalStorage } from './useLocalStorage';
 
 
 const ThemeNameContext = createContext<[themeName: ThemeNameType, setThemeName: (themeName: ThemeNameType) => void]>(["light", () => { }]);
-const DEFAULT: ThemeNameType = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
+const DEFAULT: ThemeNameType = typeof window !== "undefined" && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
 
 function ThemeNameProvider({ children }: { children: React.ReactNode }) {
   const [themeName, setThemeName] = useLocalStorage("theme", DEFAULT);
