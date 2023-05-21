@@ -6,7 +6,7 @@ const config: GatsbyConfig = {
         description: `Dive into the digital realm and explore Josh's software wizardry and artistic snapshots that will leave you inspired and in awe. Nah, I'm joshin', he's alright.`,
         author: `@imjosh_in`,
         siteUrl: `https://imjosh.in/`,
-        image: `/images/pixar1.png`,
+        image: `/images/ogimage.png`,
     },
     plugins: [
         `gatsby-plugin-image`,
