@@ -2,7 +2,9 @@ import React from "react";
 import { useStaticQuery, graphql } from "gatsby";
 import { useTheme } from "../../hooks/useTheme";
 import { flattenThemeToCSS } from "../../util/theme";
-import "./Layout.css";
+import "../../main.css";
+import * as styles from "./Layout.module.css";
+import { Navigation } from "../navigation";
 
 const Layout = ({ children }) => {
     const theme = useTheme();
@@ -22,16 +24,12 @@ const Layout = ({ children }) => {
     `);
 
     return (
-        <div id="root" style={style}>
-            {/* <Header siteTitle={data.site.siteMetadata?.title || `Title`} /> */}
-            <div
-                style={{
-                    margin: `0 auto`,
-                    maxWidth: `var(--size-content)`,
-                    padding: `var(--theme-size-space-5)`,
-                }}
-            >
-                <main>{children} </main>
+        <div className={styles.container} style={style}>
+            <Navigation />
+            <div className={styles.body}>
+                <main>
+                    {children}
+                </main>
             </div>
         </div>
     );
