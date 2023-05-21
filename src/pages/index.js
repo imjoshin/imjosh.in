@@ -3,7 +3,7 @@ import { Link } from "gatsby"
 import { StaticImage } from "gatsby-plugin-image"
 
 import Layout from "../components/layout"
-import Seo from "../components/seo"
+import { SEO } from "../components/seo"
 import * as styles from "../components/index.module.css"
 import { useThemeName } from "../hooks/useThemeName"
 
@@ -21,9 +21,8 @@ const IndexPage = () => {
         <StaticImage
           src="../images/pixar1.png"
           loading="eager"
-          width={128}
+          width={175}
           quality={95}
-          formats={["auto", "webp", "avif"]}
           alt=""
           style={{ marginBottom: `var(--theme-space-3)` }}
         />
@@ -40,6 +39,6 @@ const IndexPage = () => {
  *
  * See: https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-head/
  */
-export const Head = () => <Seo />
+export const Head = () => <SEO />
 
 export default IndexPage

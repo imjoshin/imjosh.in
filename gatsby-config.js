@@ -10,9 +10,10 @@
 module.exports = {
   siteMetadata: {
     title: `Josh Johnson`,
-    description: `Dive into the digital realm and explore Josh's software wizardry and artistic snapshots that will leave you inspired and in awe. Nah, I'm just joshin', he's alright.`,
+    description: `Dive into the digital realm and explore Josh's software wizardry and artistic snapshots that will leave you inspired and in awe. Nah, I'm joshin', he's alright.`,
     author: `@imjosh_in`,
     siteUrl: `https://imjosh.in/`,
+    image: `images/pixar1.png`
   },
   plugins: [
     `gatsby-plugin-image`,
@@ -28,15 +29,15 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `gatsby-starter-default`,
-        short_name: `starter`,
+        name: `imjosh.in`,
+        short_name: `imjosh.in`,
         start_url: `/`,
         background_color: `#663399`,
         // This will impact how browsers show your PWA/website
         // https://css-tricks.com/meta-theme-color-and-trickery/
         // theme_color: `#663399`,
         display: `minimal-ui`,
-        icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
+        icon: `src/images/favicon.png`, // This path is relative to the root of the site.
       },
     },
   ],
