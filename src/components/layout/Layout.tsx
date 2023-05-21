@@ -1,10 +1,8 @@
 import React from "react"
 import { useStaticQuery, graphql } from "gatsby"
-
-import Header from "./header"
-import "./layout.css"
-import { useTheme } from "../hooks/useTheme"
-import { flattenThemeToCSS } from "../util/theme"
+import { useTheme } from "../../hooks/useTheme"
+import { flattenThemeToCSS } from "../../util/theme"
+import "./Layout.css"
 
 const Layout = ({ children }) => {
   const theme = useTheme()

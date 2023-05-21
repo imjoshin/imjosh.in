@@ -1,13 +1,17 @@
 import * as React from "react"
-import { Link } from "gatsby"
+import { HeadFC, Link, PageProps } from "gatsby"
 import { StaticImage } from "gatsby-plugin-image"
 
-import Layout from "../components/layout"
+import Layout from "../components/layout/Layout"
 import { SEO } from "../components/seo"
-import * as styles from "../components/index.module.css"
+import * as styles from "./index.module.css"
 import { useThemeName } from "../hooks/useThemeName"
 
-const IndexPage = () => {
+type IndexPageProps = {
+
+}
+
+const IndexPage: React.FC<PageProps<IndexPageProps>> = () => {
   const [theme, setTheme] = useThemeName()
 
   return (
@@ -34,11 +38,6 @@ const IndexPage = () => {
   )
 }
 
-/**
- * Head export to define metadata for the page
- *
- * See: https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-head/
- */
-export const Head = () => <SEO />
+export const Head: HeadFC<IndexPageProps> = () => <SEO />
 
 export default IndexPage
