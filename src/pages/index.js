@@ -19,16 +19,16 @@ const IndexPage = () => {
         }}
       >
         <StaticImage
-          src="../images/example.png"
+          src="../images/pixar1.png"
           loading="eager"
-          width={64}
+          width={128}
           quality={95}
           formats={["auto", "webp", "avif"]}
           alt=""
           style={{ marginBottom: `var(--theme-space-3)` }}
         />
         <h1>
-          Welcome to <b>Gatsby!</b>
+          Welcome to <b>imjosh.in</b>
         </h1>
       </div>
     </Layout>
