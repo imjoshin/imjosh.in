@@ -12,7 +12,8 @@ const DEFAULT_THEME = {
             2: '#e8a4be',
             3: '#a0d4e5',
             4: '#93e2cf',
-        }
+        },
+        navigation: '#FFFFFF' + '20',
     },
     font: {
         large: '18px',
@@ -45,6 +46,7 @@ export const themes: { [key: string]: ThemeType; } = {
             primary: '#fff993',
             background: '#000000',
             text: '#FFFFFF',
+            navigation: '#000000' + '20',
             gradient: {
                 1: '#67127c',
                 2: '#32094B',

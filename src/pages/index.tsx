@@ -10,16 +10,9 @@ import { useThemeName } from "../hooks/useThemeName";
 type IndexPageProps = {};
 
 const IndexPage: React.FC<PageProps<IndexPageProps>> = () => {
-  const [theme, setTheme] = useThemeName();
-
   return (
     <Layout>
-      <div
-        className={styles.textCenter}
-        onClick={() => {
-          setTheme(theme === "light" ? "dark" : "light");
-        }}
-      >
+      <div className={styles.textCenter}>
         <StaticImage
           src="../images/pixar1.png"
           loading="eager"

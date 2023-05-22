@@ -1,0 +1,26 @@
+.navigation {
+    width: 100%;
+    backdrop-filter: blur(8px);
+    background-color: var(--theme-color-navigation);
+}
+
+.content {
+    margin: 0 auto;
+    max-width: var(--size-content);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    padding: 16px;
+}
+
+.link {
+    margin-right: 16px;
+    text-decoration: none;
+    color: var(--theme-color-text);
+}
+
+.link:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
