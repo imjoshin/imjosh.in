@@ -19,7 +19,8 @@ const IndexPage: React.FC<PageProps<IndexPageProps>> = () => {
           width={175}
           quality={95}
           alt=""
-          style={{ marginBottom: `var(--theme-space-3)` }}
+          style={{ transform: 'scaleX(-1)' }}
+          placeholder="blurred"
         />
         <h1>
           I'm <b>joshin</b>
