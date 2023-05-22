@@ -28,7 +28,7 @@ const DEFAULT_THEME = {
         'space-4': '24x',
         'space-5': '32px',
         'space-6': '64px',
-        'gutter': '32px',
+        'space-7': '128px',
         'gap': '64px',
     }
 };

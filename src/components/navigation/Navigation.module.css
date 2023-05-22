@@ -2,6 +2,7 @@
     width: 100%;
     backdrop-filter: blur(8px);
     background-color: var(--theme-color-navigation);
+    position: fixed;
 }
 
 .content {

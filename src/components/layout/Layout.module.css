@@ -54,4 +54,5 @@
     margin: 0 auto;
     max-width: var(--size-content);
     padding: var(--theme-size-space-5);
+    padding-top: var(--theme-size-space-7);
 }
