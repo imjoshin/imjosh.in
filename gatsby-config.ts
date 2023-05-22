@@ -89,15 +89,13 @@ const config: GatsbyConfig = {
                         query: `{
                             allMarkdownRemark(sort: {frontmatter: {date: DESC}}) {
                                 nodes {
-                                excerpt
-                                html
-                                fields {
-                                    slug
-                                }
-                                frontmatter {
-                                    title
-                                    date
-                                }
+                                    excerpt
+                                    html
+                                    frontmatter {
+                                        slug
+                                        title
+                                        date
+                                    }
                                 }
                             }
                         }`,
