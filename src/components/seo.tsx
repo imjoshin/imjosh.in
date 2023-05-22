@@ -31,8 +31,6 @@ export const SEO = ({ title, description, path, children }: SEOProps) => {
         author,
     };
 
-    console.log({ seo });
-
     return (
         <>
             <title>{seo.title}</title>
