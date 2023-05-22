@@ -19,7 +19,6 @@ const writingTemplate = path.resolve(`src/templates/writing.tsx`);
 export const createPages: GatsbyNode["createPages"] = async ({ actions, graphql, reporter }) => {
     const { createPage } = actions;
 
-    // Get all markdown blog posts sorted by date
     const result = await graphql<MarkdownRemarkNodes>(`
     {
         allMarkdownRemark(sort: { frontmatter: { date: ASC } }, limit: 1000) {
@@ -41,10 +40,6 @@ export const createPages: GatsbyNode["createPages"] = async ({ actions, graphql,
     }
 
     const posts = result.data.allMarkdownRemark.nodes;
-
-    // Create blog posts pages
-    // But only if there's at least one markdown file found at "content/blog" (defined in gatsby-config.js)
-    // `context` is available in the template as a prop and as a variable in GraphQL
 
     if (posts.length > 0) {
         posts.forEach((post, index) => {
