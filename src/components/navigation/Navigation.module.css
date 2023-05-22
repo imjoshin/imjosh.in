@@ -3,6 +3,7 @@
     backdrop-filter: blur(8px);
     background-color: var(--theme-color-navigation);
     position: fixed;
+    z-index: 1000;
 }
 
 .content {
