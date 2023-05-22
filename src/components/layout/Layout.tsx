@@ -9,6 +9,7 @@ import { Navigation } from "../navigation";
 const Layout = ({ children }) => {
     const theme = useTheme();
     const cssVariables = flattenThemeToCSS(theme);
+    console.log({ theme, cssVariables });
     const style = {
         ...cssVariables,
     };
