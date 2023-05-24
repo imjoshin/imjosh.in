@@ -4,7 +4,7 @@
     text-align: center;
     text-transform: uppercase;
     font-weight: bold;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     font-size: 15px;
     padding: 25px;
     border-radius: 11px;
@@ -34,6 +34,20 @@
     background-color: var(--theme-color-white);
     text-shadow: 22px 22px var(--theme-color-navigation);
     box-shadow: 22px 22px var(--theme-color-navigation);
+}
+
+.bubble a {
+    font-weight: bold;
+    color: var(--theme-color-black);
+    text-decoration: none;
+}
+
+.bubble a:hover {
+    text-decoration: underline;
+}
+
+.bubble p:not(:first-child) {
+    padding-top: var(--theme-size-space-3);
 }
 
 @keyframes float {

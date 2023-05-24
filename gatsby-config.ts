@@ -2,7 +2,7 @@ import type { GatsbyConfig } from "gatsby";
 
 const config: GatsbyConfig = {
     flags: {
-        DEV_SSR: true,
+        DEV_SSR: false,
     },
     siteMetadata: {
         title: `Josh Johnson`,

@@ -8,7 +8,13 @@ export const Hero = () => {
         <div className={styles.hero}>
             <div className={styles.heroSpeech}>
                 <SpeechBubble className={styles.heroSpeechComponent}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus massa leo, molestie eget urna id, placerat efficitur augue.
+                    <p>
+                        Hey, I'm Josh! I'm passionate about solving interesting problems
+                        and currently work at <a href="https://www.beeper.com" target="_blank">Beeper</a>.
+                    </p>
+                    <p>
+                        Feel free to peruse!
+                    </p>
                 </SpeechBubble>
             </div>
             <StaticImage
