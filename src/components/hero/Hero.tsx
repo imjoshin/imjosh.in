@@ -9,8 +9,8 @@ export const Hero = () => {
             <div className={styles.heroSpeech}>
                 <SpeechBubble className={styles.heroSpeechComponent}>
                     <p>
-                        Hey, I'm Josh! I'm passionate about solving interesting problems
-                        and currently work at <a href="https://www.beeper.com" target="_blank">Beeper</a>.
+                        Hey, I'm Josh! I'm passionate about solving <div className={styles.interesting}>interesting</div> problems
+                        and currently work at <a className={styles.workplace} href="https://www.beeper.com" target="_blank">Beeper</a>.
                     </p>
                     <p>
                         Feel free to peruse!

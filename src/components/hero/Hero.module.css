@@ -33,3 +33,62 @@
         right: 25%;
     }
 }
+
+.interesting {
+    display: inline-block;
+    animation: interesting 3s ease;
+    animation-delay: 3s;
+}
+
+@keyframes interesting {
+    0% {
+        opacity: 1;
+        transform: rotateX(90def);
+    }
+
+    50% {
+        opacity: 1;
+        transform: rotateX(720deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: rotateX(720deg);
+    }
+}
+
+.workplace {
+    display: inline-block;
+    animation: workplace 5s ease;
+    animation-delay: 5s;
+}
+
+@keyframes workplace {
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1) rotate(0);
+    }
+
+    45% {
+        transform: rotate(-5deg);
+    }
+
+    50% {
+        transform: scale(1.2) rotate(5deg);
+    }
+
+    55% {
+        transform: rotate(-5deg);
+    }
+
+    60% {
+        transform: scale(1) rotate(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}

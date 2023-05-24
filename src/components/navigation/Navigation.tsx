@@ -12,7 +12,7 @@ export const Navigation = ({ }: NavigationProps) => {
     return (
         <div className={styles.navigation}>
             <div className={styles.content}>
-                <div className={styles.logo}>
+                <div>
                     <Link to="/">
                         <StaticImage
                             src="../../images/favicon.png"
@@ -24,7 +24,7 @@ export const Navigation = ({ }: NavigationProps) => {
                         />
                     </Link>
                 </div>
-                <div className={styles.links}>
+                <div>
                     <Link className={styles.link} to="/writing">Writing</Link>
                     <Link className={styles.link} to="/">Talks</Link>
                     <a className={styles.link} target="_blank" href="https://www.jj.photos">Photography</a>
