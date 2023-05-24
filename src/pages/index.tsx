@@ -5,29 +5,17 @@ import { StaticImage } from "gatsby-plugin-image";
 import Layout from "../components/layout/Layout";
 import { SEO } from "../components/seo";
 import * as styles from "./index.module.css";
-import { useThemeName } from "../hooks/useThemeName";
+import { SpeechBubble } from "../components/speech-bubble/SpeechBubble";
+import { Hero } from "../components/hero/Hero";
 
 type IndexPageProps = {};
 
 const IndexPage: React.FC<PageProps<IndexPageProps>> = () => {
-  return (
-    <Layout>
-      <div className={styles.textCenter}>
-        <StaticImage
-          src="../images/pixar1.png"
-          loading="eager"
-          width={175}
-          quality={95}
-          alt=""
-          style={{ transform: 'scaleX(-1)' }}
-          placeholder="blurred"
-        />
-        <h1>
-          I'm <b>joshin</b>
-        </h1>
-      </div>
-    </Layout>
-  );
+    return (
+        <Layout>
+            <Hero />
+        </Layout>
+    );
 };
 
 export const Head: HeadFC<IndexPageProps> = () => <SEO />;

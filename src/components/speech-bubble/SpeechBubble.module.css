@@ -1,0 +1,71 @@
+.bubble {
+    transform: translatey(0px);
+    animation: float 5s ease-in-out infinite;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 3px;
+    font-size: 15px;
+    padding: 25px;
+    border-radius: 11px;
+    position: relative;
+    color: var(--theme-color-black);
+    background-color: var(--theme-color-white);
+    box-shadow: 20px 20px var(--theme-color-navigation);
+}
+
+.bubble:after {
+    transform: translatey(0px);
+    animation: float2 5s ease-in-out infinite;
+    content: ".";
+    font-weight: bold;
+    text-align: right;
+    font-size: 55px;
+    width: 55px;
+    height: 11px;
+    line-height: 30px;
+    border-radius: 11px;
+    position: absolute;
+    display: block;
+    bottom: -30px;
+    right: 0;
+    z-index: -2;
+    -webkit-text-fill-color: var(--theme-color-white);
+    background-color: var(--theme-color-white);
+    text-shadow: 22px 22px var(--theme-color-navigation);
+    box-shadow: 22px 22px var(--theme-color-navigation);
+}
+
+@keyframes float {
+    0% {
+        transform: translatey(0px);
+    }
+
+    50% {
+        transform: translatey(-10px);
+    }
+
+    100% {
+        transform: translatey(0px);
+    }
+}
+
+@keyframes float2 {
+    0% {
+        line-height: 30px;
+        transform: translatey(0px);
+    }
+
+    55% {
+        transform: translatey(-10px);
+    }
+
+    60% {
+        line-height: 10px;
+    }
+
+    100% {
+        line-height: 30px;
+        transform: translatey(0px);
+    }
+}

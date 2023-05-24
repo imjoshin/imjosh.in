@@ -1,0 +1,19 @@
+.hero {
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+}
+
+.heroSpeech {
+    flex: 1 1 auto;
+    max-width: 50%;
+}
+
+.heroImage {
+    flex: 1 1 auto;
+}
+
+.heroImage img {
+    /* Fix gatsby image loading */
+    object-fit: contain !important;
+}
