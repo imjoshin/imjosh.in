@@ -7,7 +7,7 @@ export const Hero = () => {
     return (
         <div className={styles.hero}>
             <div className={styles.heroSpeech}>
-                <SpeechBubble>
+                <SpeechBubble className={styles.heroSpeechComponent}>
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus massa leo, molestie eget urna id, placerat efficitur augue.
                 </SpeechBubble>
             </div>

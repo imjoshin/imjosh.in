@@ -11,9 +11,25 @@
 
 .heroImage {
     flex: 1 1 auto;
+    margin-top: var(--theme-size-space-6);
 }
 
 .heroImage img {
     /* Fix gatsby image loading */
     object-fit: contain !important;
+}
+
+@media screen and (max-width: 640px) {
+    .hero {
+        flex-direction: column;
+    }
+
+    .heroSpeech {
+        max-width: none;
+    }
+
+    .heroSpeech .heroSpeechComponent:after {
+        text-align: left;
+        right: 25%;
+    }
 }
