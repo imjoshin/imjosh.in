@@ -1,5 +1,5 @@
 import React from "react";
-import { FaFacebook, FaInstagram, FaGithub, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaGithub, FaTwitter, FaLinkedin } from "react-icons/fa";
 import * as styles from "./Socials.module.css";
 import clsx from "clsx";
 
@@ -8,6 +8,10 @@ const socials = [
     {
         Icon: FaGithub,
         url: "https://github.com/imjoshin",
+    },
+    {
+        Icon: FaLinkedin,
+        url: "https://www.linkedin.com/in/imjoshin/",
     },
     {
         Icon: FaInstagram,
