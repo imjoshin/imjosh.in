@@ -1,4 +1,4 @@
-.hero {
+.heroIntro {
     text-align: center;
     display: flex;
     flex-direction: row;
@@ -14,13 +14,17 @@
     margin-top: var(--theme-size-space-6);
 }
 
+.socials {
+    margin-top: var(--theme-size-space-3);
+}
+
 .heroImage img {
     /* Fix gatsby image loading */
     object-fit: contain !important;
 }
 
 @media screen and (max-width: 640px) {
-    .hero {
+    .heroIntro {
         flex-direction: column;
     }
 

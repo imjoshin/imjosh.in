@@ -1,4 +1,5 @@
 .bubble {
+    /* Heavily inspired from https://codepen.io/kirstenallen/pen/MWwPYYm */
     transform: translatey(0px);
     animation: float 5s ease-in-out infinite;
     text-align: center;

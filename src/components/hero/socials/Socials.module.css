@@ -1,0 +1,19 @@
+.socials {
+    display: flex;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.socials a {
+    color: var(--theme-color-text);
+    opacity: 0.5;
+    transition: all 0.5s ease;
+}
+
+.socials a:not(:first-child) {
+    margin-left: var(--theme-size-space-4);
+}
+
+.socials a:hover {
+    opacity: 1;
+}
