@@ -11,8 +11,6 @@ export const ThemeToggle = ({ className }: ThemeToggleProps) => {
     const [dummyClass, setDummyClass] = useState('');
     const darkMode = useDarkMode(true);
     const Icon = darkMode.value ? BsFillMoonFill : BsFillSunFill;
-    console.log(darkMode.value);
-    console.log(Icon);
 
     useEffect(() => {
         setTimeout(() => {
