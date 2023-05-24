@@ -1,6 +1,9 @@
 import type { GatsbyConfig } from "gatsby";
 
 const config: GatsbyConfig = {
+    flags: {
+        DEV_SSR: true,
+    },
     siteMetadata: {
         title: `Josh Johnson`,
         description: `Dive into the digital realm and explore Josh's software wizardry and artistic snapshots that will leave you inspired and in awe. Nah, I'm joshin', he's alright.`,
@@ -10,6 +13,9 @@ const config: GatsbyConfig = {
     },
     plugins: [
         `gatsby-plugin-image`,
+        `gatsby-transformer-sharp`,
+        `gatsby-plugin-sharp`,
+        'gatsby-plugin-use-dark-mode',
         {
             resolve: `gatsby-source-filesystem`,
             options: {
@@ -17,8 +23,6 @@ const config: GatsbyConfig = {
                 path: `${__dirname}/src/images`,
             },
         },
-        `gatsby-transformer-sharp`,
-        `gatsby-plugin-sharp`,
         {
             resolve: `gatsby-plugin-manifest`,
             options: {

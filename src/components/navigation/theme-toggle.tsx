@@ -1,28 +1,35 @@
-import React from "react";
-import { useThemeName } from "../../hooks/useThemeName";
+import clsx from "clsx";
+import React, { useEffect, useState } from "react";
 import { BsFillSunFill, BsFillMoonFill } from "react-icons/bs";
+import useDarkMode from "use-dark-mode";
 
 interface ThemeToggleProps {
     className?: string;
 }
 
 export const ThemeToggle = ({ className }: ThemeToggleProps) => {
-    const [theme, setTheme] = useThemeName();
+    const [dummyClass, setDummyClass] = useState('');
+    const darkMode = useDarkMode(true);
+    const Icon = darkMode.value ? BsFillMoonFill : BsFillSunFill;
+    console.log(darkMode.value);
+    console.log(Icon);
 
-    const Icon = theme === "light" ? BsFillSunFill : BsFillMoonFill;
+    useEffect(() => {
+        setTimeout(() => {
+            setDummyClass('rendered');
+        }, 500);
+    });
 
     return (
         <a
-            className={className}
-            onClick={() => {
-                setTheme(theme === "light" ? "dark" : "light");
-            }}
+            className={clsx(className, dummyClass)}
+            onClick={darkMode.toggle}
             style={{
                 position: 'relative',
                 top: '2px',
             }}
         >
-            <Icon />
+            <Icon className={clsx(dummyClass)} />
         </a>
     );
 };

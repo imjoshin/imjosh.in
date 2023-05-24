@@ -29,6 +29,44 @@ body {
     font-weight: normal;
     margin: 0;
     word-wrap: break-word;
+
+    --theme-size-space-1: 4px;
+    --theme-size-space-2: 8px;
+    --theme-size-space-3: 16px;
+    --theme-size-space-4: 24x;
+    --theme-size-space-5: 32px;
+    --theme-size-space-6: 64px;
+    --theme-size-space-7: 128px;
+    --theme-size-gap: 64px;
+    --theme-font-large: 18px;
+    --theme-font-medium: 16px;
+    --theme-font-small: 14px;
+    --theme-font-xsmall: 12px;
+
+    /* TODO: handle theme styles better */
+    --theme-color-gradient-1: #efb4a2;
+    --theme-color-gradient-2: #e8a4be;
+    --theme-color-gradient-3: #a0d4e5;
+    --theme-color-gradient-4: #93e2cf;
+    --theme-color-black: #000000;
+    --theme-color-white: #FFFFFF;
+    --theme-color-primary: #0000FF;
+    --theme-color-background: #FFFFFF;
+    --theme-color-text: #000000;
+    --theme-color-navigation: #FFFFFF20;
+}
+
+body.dark-mode {
+    --theme-color-gradient-1: #67127c;
+    --theme-color-gradient-2: #32094B;
+    --theme-color-gradient-3: #341666;
+    --theme-color-gradient-4: #020B7C;
+    --theme-color-black: #000000;
+    --theme-color-white: #FFFFFF;
+    --theme-color-primary: #fff993;
+    --theme-color-background: #000000;
+    --theme-color-text: #FFFFFF;
+    --theme-color-navigation: #00000020;
 }
 
 a {
