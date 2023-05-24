@@ -37,58 +37,56 @@
 .interesting {
     display: inline-block;
     animation: interesting 3s ease;
-    animation-delay: 3s;
+    animation-delay: 1.5s;
 }
 
 @keyframes interesting {
     0% {
         opacity: 1;
         transform: rotateX(90def);
+        color: var(--theme-color-black);
     }
 
     50% {
         opacity: 1;
         transform: rotateX(720deg);
+        color: maroon;
     }
 
     100% {
         opacity: 1;
         transform: rotateX(720deg);
+        color: var(--theme-color-black);
     }
 }
 
 .workplace {
     display: inline-block;
-    animation: workplace 5s ease;
-    animation-delay: 5s;
+    animation: workplace 1s ease;
+    animation-delay: 3s;
 }
 
 @keyframes workplace {
     0% {
-        transform: scale(1);
-    }
-
-    40% {
         transform: scale(1) rotate(0);
+        color: var(--theme-color-black);
     }
 
-    45% {
+    25% {
         transform: rotate(-5deg);
     }
 
     50% {
         transform: scale(1.2) rotate(5deg);
+        color: purple;
     }
 
-    55% {
+    75% {
         transform: rotate(-5deg);
     }
 
-    60% {
-        transform: scale(1) rotate(0);
-    }
-
     100% {
-        transform: scale(1);
+        transform: scale(1) rotate(0);
+        color: var(--theme-color-black);
     }
 }
