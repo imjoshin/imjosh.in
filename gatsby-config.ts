@@ -69,7 +69,7 @@ const config: GatsbyConfig = {
             resolve: "gatsby-source-external-blog",
             options: {
                 blogs: externalBlogs,
-                cache: false,
+                cache: true,
             }
         },
         {
