@@ -20,3 +20,5 @@ const articles = [
         tags: ['external', 'gatsby'],
     },
 ];
+
+export default articles;
