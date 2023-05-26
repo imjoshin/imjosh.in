@@ -39,7 +39,7 @@ export const sourceNodes: GatsbyNode["sourceNodes"] = async ({ actions, createNo
         const blog = blogs[i]
 
         try {
-            const data = await getBlogData(blog, cache)
+            const data = await getBlogData(blog, options.cache ? cache : undefined)
 
             const nodeContent = JSON.stringify(data)
             const nodeMeta = {
@@ -54,9 +54,9 @@ export const sourceNodes: GatsbyNode["sourceNodes"] = async ({ actions, createNo
             }
 
             const node = Object.assign({}, data, nodeMeta)
-            createNode(node)
+            await createNode(node)
         } catch (e) {
-            reporter.error(`Failed to fetch ${blog.url}: ${JSON.stringify(e, null, 2)}`)
+            reporter.error(`Failed to fetch ${blog.url}:\n  ${e.stack}`)
         }
 
         activity.setStatus(`${i + 1} / ${blogs.length}`)

@@ -12,14 +12,16 @@ type DataType = {
     title: string,
     excerpt: string | null,
     image: string | null,
-    date: string | null,
+    date: Date | null,
 }
 
+// TODO support other date formats
+const dateRegex = /((January|February|March|April|May|June|July|August|September|October|November|December)\s+\d\d?[sthndr]{0,2},\s\d{4})/g
 
-export const getBlogData = async (blog: BlogType, cache: GatsbyCache): Promise<DataType> => {
+export const getBlogData = async (blog: BlogType, cache: GatsbyCache | undefined): Promise<DataType> => {
     const cacheKey = `external-blog-${blog.url}`
 
-    const cachedBlog = await cache.get(cacheKey)
+    const cachedBlog = await cache?.get(cacheKey)
     if (cachedBlog) {
         return cachedBlog
     }
@@ -74,7 +76,28 @@ export const getBlogData = async (blog: BlogType, cache: GatsbyCache): Promise<D
             .join(' ')
     }
 
-    cache.set(`external-blog-${blog.url}`, data)
+    // Find the date
+    // TODO make this more robust
+    const bodyText = root.querySelector('body')!.innerHTML
+    const dateMatches = bodyText.matchAll(dateRegex)
+
+    for (const dateMatch of dateMatches) {
+        let dateStr = dateMatch[0]
+
+        if (dateStr) {
+            // remove suffixes and commas from second part of date, i.e. "26th,"" -> "26"
+            const dateParts = dateStr.split(/\s+/)
+            dateParts[1] = parseInt(dateParts[1]).toString()
+            dateStr = dateParts.join(' ')
+
+            const date = new Date(dateStr)
+            data.date = date
+            break
+        }
+
+    }
+
+    cache?.set(`external-blog-${blog.url}`, data)
 
     return data
 }
