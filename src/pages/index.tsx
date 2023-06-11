@@ -16,16 +16,16 @@ type DataProps = {
             date: string,
             title: string,
             url: string,
-        }[]
-    }
+        }[];
+    };
 };
 
 const IndexPage: React.FC<PageProps<DataProps>> = ({ data }) => {
-    console.log({ data })
+    console.log({ data });
     return (
         <Layout>
             <Hero />
-            <RecentPosts external={data.allExternalBlog.nodes} />
+            {/* <RecentPosts external={data.allExternalBlog.nodes} /> */}
         </Layout>
     );
 };
@@ -43,6 +43,6 @@ export const pageQuery = graphql`
       }
     }
   }
-`
+`;
 
 export default IndexPage;

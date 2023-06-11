@@ -26,7 +26,8 @@ export const Navigation = ({ }: NavigationProps) => {
                 </div>
                 <div>
                     <Link className={styles.link} to="/writing">Writing</Link>
-                    <Link className={styles.link} to="/">Talks</Link>
+                    <Link className={styles.link} to="/uses">Uses</Link>
+                    {/* <Link className={styles.link} to="/">Talks</Link> */}
                     <a className={styles.link} target="_blank" href="https://www.jj.photos">Photography</a>
                     <ThemeToggle className={styles.link} />
                 </div>
