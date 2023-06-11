@@ -48,6 +48,7 @@ body {
     --theme-color-gradient-2: #e8a4be;
     --theme-color-gradient-3: #a0d4e5;
     --theme-color-gradient-4: #93e2cf;
+    --theme-color-background-hover: #FFFFFF;
     --theme-color-black: #000000;
     --theme-color-white: #FFFFFF;
     --theme-color-primary: #0000FF;
@@ -61,6 +62,7 @@ body.dark-mode {
     --theme-color-gradient-2: #32094B;
     --theme-color-gradient-3: #341666;
     --theme-color-gradient-4: #020B7C;
+    --theme-color-background-hover: #67127c;
     --theme-color-black: #000000;
     --theme-color-white: #FFFFFF;
     --theme-color-primary: #fff993;
