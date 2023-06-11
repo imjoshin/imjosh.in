@@ -1,10 +1,33 @@
 import * as React from "react";
-import { Link, graphql } from "gatsby";
+import { Link, PageProps, graphql } from "gatsby";
 import Layout from "../components/layout/Layout";
 import { SEO } from "../components/seo";
 
-const WritingsPage = ({ data, location }) => {
+type DataProps = {
+    allMarkdownRemark: {
+        nodes: {
+            excerpt: string,
+            frontmatter: {
+                date: string,
+                title: string,
+                description: string,
+                slug: string,
+            }
+        }[]
+    }
+    allExternalBlog: {
+        nodes: {
+            excerpt: string,
+            date: string,
+            title: string,
+            url: string,
+        }[]
+    }
+};
+
+const WritingsPage: React.FC<PageProps<DataProps>> = ({ data, location }) => {
     const posts = data.allMarkdownRemark.nodes;
+    const external = data.allExternalBlog.nodes;
 
     return (
         <Layout>
@@ -39,6 +62,36 @@ const WritingsPage = ({ data, location }) => {
                         </li>
                     );
                 })}
+                {external.map(post => {
+                    const title = post.title;
+
+                    return (
+                        <li key={post.url}>
+                            <article
+                                className="post-list-item"
+                                itemScope
+                                itemType="http://schema.org/Article"
+                            >
+                                <header>
+                                    <h2>
+                                        <a href={post.url} target="_blank">
+                                            <span itemProp="headline">{title}</span>
+                                        </a>
+                                    </h2>
+                                    <small>{post.date}</small>
+                                </header>
+                                <section>
+                                    <p
+                                        dangerouslySetInnerHTML={{
+                                            __html: post.excerpt,
+                                        }}
+                                        itemProp="description"
+                                    />
+                                </section>
+                            </article>
+                        </li>
+                    );
+                })}
             </ol>
         </Layout>
     );
@@ -59,6 +112,14 @@ export const pageQuery = graphql`
           description
           slug
         }
+      }
+    }
+    allExternalBlog(sort: { date: DESC } ) {
+      nodes {
+        excerpt
+        date(formatString: "MMMM DD, YYYY")
+        title
+        url
       }
     }
   }

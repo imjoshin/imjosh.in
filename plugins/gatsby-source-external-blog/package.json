@@ -1,0 +1,9 @@
+{
+  "name": "gatsby-source-external-blog",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "node-html-parser": "^6.1.5"
+  }
+}

@@ -1,4 +1,5 @@
 import type { GatsbyConfig } from "gatsby";
+import externalBlogs from "./content/external";
 
 const config: GatsbyConfig = {
     flags: {
@@ -63,6 +64,13 @@ const config: GatsbyConfig = {
                     `gatsby-remark-prismjs`,
                 ],
             },
+        },
+        {
+            resolve: "gatsby-source-external-blog",
+            options: {
+                blogs: externalBlogs,
+                cache: true,
+            }
         },
         {
             resolve: `gatsby-plugin-feed`,
