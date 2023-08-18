@@ -36,7 +36,7 @@ const VideoTemplate: React.FC<PageProps<{}, ContextProps>> = ({ pageContext: { f
                 </header>
                 <section itemProp="articleBody">
                     <div className={styles.video}>
-                        <ReactPlayer url={`/${file}`} controls={true} />
+                        <ReactPlayer url={file} controls={true} />
                     </div>
                 </section>
             </article>
