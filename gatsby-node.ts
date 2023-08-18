@@ -1,6 +1,6 @@
 import { GatsbyNode } from "gatsby";
 import path from "path";
-
+import { videos } from "./content/videos";
 
 type MarkdownRemarkNodes = {
     allMarkdownRemark: {
@@ -14,6 +14,7 @@ type MarkdownRemarkNodes = {
 };
 
 const writingTemplate = path.resolve(`src/templates/writing.tsx`);
+const videoTemplate = path.resolve(`src/templates/video.tsx`);
 
 
 export const createPages: GatsbyNode["createPages"] = async ({ actions, graphql, reporter }) => {
@@ -55,6 +56,22 @@ export const createPages: GatsbyNode["createPages"] = async ({ actions, graphql,
                     nextPostId,
                 },
             });
+        });
+    }
+
+    // TODO put this in graphql, this was hacked together quick
+    for (const video of videos) {
+        const videoWithoutPath = { ...video };
+
+        // @ts-ignore
+        delete videoWithoutPath.path;
+
+        createPage({
+            path: `/v/${video.path}`,
+            component: videoTemplate,
+            context: {
+                ...videoWithoutPath,
+            },
         });
     }
 };
