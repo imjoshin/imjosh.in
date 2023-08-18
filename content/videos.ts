@@ -2,7 +2,7 @@ export const videos = [
     {
         path: 'ca',
         title: 'California Trip, 2023',
-        file: '/videos/California-2023.mp4',
+        file: 'https://jjdev.io/video/California-2023.mp4',
         image: '/images/California-2023-og.png',
         description: 'We went to California! Check it out...',
         song: {
@@ -14,7 +14,7 @@ export const videos = [
     {
         path: 'hi',
         title: "Hawai'i Trip, 2022",
-        file: '/videos/Hawaii-2022.mp4',
+        file: 'https://jjdev.io/video/Hawaii-2022.mp4',
         image: '/images/Hawaii-2022-og.png',
         description: 'We went to Hawai\'! Check it out...',
         song: {
