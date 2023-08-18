@@ -67,7 +67,7 @@ export const createPages: GatsbyNode["createPages"] = async ({ actions, graphql,
         delete videoWithoutPath.path;
 
         createPage({
-            path: `/v/${video.path}`,
+            path: `v/${video.path}`,
             component: videoTemplate,
             context: {
                 ...videoWithoutPath,

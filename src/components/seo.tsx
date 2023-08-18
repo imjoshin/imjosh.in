@@ -7,13 +7,14 @@ interface SEOProps {
     description?: string;
     path?: string;
     children?: React.ReactNode;
+    image?: string;
 }
 
-export const SEO = ({ title, description, path, children }: SEOProps) => {
+export const SEO = ({ title, description, path, children, image }: SEOProps) => {
     const {
         title: defaultTitle,
         description: defaultDescription,
-        image,
+        image: defaultImage,
         siteUrl,
         author,
     } = useSiteMetadata();
@@ -26,7 +27,7 @@ export const SEO = ({ title, description, path, children }: SEOProps) => {
     const seo = {
         title: finalTitle,
         description: description || defaultDescription,
-        image: `${siteUrl}${image}`,
+        image: `${siteUrl}${image || defaultImage}`,
         url: `${siteUrl}${path || ``}`,
         author,
     };

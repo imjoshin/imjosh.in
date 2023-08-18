@@ -9,6 +9,8 @@ import * as styles from "./video.module.css";
 type ContextProps = {
     file: string,
     title: string,
+    image: string,
+    description: string,
     song: {
         artist: string,
         title: string,
@@ -54,8 +56,10 @@ const VideoTemplate: React.FC<PageProps<{}, ContextProps>> = ({ pageContext: { f
     );
 };
 
-export const Head: HeadFC<{}, ContextProps> = ({ pageContext: { title } }) => <SEO
+export const Head: HeadFC<{}, ContextProps> = ({ pageContext: { title, image, description } }) => <SEO
     title={title}
+    image={image}
+    description={description}
 />;
 
 // export const query = graphql`
