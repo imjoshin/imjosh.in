@@ -1,13 +1,14 @@
 import { GatsbyNode } from "gatsby";
 import path from "path";
 import { videos } from "./content/videos";
+import { redirects } from "./content/redirects";
 
 type MarkdownRemarkNodes = {
     allMarkdownRemark: {
         nodes: {
-            id: string,
+            id: string;
             frontmatter: {
-                slug: string,
+                slug: string;
             };
         }[];
     };
@@ -16,21 +17,36 @@ type MarkdownRemarkNodes = {
 const writingTemplate = path.resolve(`src/templates/writing.tsx`);
 const videoTemplate = path.resolve(`src/templates/video.tsx`);
 
+export const createPages: GatsbyNode["createPages"] = async ({
+    actions,
+    graphql,
+    reporter,
+}) => {
+    const { createPage, createRedirect } = actions;
 
-export const createPages: GatsbyNode["createPages"] = async ({ actions, graphql, reporter }) => {
-    const { createPage } = actions;
+    for (const redirect of redirects) {
+        createRedirect({
+            fromPath: redirect.from,
+            toPath: redirect.to,
+            statusCode: 200,
+        });
+    }
 
     const result = await graphql<MarkdownRemarkNodes>(`
-    {
-        allMarkdownRemark(sort: { frontmatter: { date: ASC } }, limit: 1000) {
-            nodes {
-                id
-                frontmatter {
-                    slug
+        {
+            allMarkdownRemark(
+                sort: { frontmatter: { date: ASC } }
+                limit: 1000
+            ) {
+                nodes {
+                    id
+                    frontmatter {
+                        slug
+                    }
                 }
             }
         }
-    }`);
+    `);
 
     if (result.errors || !result.data) {
         reporter.panicOnBuild(
@@ -45,7 +61,8 @@ export const createPages: GatsbyNode["createPages"] = async ({ actions, graphql,
     if (posts.length > 0) {
         posts.forEach((post, index) => {
             const previousPostId = index === 0 ? null : posts[index - 1].id;
-            const nextPostId = index === posts.length - 1 ? null : posts[index + 1].id;
+            const nextPostId =
+                index === posts.length - 1 ? null : posts[index + 1].id;
 
             createPage({
                 path: `writing/${post.frontmatter.slug}`,
