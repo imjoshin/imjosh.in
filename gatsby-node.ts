@@ -16,19 +16,27 @@ type MarkdownRemarkNodes = {
 
 const writingTemplate = path.resolve(`src/templates/writing.tsx`);
 const videoTemplate = path.resolve(`src/templates/video.tsx`);
+const redirectTemplate = path.resolve(`src/templates/redirect.tsx`);
 
 export const createPages: GatsbyNode["createPages"] = async ({
     actions,
     graphql,
     reporter,
 }) => {
-    const { createPage, createRedirect } = actions;
+    const { createPage } = actions;
 
     for (const redirect of redirects) {
-        createRedirect({
-            fromPath: redirect.from,
-            toPath: redirect.to,
-            statusCode: 200,
+        // redirects are handled in gatsby-browser
+        reporter.info(
+            `Redirecting from "${redirect.from}" to "${redirect.to}"`
+        );
+
+        createPage({
+            path: redirect.from,
+            component: redirectTemplate,
+            context: {
+                to: redirect.to,
+            },
         });
     }
 
