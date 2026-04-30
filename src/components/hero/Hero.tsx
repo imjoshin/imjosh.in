@@ -35,7 +35,7 @@ export const Hero = () => {
                     <SpeechBubble className={styles.heroSpeechComponent}>
                         <p>
                             Hey, I'm Josh! I'm passionate about solving <div className={styles.interesting}>interesting</div> problems
-                            and currently work at <a className={styles.workplace} href="https://www.beeper.com" target="_blank">Beeper</a>.
+                            and currently work at <a className={styles.workplace} href="https://alpine.inc" target="_blank">Alpine</a>.
                         </p>
                         <p>
                             Feel free to peruse!
