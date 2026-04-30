@@ -4,6 +4,9 @@ import HTMLParser from "node-html-parser";
 export type BlogType = {
     url: string,
     tags: string[],
+    title?: string,
+    excerpt?: string,
+    date?: string,
 }
 
 type DataType = {
@@ -29,10 +32,16 @@ export const getBlogData = async (blog: BlogType, cache: GatsbyCache | undefined
     const data: DataType = {
         url: blog.url,
         tags: blog.tags,
-        title: 'Unknown',
-        excerpt: null,
+        title: blog.title ?? 'Unknown',
+        excerpt: blog.excerpt ?? null,
         image: null, // TODO fetch a hero image
-        date: null, // TODO fetch a date
+        date: blog.date ? new Date(blog.date) : null,
+    }
+
+    // If all metadata was provided, skip fetching
+    if (blog.title && blog.excerpt && blog.date) {
+        cache?.set(cacheKey, data)
+        return data
     }
 
     const blogResponse = await fetch(blog.url);
@@ -78,7 +87,7 @@ export const getBlogData = async (blog: BlogType, cache: GatsbyCache | undefined
 
     // Find the date
     // TODO make this more robust
-    const bodyText = root.querySelector('body')!.innerHTML
+    const bodyText = (root.querySelector('body') ?? root).innerHTML
     const dateMatches = bodyText.matchAll(dateRegex)
 
     for (const dateMatch of dateMatches) {

@@ -3,6 +3,20 @@ import path from "path";
 import { videos } from "./content/videos";
 import { redirects } from "./content/redirects";
 
+export const createSchemaCustomization: GatsbyNode["createSchemaCustomization"] = ({ actions }) => {
+    actions.createTypes(`
+        type MarkdownRemark implements Node {
+            frontmatter: MarkdownRemarkFrontmatter!
+        }
+        type MarkdownRemarkFrontmatter {
+            title: String
+            date: Date @dateformat
+            description: String
+            slug: String
+        }
+    `)
+};
+
 type MarkdownRemarkNodes = {
     allMarkdownRemark: {
         nodes: {
