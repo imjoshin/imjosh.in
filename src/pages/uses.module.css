@@ -18,6 +18,7 @@
   padding-bottom: 24px;
   box-sizing: border-box;
   scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--theme-color-text) 15%, transparent) transparent;
 }
 
 .desktopTimeline {
