@@ -10,11 +10,36 @@ import * as styles from "./uses.module.css";
 const dateGroups = buildDateGroups();
 const allMonths = dateGroups.filter((g) => !g.isGap).map((g) => g.date);
 
+function useRemainingHeight(ref: React.RefObject<HTMLElement | null>) {
+  const [height, setHeight] = React.useState<number | undefined>(undefined);
+
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const measure = () => {
+      const rect = el.getBoundingClientRect();
+      setHeight(window.innerHeight - rect.top);
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [ref]);
+
+  return height;
+}
+
 const UsesPage: React.FC<PageProps> = () => {
   const [activeDate, setActiveDate] = React.useState(allMonths[0]);
   const dateRefs = React.useRef<Map<string, HTMLLIElement>>(new Map());
   const mobileDateRefs = React.useRef<Map<string, HTMLLIElement>>(new Map());
   const mobileTimelineRef = React.useRef<HTMLDivElement>(null);
+
+  const desktopEquipRef = React.useRef<HTMLDivElement>(null);
+  const mobileEquipRef = React.useRef<HTMLDivElement>(null);
+  const desktopHeight = useRemainingHeight(desktopEquipRef);
+  const mobileHeight = useRemainingHeight(mobileEquipRef);
 
   // Desktop: IntersectionObserver on page scroll for the timeline
   React.useEffect(() => {
@@ -79,10 +104,13 @@ const UsesPage: React.FC<PageProps> = () => {
 
       {/* ── Desktop layout ── */}
       <div className={styles.desktopLayout}>
-        <EquipmentPanel
-          activeDate={activeDate}
+        <div
+          ref={desktopEquipRef}
           className={styles.desktopEquipment}
-        />
+          style={desktopHeight ? { height: desktopHeight } : undefined}
+        >
+          <EquipmentPanel activeDate={activeDate} />
+        </div>
         <Timeline
           dateGroups={dateGroups}
           activeDate={activeDate}
@@ -103,10 +131,13 @@ const UsesPage: React.FC<PageProps> = () => {
             className={styles.mobileTimeline}
           />
         </div>
-        <EquipmentPanel
-          activeDate={activeDate}
+        <div
+          ref={mobileEquipRef}
           className={styles.mobileEquipment}
-        />
+          style={mobileHeight ? { height: mobileHeight } : undefined}
+        >
+          <EquipmentPanel activeDate={activeDate} />
+        </div>
       </div>
     </Layout>
   );

@@ -37,9 +37,6 @@ export const Hero = () => {
                             Hey, I'm Josh! I'm passionate about solving <div className={styles.interesting}>interesting</div> problems
                             and currently work at <a className={styles.workplace} href="https://alpine.inc" target="_blank">Alpine</a>.
                         </p>
-                        <p>
-                            Feel free to peruse!
-                        </p>
                     </SpeechBubble>
                 </div>
                 <div className={styles.heroImage}>
