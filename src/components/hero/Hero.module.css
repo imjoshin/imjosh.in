@@ -27,11 +27,11 @@
     display: none;
 }
 
-body.dark-mode .darkImage {
+:global(body.dark-mode) .darkImage {
     display: block;
 }
 
-body.dark-mode .lightImage {
+:global(body.dark-mode) .lightImage {
     display: none;
 }
 
