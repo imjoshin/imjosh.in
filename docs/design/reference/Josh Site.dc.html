@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&display=swap" rel="stylesheet">
+<style>
+:root,html[data-theme=light]{--bg:#eceaf3;--ink:#15131d;--mute:#5d5a6c;--line:rgba(21,19,29,.16);--acc:#5b45d6;--panel:rgba(236,234,243,.74)}
+html[data-theme=dark]{--bg:#0c0b12;--ink:#edebf5;--mute:#a09db2;--line:rgba(237,235,245,.15);--acc:#a597ff;--panel:rgba(16,15,24,.7)}
+html,body{margin:0;background:var(--bg);color:var(--ink);transition:background .4s,color .4s}
+a{color:var(--ink);text-decoration:none;transition:color .2s}a:hover{color:var(--acc)}
+input[type=range]{accent-color:var(--acc)}
+@media print{canvas,header{display:none!important}}
+</style>
+</helmet>
+<div style="position:relative;min-height:100vh;display:flex;flex-direction:column;color:var(--ink);font-family:'Bricolage Grotesque',sans-serif">
+  <canvas ref="{{ canvasRef }}" style="position:fixed;inset:0;width:100vw;height:100vh;display:block;pointer-events:none;transition:opacity .8s;opacity:{{ blobOpacity }}"></canvas>
+  <header style="position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:22px clamp(20px,4vw,56px)">
+    <a href="#/" style="font-family:'Instrument Serif',serif;font-style:italic;font-size:28px;letter-spacing:-.01em">imjosh.in</a>
+    <nav style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <a href="#/uses" style="padding:10px 18px;border:1px solid var(--ink);border-radius:999px;font-size:14px;font-weight:500;background:var(--panel);backdrop-filter:blur(10px);transition:all .2s" style-hover="background:var(--ink);color:var(--bg)">Uses</a>
+      <a href="#/resume" style="padding:10px 18px;border:1px solid var(--ink);border-radius:999px;font-size:14px;font-weight:500;background:var(--panel);backdrop-filter:blur(10px);transition:all .2s" style-hover="background:var(--ink);color:var(--bg)">Resume</a>
+      <a href="https://www.jj.photos" target="_blank" rel="noopener" style="padding:10px 18px;border:1px solid var(--ink);border-radius:999px;font-size:14px;font-weight:500;background:var(--panel);backdrop-filter:blur(10px);transition:all .2s" style-hover="background:var(--ink);color:var(--bg)">Photography ↗</a>
+    </nav>
+  </header>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <main data-screen-label="Home" style="position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:clamp(20px,3vw,40px);min-height:calc(100vh - 86px);box-sizing:border-box;padding:0 clamp(20px,4vw,56px) clamp(24px,4vw,48px);pointer-events:none">
+      <h1 style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(84px,17.5vw,320px);line-height:.8;letter-spacing:-.04em">I'm Josh<span style="font-style:italic;color:var(--acc)">in'</span></h1>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:28px;flex-wrap:wrap">
+        <p style="margin:0;font-size:clamp(20px,2.1vw,30px);line-height:1.25;max-width:26ch;text-wrap:pretty">Hey! I'm passionate about solving <span style="display:inline-flex;vertical-align:bottom;height:1.25em;overflow:hidden;color:var(--acc)"><span style="display:flex;flex-direction:column;transform:translateY({{ slotY }});transition:{{ slotTr }}"><sc-for list="{{ words }}" as="w" hint-placeholder-count="1"><span style="height:1.25em;line-height:1.25em;font-family:'Instrument Serif',serif;font-style:italic">{{ w }}</span></sc-for></span></span> problems and currently work at <a href="https://tern.travel" target="_blank" rel="noopener" style="pointer-events:auto;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1px">tern.travel</a>.</p>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:12px;pointer-events:auto">
+          <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:20px;color:var(--mute)">nah, he's alright.</span>
+          <div style="display:flex;gap:18px;flex-wrap:wrap;justify-content:flex-end;font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase">
+            <a href="https://github.com/imjoshin">GitHub</a>
+            <a href="https://www.linkedin.com/in/imjoshin/">LinkedIn</a>
+            <a href="https://www.instagram.com/imjosh.in">Instagram</a>
+            <a href="https://www.twitter.com/imjosh_in">Twitter</a>
+            <a href="https://www.facebook.com/www.imjosh.in">Facebook</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isUses }}" hint-placeholder-val="{{ false }}">
+    <main data-screen-label="Uses" style="position:relative;flex:1;width:100%;max-width:1240px;margin:0 auto;box-sizing:border-box;padding:clamp(24px,5vw,72px) clamp(20px,4vw,56px) 64px;display:flex;flex-direction:column;gap:36px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <h1 style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(56px,9vw,128px);line-height:.85;letter-spacing:-.03em">What I <span style="font-style:italic;color:var(--acc)">use</span></h1>
+          <p style="margin:0;font-size:19px;color:var(--mute);max-width:34ch;text-wrap:pretty">Every piece of gear since 2010. Drag through time.</p>
+        </div>
+        <div style="font-family:'Instrument Serif',serif;font-size:clamp(80px,12vw,168px);line-height:.8;letter-spacing:-.03em;font-variant-numeric:tabular-nums">{{ year }}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;padding:20px 24px;border:1px solid var(--line);border-radius:20px;background:var(--panel);backdrop-filter:blur(14px)">
+        <input type="range" min="2010" max="2026" step="1" value="{{ year }}" onChange="{{ onYear }}" aria-label="Year" style="width:100%;margin:0">
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums">
+          <span>2010</span><span>2014</span><span>2018</span><span>2022</span><span>2026</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px;align-items:start">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:14px;grid-column:1 / -1">
+          <sc-for list="{{ cats }}" as="cat" hint-placeholder-count="8">
+            <div style="display:flex;flex-direction:column;gap:14px;padding:20px 22px;border:1px solid var(--line);border-radius:20px;background:var(--panel);backdrop-filter:blur(14px);min-height:120px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)"><span>{{ cat.label }}</span><span>{{ cat.count }}</span></div>
+              <sc-if value="{{ cat.empty }}"><span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:22px;color:var(--mute)">nothing yet</span></sc-if>
+              <sc-for list="{{ cat.items }}" as="it" hint-placeholder-count="1">
+                <div style="display:flex;flex-direction:column;gap:3px">
+                  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <span style="font-size:18px;font-weight:500;line-height:1.2">{{ it.name }}</span>
+                    <sc-if value="{{ it.isNew }}"><span style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--acc);color:var(--bg)">new</span></sc-if>
+                  </div>
+                  <sc-if value="{{ it.hasSpec }}"><span style="font-size:14px;color:var(--mute);line-height:1.35">{{ it.spec }}</span></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;padding:24px;border:1px solid var(--line);border-radius:20px;background:var(--panel);backdrop-filter:blur(14px)">
+        <div style="font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)">Changes in {{ year }}</div>
+        <sc-if value="{{ noChanges }}"><span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:24px;color:var(--mute)">A quiet year. Nothing in, nothing out.</span></sc-if>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:10px 28px">
+          <sc-for list="{{ changes }}" as="c" hint-placeholder-count="2">
+            <div style="display:grid;grid-template-columns:40px 18px minmax(0,1fr);gap:8px;align-items:baseline;font-size:16px">
+              <span style="color:var(--mute);font-size:13px">{{ c.mon }}</span>
+              <span style="font-weight:600;color:{{ c.color }}">{{ c.sign }}</span>
+              <span style="text-decoration:{{ c.deco }};color:{{ c.color }}">{{ c.name }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isResume }}" hint-placeholder-val="{{ false }}">
+    <main data-screen-label="Resume" style="position:relative;flex:1;width:100%;max-width:1120px;margin:0 auto;box-sizing:border-box;padding:clamp(24px,5vw,72px) clamp(20px,4vw,56px) 64px;display:flex;flex-direction:column;gap:40px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <h1 style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(56px,9vw,128px);line-height:.85;letter-spacing:-.03em">Josh <span style="font-style:italic;color:var(--acc)">Johnson</span></h1>
+          <p style="margin:0;font-size:clamp(18px,1.6vw,22px);color:var(--mute);max-width:40ch;text-wrap:pretty">Engineer, sometimes product manager. I like building things that make people's lives easier. Ann Arbor, MI — a proud Yooper gone South.</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a href="https://www.linkedin.com/in/imjoshin/" target="_blank" rel="noopener" style="padding:12px 20px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:15px;font-weight:500" style-hover="background:var(--acc);color:var(--bg)">LinkedIn ↗</a>
+          <button onClick="{{ printPage }}" style="padding:12px 20px;border-radius:999px;border:1px solid var(--ink);background:var(--panel);color:var(--ink);font-family:inherit;font-size:15px;font-weight:500;cursor:pointer" style-hover="background:var(--ink);color:var(--bg)">Save as PDF</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;border:1px solid var(--line);border-radius:24px;background:var(--panel);backdrop-filter:blur(14px);overflow:hidden">
+        <div style="padding:18px 28px;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);border-bottom:1px solid var(--line)">Experience</div>
+        <sc-for list="{{ jobs }}" as="j" hint-placeholder-count="7">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:8px 32px;padding:24px 28px;border-bottom:1px solid var(--line);transition:background .25s" style-hover="background:var(--line)">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <span style="font-family:'Instrument Serif',serif;font-size:36px;line-height:1;letter-spacing:-.01em">{{ j.co }}</span>
+              <span style="font-size:14px;color:var(--mute);font-variant-numeric:tabular-nums">{{ j.when }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;grid-column:span 2">
+              <span style="font-size:17px;font-weight:600;color:var(--acc)">{{ j.role }}</span>
+              <span style="font-size:17px;line-height:1.45;text-wrap:pretty">{{ j.blurb }}</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px">
+        <div style="display:flex;flex-direction:column;gap:12px;padding:24px 28px;border:1px solid var(--line);border-radius:24px;background:var(--panel);backdrop-filter:blur(14px)">
+          <div style="font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)">Education</div>
+          <span style="font-family:'Instrument Serif',serif;font-size:32px;line-height:1.05">Michigan Technological University</span>
+          <span style="font-size:15px;color:var(--mute)">Houghton, MI</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;padding:24px 28px;border:1px solid var(--line);border-radius:24px;background:var(--panel);backdrop-filter:blur(14px)">
+          <div style="font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)">Kind words</div>
+          <span style="font-family:'Instrument Serif',serif;font-style:italic;font-size:28px;line-height:1.15;text-wrap:pretty">"Josh combines deep technical skills with an empathetic, collaborative mindset."</span>
+          <span style="font-size:15px;color:var(--mute)">Vitaliy Peker — worked with Josh at Barracuda, Duo, Gatsby &amp; Netlify</span>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ notHome }}" hint-placeholder-val="{{ false }}">
+    <footer style="position:relative;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:24px clamp(20px,4vw,56px);border-top:1px solid var(--line);font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;background:var(--panel);backdrop-filter:blur(14px)">
+      <span style="color:var(--mute)">imjosh.in</span>
+      <div style="display:flex;gap:18px;flex-wrap:wrap">
+        <a href="https://github.com/imjoshin">GitHub</a>
+        <a href="https://www.linkedin.com/in/imjoshin/">LinkedIn</a>
+        <a href="https://www.instagram.com/imjosh.in">Instagram</a>
+        <a href="https://www.twitter.com/imjosh_in">Twitter</a>
+      </div>
+    </footer>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const EV = [
+['2010-06','+','phone','LG Banter'],['2013-06','+','laptop','MSI GE60 0ND-257US'],
+['2013-08','-','phone','LG Banter'],['2013-08','+','phone','Google Nexus 4'],['2014-10','+','mouse','Razer Naga 2014 MMO'],
+['2015-06','-','phone','Google Nexus 4'],['2015-06','+','phone','LG G4'],['2015-08','+','monitor','LG 25UM57 25"'],
+['2015-09','+','monitor','ASUS VG248QE 24"'],['2015-09','+','monitor','LG 29UM67 29"'],['2015-10','+','desktop','Custom i7-4790K / GTX 970 Build'],
+['2016-07','-','phone','LG G4'],['2016-07','+','phone','Samsung Galaxy S7 Edge'],['2018-01','+','camera','Canon EOS Rebel T3i'],
+['2018-02','-','phone','Samsung Galaxy S7 Edge'],['2018-02','+','phone','Google Pixel 2 XL'],['2018-04','+','keyboard','Corsair STRAFE RGB'],
+['2018-05','-','mouse','Razer Naga 2014 MMO'],['2018-05','+','mouse','Razer Naga Chroma'],
+['2018-12','-','phone','Google Pixel 2 XL'],['2018-12','+','phone','Google Pixel 3 XL'],
+['2020-02','-','camera','Canon EOS Rebel T3i'],['2020-02','+','camera','Canon EOS Rebel T7i'],['2020-02','+','lens','Sigma 50mm F1.4 DG HSM Art'],
+['2020-04','-','desktop','Custom i7-4790K / GTX 970 Build'],['2020-04','+','desktop','Custom Ryzen 7 3700X / RTX 2070S Build'],
+['2020-12','-','keyboard','Corsair STRAFE RGB'],['2020-12','+','keyboard','FILCO Majestouch Convertible 2'],
+['2020-12','-','mouse','Razer Naga Chroma'],['2020-12','+','mouse','Razer Mamba Wireless'],['2021-11','-','laptop','MSI GE60 0ND-257US'],
+['2021-12','-','monitor','LG 25UM57 25"'],['2021-12','-','monitor','ASUS VG248QE 24"'],['2021-12','+','monitor','MSI Optix G27CQ4 27"'],
+['2022-11','-','phone','Google Pixel 3 XL'],['2022-11','+','phone','Google Pixel 6 Pro'],['2023-01','+','camera','Insta360 X3'],
+['2023-03','-','monitor','LG 29UM67 29"'],['2023-03','+','monitor','LG UltraGear 34GP63A-B 34"'],
+['2023-03','-','keyboard','FILCO Majestouch Convertible 2'],['2023-03','+','keyboard','Logitech G613 LIGHTSPEED'],
+['2023-05','-','phone','Google Pixel 6 Pro'],['2023-05','+','phone','Google Pixel 7 Pro'],['2024-04','+','laptop','ASUS ROG Zephyrus G16'],
+['2024-08','-','mouse','Razer Mamba Wireless'],['2024-09','-','monitor','MSI Optix G27CQ4 27"'],['2024-09','+','monitor','ASUS ROG Swift PG34WCDM 34"'],
+['2024-09','-','phone','Google Pixel 7 Pro'],['2024-09','+','phone','Google Pixel 9 Pro'],['2024-11','-','laptop','ASUS ROG Zephyrus G16'],
+['2026-01','+','laptop','Apple MacBook Pro 16" (M4 Pro)'],['2026-03','+','mouse','Logitech MX Master 3S'],
+['2026-04','-','desktop','Custom Ryzen 7 3700X / RTX 2070S Build'],['2026-04','+','desktop','iBUYPOWER RDY KING 95 PRO']];
+const SPEC = {
+  'iBUYPOWER RDY KING 95 PRO': 'i9-14900KF · RTX 5080 16GB · 64GB DDR5 · 4TB NVMe',
+  'Custom Ryzen 7 3700X / RTX 2070S Build': 'Ryzen 7 3700X · RTX 2070 SUPER · 64GB DDR4',
+  'Custom i7-4790K / GTX 970 Build': 'i7-4790K · GTX 970 4GB · 16GB DDR3',
+  'Apple MacBook Pro 16" (M4 Pro)': 'M4 Pro 14-core · 48GB unified · 512GB',
+  'ASUS ROG Zephyrus G16': 'Core Ultra 9 185H · RTX 4090 · 240Hz OLED',
+  'MSI GE60 0ND-257US': 'i7-3630QM · GTX 660M · 24GB DDR3',
+  'ASUS ROG Swift PG34WCDM 34"': '3440×1440 · 240Hz · primary',
+  'LG UltraGear 34GP63A-B 34"': '2560×1440 · 160Hz', 'MSI Optix G27CQ4 27"': '2560×1440 · 165Hz',
+  'LG 29UM67 29"': '2560×1080', 'ASUS VG248QE 24"': '1920×1080 · 144Hz', 'LG 25UM57 25"': '2560×1080',
+  'Corsair STRAFE RGB': 'Cherry MX Brown', 'FILCO Majestouch Convertible 2': 'Cherry MX Brown',
+  'Sigma 50mm F1.4 DG HSM Art': '50mm f/1.4'
+};
+const CATS = [['desktop', 'Desktop'], ['laptop', 'Laptop'], ['monitor', 'Monitors'], ['keyboard', 'Keyboard'], ['mouse', 'Mouse'], ['camera', 'Camera'], ['lens', 'Lenses'], ['phone', 'Phone']];
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const JOBS = [
+  { co: 'Tern', when: '2026 — now', role: 'Engineer', blurb: 'Currently building at tern.travel.' },
+  { co: 'Alpine', when: '2026', role: 'Founding Engineer', blurb: 'Early engineer on Alpine, an AI-native workspace that brings docs, tasks and chat into one app.' },
+  { co: 'Beeper · Automattic', when: '2023 — 2025', role: 'Software Engineer', blurb: 'Worked on Beeper, the universal chat app, through its acquisition by Automattic.' },
+  { co: 'Netlify', when: '2023', role: 'Engineer & Product Manager', blurb: 'Joined with the Gatsby acquisition and kept the framework moving.' },
+  { co: 'Gatsby', when: '2021 — 2023', role: 'Staff Software Engineer → Product Manager', blurb: 'Moved from engineering into product and led the launch of Gatsby 5, shipping the Slice API and Partial Hydration.' },
+  { co: 'Duo Security', when: '2017 — 2021', role: 'Software Engineer · Team Lead', blurb: 'Owned critical projects across core systems and led an engineering team.' },
+  { co: 'Barracuda', when: '2015 — 2017', role: 'Software Engineer', blurb: 'Where it started — shipping software out of Michigan.' }
+];
+
+class Component extends DCLogic {
+  canvasRef = React.createRef();
+  words = ['interesting', 'weird', 'stubborn', 'gnarly', 'fun', 'interesting'];
+  state = { wi: 0, snap: false, page: 'home', year: 2026, theme: 'light' };
+  readPage() { const h = (location.hash || '').replace('#/', ''); return h === 'uses' || h === 'resume' ? h : 'home'; }
+  componentDidMount() {
+    this.mq = matchMedia('(prefers-color-scheme: dark)');
+    this.mqf = () => { const t = this.mq.matches ? 'dark' : 'light'; document.documentElement.dataset.theme = t; this.setState({ theme: t }); };
+    this.mqf(); this.mq.addEventListener('change', this.mqf);
+    this.setState({ page: this.readPage() });
+    this.hc = () => { this.setState({ page: this.readPage() }); window.scrollTo(0, 0); };
+    window.addEventListener('hashchange', this.hc);
+    this.iv = setInterval(() => {
+      this.setState(s => ({ wi: s.wi + 1, snap: false }), () => {
+        if (this.state.wi === this.words.length - 1) this.to = setTimeout(() => this.setState({ wi: 0, snap: true }), 700);
+      });
+    }, 2300);
+    import('./blob.js').then(m => { if (!this.dead && this.canvasRef.current) this.destroy = m.initBlob(this.canvasRef.current, { count: 7, pull: 0.24 }); });
+  }
+  componentWillUnmount() {
+    this.dead = true; clearInterval(this.iv); clearTimeout(this.to);
+    window.removeEventListener('hashchange', this.hc); if (this.mq) this.mq.removeEventListener('change', this.mqf); if (this.destroy) this.destroy();
+  }
+  uses(y) {
+    const cut = y >= 2026 ? '9999' : `${y}-12`, inv = {};
+    EV.forEach(([d, op, cat, item]) => {
+      if (d > cut) return; inv[cat] = inv[cat] || [];
+      if (op === '+') inv[cat].push({ name: item, isNew: d.startsWith(String(y)) }); else inv[cat] = inv[cat].filter(x => x.name !== item);
+    });
+    const cats = CATS.map(([k, label]) => {
+      const items = (inv[k] || []).slice().reverse().map(it => ({ ...it, spec: SPEC[it.name] || '', hasSpec: !!SPEC[it.name] }));
+      return { label, items, empty: !items.length, count: items.length ? String(items.length).padStart(2, '0') : '' };
+    });
+    const changes = EV.filter(e => e[0].startsWith(String(y))).map(([d, op, , name]) => ({
+      mon: MON[+d.slice(5) - 1], sign: op === '+' ? '+' : '−', name,
+      color: op === '+' ? 'var(--acc)' : 'var(--mute)', deco: op === '+' ? 'none' : 'line-through'
+    }));
+    return { cats, changes };
+  }
+  renderVals() {
+    const { page, year } = this.state, u = this.uses(year);
+    return {
+      canvasRef: this.canvasRef, words: this.words,
+      slotY: `${-this.state.wi * 1.25}em`,
+      slotTr: this.state.snap ? 'none' : 'transform .65s cubic-bezier(.75,0,.2,1)',
+      isHome: page === 'home', isUses: page === 'uses', isResume: page === 'resume', notHome: page !== 'home',
+      blobOpacity: page === 'home' ? 1 : 0.5,
+      year, cats: u.cats, changes: u.changes, noChanges: !u.changes.length,
+      onYear: e => this.setState({ year: +e.target.value }),
+      jobs: JOBS,
+      printPage: () => window.print()
+    };
+  }
+}
+</script>
+</body>
+</html>

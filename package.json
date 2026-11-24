@@ -1,55 +1,39 @@
 {
-  "name": "gatsby-starter-default",
+  "name": "imjosh.in",
+  "version": "2.0.0",
   "private": true,
-  "description": "A simple starter to get up and developing quickly with Gatsby",
-  "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
-  "dependencies": {
-    "clsx": "^1.2.1",
-    "gatsby": "^5.9.1",
-    "gatsby-plugin-feed": "^5.10.0",
-    "gatsby-plugin-image": "^3.9.0",
-    "gatsby-plugin-manifest": "^5.9.0",
-    "gatsby-plugin-sharp": "^5.9.0",
-    "gatsby-plugin-use-dark-mode": "^2.0.1",
-    "gatsby-remark-images": "^7.10.0",
-    "gatsby-remark-prismjs": "^7.10.0",
-    "gatsby-remark-responsive-iframe": "^6.10.0",
-    "gatsby-source-filesystem": "^5.9.0",
-    "gatsby-transformer-remark": "^6.10.0",
-    "gatsby-transformer-sharp": "^5.9.0",
-    "prismjs": "^1.29.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^4.8.0",
-    "react-player": "^2.12.0",
-    "use-dark-mode": "^2.3.1"
+  "type": "module",
+  "description": "Josh Johnson’s personal site — Liquid Chrome, built with Next.js and Tailwind CSS.",
+  "license": "0BSD",
+  "engines": {
+    "node": ">=24.0.0"
   },
-  "resolutions": {
-    "msgpackr": "^1.11.10",
-    "lmdb": "^3.5.4"
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1",
+    "build": "next build",
+    "start": "serve out",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "check": "npm run typecheck && npm test",
+    "deploy:preview": "netlify deploy --context deploy-preview",
+    "deploy": "netlify deploy --prod --context production"
+  },
+  "dependencies": {
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "@fontsource/instrument-serif": "5.3.0",
+    "@fontsource-variable/bricolage-grotesque": "5.3.0"
   },
   "devDependencies": {
-    "prettier": "^2.8.8"
-  },
-  "keywords": [
-    "gatsby"
-  ],
-  "license": "0BSD",
-  "scripts": {
-    "build": "gatsby build",
-    "develop": "gatsby develop",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
-    "start": "gatsby develop",
-    "serve": "gatsby serve",
-    "clean": "gatsby clean",
-    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
-  },
-  "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
+    "@tailwindcss/postcss": "4.3.5",
+    "tailwindcss": "4.3.5",
+    "postcss": "8.5.33",
+    "typescript": "5.9.3",
+    "@types/node": "26.6.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "netlify-cli": "27.20.1",
+    "serve": "14.2.8"
   }
 }

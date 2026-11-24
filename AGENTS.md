@@ -1,0 +1,30 @@
+# imjosh.in
+
+This is Josh Johnson’s personal site, rewritten with Next.js App Router, React, TypeScript, and Tailwind CSS. It is a static export hosted on the existing Netlify site.
+
+## Source of truth
+
+- `docs/design/handoff.md` and its screenshots define Option B, **Liquid Chrome**. Match its typography, spacing, colors, and motion. The handoff is a design reference, not application source.
+- `content/uses.ts` is the authoritative gear timeline. Preserve its dates, specifications, names, and retirement history. Derive the eight display categories from it; do not duplicate the prototype event log.
+- Never infer personal facts from the previous Gatsby site. The handoff flags résumé dates, titles, and descriptions as placeholders. Publish only supplied or independently verified information; record provenance in `content/resume.ts`.
+- No Writing page, old generated hero imagery, theme toggle, or prototype runtime. Photography links to `https://www.jj.photos`.
+
+## Implementation
+
+- Use real routes `/`, `/uses`, and `/resume`. Keep React client components limited to interaction, browser state, and the persistent canvas.
+- Use Tailwind utilities and shared CSS design tokens. Instrument Serif and Bricolage Grotesque are self-hosted through Fontsource.
+- `src/lib/blob.js` must remain byte-for-byte identical to `docs/design/scripts/blob.js`. Manage lazy loading, reduced motion, tab visibility, and cleanup in the React wrapper.
+- Theme follows the operating system only. Honor live changes to `prefers-color-scheme` and `prefers-reduced-motion`.
+- Preserve keyboard access, visible focus, labeled controls, responsive layouts, and useful no-WebGL/no-JavaScript fallbacks.
+- Read the installed Next.js documentation in `node_modules/next/dist/docs/` when available before unfamiliar framework changes; use official docs as needed.
+- Scoped `AGENTS.md` files add directory guidance. `CLAUDE.md` files are relative symlinks to the corresponding `AGENTS.md`; update the canonical files.
+
+## Commands and release
+
+- Use Node.js 24 and npm. Commit only `package-lock.json`; do not restore Yarn or Gatsby dependencies.
+- `npm ci` installs the locked dependency tree; `npm run dev` starts local development.
+- `npm run check` runs strict TypeScript checks and gear timeline regression tests.
+- `npm run build` exports production routes into `out/`. `npm start` serves that export.
+- Check desktop and narrow mobile layouts, OS light/dark modes, motion preferences, scrubber/history behavior, navigation, missing routes, and résumé print layout when changing UI.
+- Use the local Netlify CLI (`npx netlify status`, `npx netlify deploy`) to inspect the existing site. The deploy command builds by default. `npm run deploy` publishes production when authorized. Do not create a second hosting project or change domains.
+- Keep credentials, local Netlify state, build output, screenshots from test runs, and environment values out of Git.
