@@ -470,6 +470,15 @@ export const usesItems: UsesItem[] = [
         make: "Google",
         model: "Pixel 9 Pro",
         acquireDate: "2024-09",
+        active: false,
+        doneDate: "2026-11-17",
+    },
+    {
+        category: "phone",
+        subtype: "phone",
+        make: "Google",
+        model: "Pixel 11 Pro",
+        acquireDate: "2026-11-17",
         active: true,
     },
 ];

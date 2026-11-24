@@ -39,7 +39,9 @@ export function buildEvents(items: UsesItem[] = usesItems): GearEvent[] {
 }
 
 export function usesAt(period: number | string, items: UsesItem[] = usesItems) {
-  const cutoff = typeof period === "number" ? `${period}-12` : period;
+  const cutoffMonth = typeof period === "number" ? `${period}-12` : period;
+  const [year, month] = cutoffMonth.split("-").map(Number);
+  const cutoff = `${cutoffMonth}-${new Date(Date.UTC(year, month, 0)).getUTCDate()}`;
   const prefix = String(period);
   const active = items.filter((item) => item.acquireDate <= cutoff && (item.active || item.doneDate > cutoff));
   return {
@@ -47,9 +49,9 @@ export function usesAt(period: number | string, items: UsesItem[] = usesItems) {
       key, label,
       items: active.filter((item) => itemCategory(item) === key)
         .sort((a, b) => b.acquireDate.localeCompare(a.acquireDate))
-        .map((item) => ({ id: itemId(item), name: itemName(item), spec: itemSpec(item), isNew: typeof period === "number" ? item.acquireDate.startsWith(`${period}-`) : item.acquireDate === period })),
+        .map((item) => ({ id: itemId(item), name: itemName(item), spec: itemSpec(item), isNew: item.acquireDate === prefix || item.acquireDate.startsWith(`${prefix}-`) })),
     })),
-    changes: buildEvents(items).filter((event) => typeof period === "number" ? event.date.startsWith(`${prefix}-`) : event.date === prefix),
+    changes: buildEvents(items).filter((event) => event.date === prefix || event.date.startsWith(`${prefix}-`)),
   };
 }
 

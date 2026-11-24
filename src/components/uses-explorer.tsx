@@ -98,8 +98,8 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
         <h2 id="changes-title" className="eyebrow">Changes in {monthLabel}</h2>
         <p className="sr-only" role="status">Showing {inventory.categories.reduce((sum, category) => sum + category.items.length, 0)} items and {inventory.changes.length} changes in {monthLabel}.</p>
         {inventory.changes.length ? <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-x-7 gap-y-[10px]">
-          {inventory.changes.map((event) => <li key={`${event.date}:${event.op}:${itemId(event.item)}`} className={`grid grid-cols-[40px_18px_minmax(0,1fr)] items-baseline gap-2 text-base ${event.op === "+" ? "text-accent" : "text-muted"}`}>
-            <span className="text-[13px] text-muted">{months[Number(event.date.slice(5)) - 1]}</span>
+          {inventory.changes.map((event) => <li key={`${event.date}:${event.op}:${itemId(event.item)}`} className={`grid grid-cols-[48px_18px_minmax(0,1fr)] items-baseline gap-2 text-base ${event.op === "+" ? "text-accent" : "text-muted"}`}>
+            <time dateTime={event.date} className="text-[13px] text-muted">{months[Number(event.date.slice(5, 7)) - 1]}{event.date.length > 7 ? ` ${Number(event.date.slice(8, 10))}` : ""}</time>
             <span className="font-semibold" aria-label={event.op === "+" ? "Acquired" : "Retired"}>{event.op === "+" ? "+" : "−"}</span>
             <span className={event.op === "-" ? "line-through" : ""}>{itemName(event.item)}</span>
           </li>)}

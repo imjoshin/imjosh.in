@@ -66,3 +66,14 @@ test("month URLs reject invalid or future periods and keep legacy year links usa
   assert.equal(readTimelineMonth(new URLSearchParams("year=2026"), now), now);
   assert.equal(readTimelineMonth(new URLSearchParams("year=2014&month=2020-04"), now), "2020-04");
 });
+
+test("the November 17 phone upgrade preserves exact dates and monthly history", () => {
+  const october = usesAt("2026-10").categories.find((category) => category.key === "phone")!;
+  const november = usesAt("2026-11");
+  assert.deepEqual(october.items.map((item) => item.name), ["Google Pixel 9 Pro"]);
+  assert.deepEqual(november.categories.find((category) => category.key === "phone")!.items.map((item) => [item.name, item.isNew]), [["Google Pixel 11 Pro", true]]);
+  assert.deepEqual(november.changes.map((event) => [event.date, event.op, event.item.model]), [
+    ["2026-11-17", "-", "Pixel 9 Pro"],
+    ["2026-11-17", "+", "Pixel 11 Pro"],
+  ]);
+});
