@@ -40,6 +40,35 @@ html, body {
   transition: background-color .4s, color .4s;
 }
 
+html {
+  scrollbar-gutter: stable;
+  overflow-x: clip;
+}
+
+@supports not (scrollbar-gutter: stable) {
+  html { overflow-y: scroll; }
+}
+
+.page-transition {
+  animation: page-enter .45s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes page-enter {
+  from { opacity: 0; transform: translateX(clamp(40px, 6vw, 80px)); }
+  to { opacity: 1; transform: none; }
+}
+
+.blob-canvas {
+  opacity: 1;
+  filter: blur(0);
+  transition: opacity 1s ease, filter 1.4s cubic-bezier(.22, 1, .36, 1);
+}
+
+.blob-canvas[data-dimmed="true"] {
+  opacity: .5;
+  filter: blur(14px);
+}
+
 body {
   margin: 0;
   font-family: "Bricolage Grotesque Variable", sans-serif;
@@ -91,6 +120,8 @@ input[type="range"] { accent-color: var(--acc); cursor: ew-resize; }
 @media print {
   :root { color-scheme: light; --bg: #fff; --ink: #15131d; --mute: #484351; --line: #d4d1da; --acc: #4935b6; --panel: #fff; }
   html, body { background: #fff !important; color: #15131d !important; font-size: 11pt; }
+  html { scrollbar-gutter: auto; }
+  .page-transition { animation: none; transform: none; }
   canvas, .site-header, .site-footer, .print-actions, .skip-link { display: none !important; }
   .resume-page { padding: 0 !important; gap: 20px !important; max-width: none !important; }
   .resume-page .page-title { font-size: 54pt; }

@@ -1,22 +1,19 @@
-// Liquid chrome metaballs. initBlob(canvas, {count, scale, pull, timeOffset}) -> destroy()
+import { BlobSimulation } from './blob-physics.ts';
+
+// The handoff's chrome shader, driven by independent gravitational particles.
 export function initBlob(canvas, o = {}) {
   const gl = canvas.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: true });
-  if (!gl) return () => {};
-  const N = o.count ?? 7, S = o.scale ?? 1, PULL = o.pull ?? 0.22;
+  if (!gl) return { destroy() {}, setHome() {}, setPaused() {} };
+  const N = Math.max(1, Math.min(8, Math.floor(o.count ?? 7))), S = o.scale ?? 1;
+  const simulation = new BlobSimulation({ count: N, scale: S, pull: o.pull ?? .24 });
   const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
   const fs = `precision highp float;
-uniform vec2 uR;uniform float uT;uniform vec2 uM;uniform float uA;uniform float uB;uniform vec2 uC;uniform float uDark;uniform float uN;uniform float uS;uniform float uPull;
+uniform vec2 uR;uniform float uT;uniform float uB;uniform float uDark;uniform float uN;uniform float uS;uniform vec3 uCenters[8];
 float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
-vec3 cen(float f){
- vec3 c=vec3(sin(uT*.21+f*1.9)*uA*.95*uS,cos(uT*.17+f*2.7)*1.05*uS,sin(uT*.15+f*1.3)*.6);
- vec2 tm=uM-c.xy;c.xy+=tm*uPull/(1.+length(tm)*.35);
- vec2 dir=normalize(c.xy-uC+vec2(sin(f*12.9),cos(f*7.3))*.7+1e-4);
- c.xy+=dir*uB*(1.5+1.1*fract(f*.618))*uS;c.z+=uB*sin(f*3.)*.7;
- return c;}
 float map(vec3 p){float d=1e3;float b=clamp(uB,0.,1.);float k=mix(.8,.1,b);
  for(int i=0;i<8;i++){float f=float(i);if(f>=uN)break;
   float r=(.36+.15*sin(f*2.1+1.))*uS*mix(1.,.72,b);
-  d=smin(d,length(p-cen(f))-r,k*uS);}
+  d=smin(d,length(p-uCenters[i])-r,k*uS);}
  return d;}
 vec3 nrm(vec3 p){vec2 e=vec2(.002,0.);return normalize(vec3(map(p+e.xyy)-map(p-e.xyy),map(p+e.yxy)-map(p-e.yxy),map(p+e.yyx)-map(p-e.yyx)));}
 void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
@@ -36,49 +33,106 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
  col+=pow(max(dot(r,normalize(vec3(.5,.8,.6))),0.),48.)*1.3;
  col=mix(col,ir,fr*mix(.45,.75,uDark));
  gl_FragColor=vec4(col,1.);}`;
-  const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s)); return s; };
+  const sh = (type, src) => {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      const error = gl.getShaderInfoLog(shader);
+      gl.deleteShader(shader);
+      throw new Error(error || 'Unable to compile the blob shader');
+    }
+    return shader;
+  };
   const pr = gl.createProgram();
-  gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(pr); gl.useProgram(pr);
+  const vertexShader = sh(gl.VERTEX_SHADER, vs), fragmentShader = sh(gl.FRAGMENT_SHADER, fs);
+  gl.attachShader(pr, vertexShader); gl.attachShader(pr, fragmentShader); gl.linkProgram(pr);
+  if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) {
+    gl.deleteShader(vertexShader); gl.deleteShader(fragmentShader); gl.deleteProgram(pr);
+    throw new Error('Unable to link the blob shader');
+  }
+  gl.useProgram(pr);
   const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['uR', 'uT', 'uM', 'uA', 'uB', 'uC', 'uDark', 'uN', 'uS', 'uPull'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
+  const U = {}; ['uR', 'uT', 'uB', 'uDark', 'uN', 'uS', 'uCenters[0]'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
 
-  let m = [0, 0], mt = [0, 0], click = [0, 0], b = 0, bv = 0, dark = isDark() ? 1 : 0, raf, dead = false;
+  const centers = new Float32Array(8 * 3);
+  let home = o.home ?? true, interactive = false, paused = false;
+  let speed = home ? 1 : .18, dark = isDark() ? 1 : 0;
+  let raf = 0, lastFrame = performance.now(), dead = false;
   function isDark() { return document.documentElement.dataset.theme === 'dark'; }
   const toWorld = (e) => {
     const r = canvas.getBoundingClientRect();
-    return [((e.clientX - r.left) * 2 - r.width) / r.height * 2.3, -((e.clientY - r.top) * 2 - r.height) / r.height * 2.3];
+    return [((e.clientX - r.left) * 2 - r.width) / r.height * 2.5, -((e.clientY - r.top) * 2 - r.height) / r.height * 2.5];
   };
   const resize = () => {
     const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (w <= 0 || h <= 0) return;
     let dpr = Math.min(devicePixelRatio, 1.5);
     if (w * h * dpr * dpr > 2.4e6) dpr = Math.sqrt(2.4e6 / (w * h));
     canvas.width = Math.max(1, Math.round(w * dpr)); canvas.height = Math.max(1, Math.round(h * dpr));
     gl.viewport(0, 0, canvas.width, canvas.height);
+    simulation.setAspect(w / Math.max(h, 1));
   };
-  const pm = e => { mt = toWorld(e); };
+  const pm = e => { simulation.setPointer(toWorld(e)); };
   const pd = e => {
     if (e.target.closest && e.target.closest('a,button,input')) return;
-    click = toWorld(e); bv += 0.14;
+    // One impulse on pointerdown, followed by a multi-second inertial recovery.
+    simulation.burstAt(toWorld(e));
   };
+  const leave = () => simulation.setPointer(null);
+  const up = e => { if (e.pointerType !== 'mouse') leave(); };
+  function setHome(value) {
+    home = value;
+    const enabled = home && !paused && !dead;
+    if (interactive === enabled) return;
+    interactive = enabled;
+    const method = enabled ? 'addEventListener' : 'removeEventListener';
+    window[method]('pointermove', pm);
+    window[method]('pointerdown', pd);
+    window[method]('pointerup', up);
+    window[method]('pointercancel', leave);
+    document.documentElement[method]('pointerleave', leave);
+    window[method]('blur', leave);
+    if (!enabled) leave();
+  }
   resize();
   const ro = new ResizeObserver(resize); ro.observe(canvas);
-  window.addEventListener('pointermove', pm); window.addEventListener('pointerdown', pd);
-  const t0 = performance.now();
-  const loop = () => {
-    if (dead) return;
+  setHome(home);
+  const loop = now => {
+    if (dead || paused) return;
     raf = requestAnimationFrame(loop);
-    m[0] += (mt[0] - m[0]) * .045; m[1] += (mt[1] - m[1]) * .045;
-    bv += (0 - b) * .016; bv *= .93; b += bv;
-    dark += ((isDark() ? 1 : 0) - dark) * .08;
+    const dt = Math.min(Math.max((now - lastFrame) / 1000, 0), .05);
+    lastFrame = now;
+    speed += ((home ? 1 : .18) - speed) * (1 - Math.exp(-dt * 2.4));
+    simulation.step(dt * speed);
+    dark += ((isDark() ? 1 : 0) - dark) * (1 - Math.exp(-dt * 5));
+    simulation.particles.forEach((particle, i) => centers.set(particle.position, i * 3));
     gl.uniform2f(U.uR, canvas.width, canvas.height);
-    gl.uniform1f(U.uT, (performance.now() - t0) / 1000 + (o.timeOffset ? o.timeOffset() : 0));
-    gl.uniform2f(U.uM, m[0], m[1]); gl.uniform1f(U.uA, canvas.width / canvas.height);
-    gl.uniform1f(U.uB, b); gl.uniform2f(U.uC, click[0], click[1]); gl.uniform1f(U.uDark, dark);
-    gl.uniform1f(U.uN, N); gl.uniform1f(U.uS, S); gl.uniform1f(U.uPull, PULL);
+    gl.uniform1f(U.uT, simulation.time);
+    gl.uniform1f(U.uB, simulation.burst); gl.uniform1f(U.uDark, dark);
+    gl.uniform1f(U.uN, N); gl.uniform1f(U.uS, S);
+    gl.uniform3fv(U['uCenters[0]'], centers);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
-  loop();
-  return () => { dead = true; cancelAnimationFrame(raf); ro.disconnect(); window.removeEventListener('pointermove', pm); window.removeEventListener('pointerdown', pd); };
+  raf = requestAnimationFrame(loop);
+  return {
+    setHome,
+    setPaused(value) {
+      if (dead || paused === value) return;
+      paused = value;
+      setHome(home);
+      cancelAnimationFrame(raf);
+      if (!paused) { lastFrame = performance.now(); raf = requestAnimationFrame(loop); }
+    },
+    destroy() {
+      dead = true;
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      setHome(false);
+      gl.deleteBuffer(buf);
+      gl.deleteShader(vertexShader); gl.deleteShader(fragmentShader); gl.deleteProgram(pr);
+    },
+  };
 }

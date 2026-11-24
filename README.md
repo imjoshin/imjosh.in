@@ -25,7 +25,8 @@ npm start      # preview the export
 - `content/uses.ts` preserves the original gear timeline unchanged. `src/lib/uses.ts` derives eight inventory categories and the acquisition/retirement event log. Historical snapshots show inventory at the end of the selected year.
 - The Uses scrubber supports pointer and keyboard input, clickable year labels, shareable `?year=2014` URLs, and browser back/forward history. It defaults to the visitor’s current year.
 - `content/resume.ts` contains verified LinkedIn roles, dates, and summarized responsibilities, replacing the handoff’s placeholders. Its comments record the sources and verification date.
-- `src/lib/blob.js` is an exact copy of the handoff renderer. A single lazy-loaded canvas persists across routes. Its React wrapper handles system theme changes, reduced motion, hidden tabs, WebGL fallback, and GPU cleanup.
+- `src/lib/blob.js` preserves the handoff’s chrome shading, with independent gravitational particles in `src/lib/blob-physics.ts`. The pointer acts as an additional gravity source; clicks scatter particles with momentum and a gradual recovery. A single lazy-loaded canvas persists across routes and hidden-tab pauses.
+- On inner pages, the background blurs and eases to a slow drift, with pointer interaction disabled. Returning Home eases it back to full speed and clears the blur. Content slides in from the right, while a reserved scrollbar gutter keeps the layout steady.
 - Theme follows the operating system. The résumé’s **Save as PDF** action opens the browser print dialog with a print-specific layout.
 
 The prior Gatsby source is preserved locally in ignored `.legacy-gatsby/` and in Git history. It is not used as a source of personal facts.
@@ -42,6 +43,8 @@ npm run deploy
 ```
 
 `netlify.toml` sets `npm run build`, publishes `out/`, selects Node 24, and skips the Next.js server adapter because this is a static export. The old Gatsby build plugin has been removed from the Netlify project. Git pushes to `main` also trigger Netlify’s production build.
+
+The build finishes by normalizing Next.js’s Windows RSC segment paths into the flat filenames the client router requests. This keeps client-side navigation working in local static previews and CLI deployments as well as Netlify’s Linux builds.
 
 The runtime dependency audit is clean. The current Netlify CLI has upstream moderate advisories in its development-only glob dependencies; npm’s proposed automatic fix downgrades the CLI by twelve major versions, so it is not applied. These packages are not shipped in `out/`.
 

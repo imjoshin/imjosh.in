@@ -2,10 +2,19 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import type { BlobController } from "@/lib/blob";
 
 export function BlobCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
   const pathname = usePathname();
+  const isHome = pathname === "/";
+  const home = useRef(isHome);
+  const engine = useRef<BlobController | null>(null);
+
+  useEffect(() => {
+    home.current = isHome;
+    engine.current?.setHome(isHome);
+  }, [isHome]);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -14,7 +23,6 @@ export function BlobCanvas() {
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     let disposed = false;
     let generation = 0;
-    let destroy: (() => void) | undefined;
 
     function syncTheme() {
       document.documentElement.dataset.theme = theme.matches ? "dark" : "light";
@@ -22,30 +30,22 @@ export function BlobCanvas() {
 
     function stop() {
       generation++;
-      if (!destroy) return;
-      destroy();
-      destroy = undefined;
-      // The supplied renderer stays untouched; release its GPU resources here.
-      const gl = canvas!.getContext("webgl");
-      if (!gl || gl.isContextLost()) return;
-      const program = gl.getParameter(gl.CURRENT_PROGRAM) as WebGLProgram | null;
-      const buffer = gl.getParameter(gl.ARRAY_BUFFER_BINDING) as WebGLBuffer | null;
-      if (program) {
-        for (const shader of gl.getAttachedShaders(program) ?? []) gl.deleteShader(shader);
-        gl.deleteProgram(program);
-      }
-      if (buffer) gl.deleteBuffer(buffer);
+      engine.current?.destroy();
+      engine.current = null;
     }
 
     async function syncAnimation() {
-      stop();
+      const current = ++generation;
       canvas!.style.visibility = motion.matches ? "hidden" : "visible";
+      if (engine.current) {
+        engine.current.setPaused(motion.matches || document.hidden);
+        return;
+      }
       if (disposed || motion.matches || document.hidden) return;
-      const current = generation;
       try {
         const { initBlob } = await import("@/lib/blob.js");
         if (disposed || current !== generation) return;
-        destroy = initBlob(canvas!, { count: 7, pull: .24 });
+        engine.current = initBlob(canvas!, { count: 7, pull: .24, home: home.current });
       } catch {
         // The typography and navigation remain complete without WebGL.
       }
@@ -71,5 +71,5 @@ export function BlobCanvas() {
     };
   }, []);
 
-  return <canvas ref={ref} aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 block h-dvh w-full transition-opacity duration-800 motion-reduce:hidden" style={{ opacity: pathname === "/" ? 1 : .5 }} />;
+  return <canvas ref={ref} aria-hidden="true" data-dimmed={!isHome} className="blob-canvas pointer-events-none fixed inset-0 z-0 block h-dvh w-full motion-reduce:hidden" />;
 }
