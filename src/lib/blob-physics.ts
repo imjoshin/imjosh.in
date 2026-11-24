@@ -1,10 +1,13 @@
 export type Point = readonly [number, number];
+export const BLOB_BLEND = .8;
+export const BLOB_SEPARATED_BLEND = .1;
 
 export type Particle = {
   position: [number, number, number];
   velocity: [number, number, number];
   radius: number;
   mass: number;
+  burst: number;
 };
 
 /** Independent particles, connected by softened gravity and loose orbital tethers. */
@@ -12,18 +15,19 @@ export class BlobSimulation {
   readonly particles: Particle[];
   readonly scale: number;
   readonly pull: number;
+  readonly connectionThreshold: number;
   aspect: number;
   time = 0;
-  burst = 0;
   private pointer: Point | null = null;
   private pointerStrength = 0;
   private impulses: [number, number, number][];
-  private burstEnergy = 0;
+  private burstEnergies: number[];
 
-  constructor({ count = 7, scale = 1, aspect = 1, pull = .24 } = {}) {
+  constructor({ count = 7, scale = 1, aspect = 1, pull = .24, connectionThreshold = BLOB_BLEND / 2 } = {}) {
     this.scale = scale;
     this.aspect = aspect;
     this.pull = pull;
+    this.connectionThreshold = connectionThreshold * scale;
     this.particles = Array.from({ length: Math.max(1, Math.min(8, Math.floor(count))) }, (_, i) => {
       const radius = (.36 + .15 * Math.sin(i * 2.1 + 1)) * scale;
       return {
@@ -31,9 +35,62 @@ export class BlobSimulation {
         velocity: [Math.cos(i * 1.9) * .12, -Math.sin(i * 2.7) * .1, Math.cos(i * 1.3) * .06],
         radius,
         mass: Math.pow(radius / (.4 * scale), 3),
+        burst: 0,
       };
     });
     this.impulses = this.particles.map(() => [0, 0, 0]);
+    this.burstEnergies = this.particles.map(() => 0);
+  }
+
+  get burst() { return this.particles.reduce((maximum, particle) => Math.max(maximum, particle.burst), 0); }
+
+  private radius(particle: Particle) { return particle.radius * (1 - particle.burst * .28); }
+
+  /** Same smooth-union field used by the shader, including local burst shapes. */
+  private sample(point: readonly number[]) {
+    let distance = 1e3, blendedBurst = 0, closest = Infinity, owner = -1;
+    this.particles.forEach((particle, i) => {
+      const signed = Math.hypot(...point.map((value, axis) => value - particle.position[axis])) - this.radius(particle);
+      if (signed < closest) { closest = signed; owner = i; }
+      const blend = (BLOB_BLEND + (BLOB_SEPARATED_BLEND - BLOB_BLEND) * Math.max(blendedBurst, particle.burst)) * this.scale;
+      const weight = Math.max(0, Math.min(1, .5 + .5 * (signed - distance) / blend));
+      distance = signed * (1 - weight) + distance * weight - blend * weight * (1 - weight);
+      blendedBurst = particle.burst * (1 - weight) + blendedBurst * weight;
+    });
+    return { distance, owner };
+  }
+
+  /** Ray march from the shader's camera through a pointer on the z=0 plane. */
+  hitTest([x, y]: Point): number | null {
+    const length = Math.hypot(x, y, 4);
+    const ray = [x / length, y / length, -4 / length];
+    let depth = 0;
+    for (let i = 0; i < 84; i++) {
+      const hit = this.sample([ray[0] * depth, ray[1] * depth, 4 + ray[2] * depth]);
+      if (hit.distance < .002) return hit.owner >= 0 ? hit.owner : null;
+      depth += hit.distance;
+      if (depth > 10) break;
+    }
+    return null;
+  }
+
+  private connectedTo(index: number): number[] {
+    const connected = new Set([index]);
+    const queue = [index];
+    for (let cursor = 0; cursor < queue.length; cursor++) {
+      const current = this.particles[queue[cursor]];
+      this.particles.forEach((other, i) => {
+        if (connected.has(i)) return;
+        const distance = Math.hypot(...current.position.map((value, axis) => value - other.position[axis]));
+        // The default gap matches the smooth union's visible joining distance.
+        const gap = this.connectionThreshold * (1 - Math.max(current.burst, other.burst) * (1 - BLOB_SEPARATED_BLEND / BLOB_BLEND));
+        if (distance <= this.radius(current) + this.radius(other) + gap) {
+          connected.add(i);
+          queue.push(i);
+        }
+      });
+    }
+    return queue;
   }
 
   private orbit(i: number): [number, number, number] {
@@ -57,8 +114,12 @@ export class BlobSimulation {
   }
 
   burstAt([x, y]: Point) {
-    this.burstEnergy = 1;
-    this.particles.forEach((particle, i) => {
+    const hit = this.hitTest([x, y]);
+    if (hit === null) return [];
+    const connected = this.connectedTo(hit);
+    connected.forEach((i) => {
+      const particle = this.particles[i];
+      this.burstEnergies[i] = 1;
       const dx = particle.position[0] - x + Math.sin(i * 12.9) * .22;
       const dy = particle.position[1] - y + Math.cos(i * 7.3) * .22;
       const length = Math.hypot(dx, dy) || 1;
@@ -69,6 +130,7 @@ export class BlobSimulation {
       this.impulses[i][1] += dy / length * impulse;
       this.impulses[i][2] += Math.sin(i * 3 + 1) * .35 * this.scale;
     });
+    return connected;
   }
 
   step(elapsed: number) {
@@ -78,8 +140,10 @@ export class BlobSimulation {
       const dt = Math.min(remaining, 1 / 120);
       remaining -= dt;
       this.time += dt;
-      this.burstEnergy *= Math.exp(-dt / 1.65);
-      this.burst += (this.burstEnergy - this.burst) * (1 - Math.exp(-dt / .06));
+      this.particles.forEach((particle, i) => {
+        this.burstEnergies[i] *= Math.exp(-dt / 1.65);
+        particle.burst += (this.burstEnergies[i] - particle.burst) * (1 - Math.exp(-dt / .06));
+      });
       this.pointerStrength += ((this.pointer ? 1 : 0) - this.pointerStrength) * (1 - Math.exp(-dt * 3));
 
       const forces = this.particles.map((particle, i) => {
@@ -103,7 +167,7 @@ export class BlobSimulation {
           const dx = this.pointer[0] - particle.position[0];
           const dy = this.pointer[1] - particle.position[1];
           const distance = Math.hypot(dx, dy);
-          const gravity = this.pull * 3.5 * this.pointerStrength * (1 - this.burst * .85) / Math.pow(distance * distance + .8, 1.5);
+          const gravity = this.pull * 3.5 * this.pointerStrength * (1 - particle.burst * .85) / Math.pow(distance * distance + .8, 1.5);
           force[0] += dx * gravity;
           force[1] += dy * gravity;
         }

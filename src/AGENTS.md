@@ -4,4 +4,6 @@ Follow the root instructions and design handoff. Pages and layouts are Server Co
 
 Inner pages blur the background, ease animation to a slow drift, and remove pointer listeners. Returning Home clears the blur and eases back up to full speed. Route changes and tab visibility must not reset particle positions or velocities. Keep page entrance animations outside the persistent background and header.
 
+Hit-test clicks against the rendered surface. Apply eased velocity impulses and local burst shapes only to the clicked bubble and its connected component, using the surface-gap threshold. Empty-space clicks must not burst any bubbles. Keep gradual recovery and individual pointer gravity.
+
 All three pages must remain readable with reduced motion and without WebGL. Do not add a theme switch; follow the OS. Keep print-specific résumé behavior in the global print stylesheet.

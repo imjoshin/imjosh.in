@@ -1,4 +1,4 @@
-import { BlobSimulation } from './blob-physics.ts';
+import { BlobSimulation, BLOB_BLEND, BLOB_SEPARATED_BLEND } from './blob-physics.ts';
 
 // The handoff's chrome shader, driven by independent gravitational particles.
 export function initBlob(canvas, o = {}) {
@@ -8,12 +8,16 @@ export function initBlob(canvas, o = {}) {
   const simulation = new BlobSimulation({ count: N, scale: S, pull: o.pull ?? .24 });
   const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
   const fs = `precision highp float;
-uniform vec2 uR;uniform float uT;uniform float uB;uniform float uDark;uniform float uN;uniform float uS;uniform vec3 uCenters[8];
-float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
-float map(vec3 p){float d=1e3;float b=clamp(uB,0.,1.);float k=mix(.8,.1,b);
+uniform vec2 uR;uniform float uT;uniform float uDark;uniform float uN;uniform float uS;uniform vec4 uParticles[8];
+float map(vec3 p){float d=1e3;float blendedBurst=0.;
  for(int i=0;i<8;i++){float f=float(i);if(f>=uN)break;
+  float b=clamp(uParticles[i].w,0.,1.);
+  float k=mix(${BLOB_BLEND},${BLOB_SEPARATED_BLEND},max(b,blendedBurst))*uS;
   float r=(.36+.15*sin(f*2.1+1.))*uS*mix(1.,.72,b);
-  d=smin(d,length(p-uCenters[i])-r,k*uS);}
+  float distance=length(p-uParticles[i].xyz)-r;
+  float h=clamp(.5+.5*(distance-d)/k,0.,1.);
+  d=mix(distance,d,h)-k*h*(1.-h);
+  blendedBurst=mix(b,blendedBurst,h);}
  return d;}
 vec3 nrm(vec3 p){vec2 e=vec2(.002,0.);return normalize(vec3(map(p+e.xyy)-map(p-e.xyy),map(p+e.yxy)-map(p-e.yxy),map(p+e.yyx)-map(p-e.yyx)));}
 void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
@@ -55,9 +59,9 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
   const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['uR', 'uT', 'uB', 'uDark', 'uN', 'uS', 'uCenters[0]'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
+  const U = {}; ['uR', 'uT', 'uDark', 'uN', 'uS', 'uParticles[0]'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
 
-  const centers = new Float32Array(8 * 3);
+  const particles = new Float32Array(8 * 4);
   let home = o.home ?? true, interactive = false, paused = false;
   let speed = home ? 1 : .18, dark = isDark() ? 1 : 0;
   let raf = 0, lastFrame = performance.now(), dead = false;
@@ -78,7 +82,7 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
   const pm = e => { simulation.setPointer(toWorld(e)); };
   const pd = e => {
     if (e.target.closest && e.target.closest('a,button,input')) return;
-    // One impulse on pointerdown, followed by a multi-second inertial recovery.
+    // Hit-test the visible surface and kick only its connected group.
     simulation.burstAt(toWorld(e));
   };
   const leave = () => simulation.setPointer(null);
@@ -108,12 +112,15 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
     speed += ((home ? 1 : .18) - speed) * (1 - Math.exp(-dt * 2.4));
     simulation.step(dt * speed);
     dark += ((isDark() ? 1 : 0) - dark) * (1 - Math.exp(-dt * 5));
-    simulation.particles.forEach((particle, i) => centers.set(particle.position, i * 3));
+    simulation.particles.forEach((particle, i) => {
+      particles.set(particle.position, i * 4);
+      particles[i * 4 + 3] = particle.burst;
+    });
     gl.uniform2f(U.uR, canvas.width, canvas.height);
     gl.uniform1f(U.uT, simulation.time);
-    gl.uniform1f(U.uB, simulation.burst); gl.uniform1f(U.uDark, dark);
+    gl.uniform1f(U.uDark, dark);
     gl.uniform1f(U.uN, N); gl.uniform1f(U.uS, S);
-    gl.uniform3fv(U['uCenters[0]'], centers);
+    gl.uniform4fv(U['uParticles[0]'], particles);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
   raf = requestAnimationFrame(loop);
