@@ -7,11 +7,8 @@ export const metadata: Metadata = { title: "Resume", description: "Josh Johnson 
 export default function ResumePage() {
   return (
     <main id="main" className="resume-page relative z-10 mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-10 px-gutter pt-[clamp(24px,5vw,72px)] pb-16">
-      <div className="flex flex-wrap items-end justify-between gap-6">
-        <div className="flex flex-col gap-[14px]">
-          <h1 className="page-title">Josh <em>Johnson</em></h1>
-          <p className="resume-bio max-w-[40ch] text-[clamp(18px,1.6vw,22px)] leading-[1.3] text-pretty text-muted">Engineer, sometimes product manager. I like building things that make people&apos;s lives easier. Ann Arbor, MI — a proud Yooper gone South.</p>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-6">
+        <h1 className="page-title">Josh <em>Johnson</em></h1>
         <div className="print-actions flex flex-wrap gap-2">
           <a className="pill pill-filled px-5 py-3 text-[15px]" href="https://www.linkedin.com/in/imjoshin/" target="_blank" rel="noopener noreferrer">LinkedIn<span className="sr-only"> (opens in a new tab)</span></a>
           <PrintButton />

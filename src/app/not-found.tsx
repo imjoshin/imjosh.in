@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { DirectionalLink as Link } from "@/components/navigation-motion";
 
 export default function NotFound() {
   return (

@@ -43,19 +43,41 @@ html, body {
 html {
   scrollbar-gutter: stable;
   overflow-x: clip;
+  view-transition-name: none;
 }
 
 @supports not (scrollbar-gutter: stable) {
   html { overflow-y: scroll; }
 }
 
-.page-transition {
+::view-transition { pointer-events: none; }
+::view-transition-group(.page-forward), ::view-transition-group(.page-back) { animation: none; }
+::view-transition-old(.page-forward), ::view-transition-old(.page-back) {
+  --page-exit-offset: -80px;
+  mix-blend-mode: normal;
+  animation: page-exit .3s cubic-bezier(.4, 0, 1, 1) both;
+}
+::view-transition-new(.page-forward), ::view-transition-new(.page-back) {
+  --page-enter-offset: 80px;
+  mix-blend-mode: normal;
   animation: page-enter .45s cubic-bezier(.22, 1, .36, 1) both;
 }
-
+::view-transition-old(.page-back) { --page-exit-offset: 80px; }
+::view-transition-new(.page-back) { --page-enter-offset: -80px; }
+@keyframes page-exit {
+  from { opacity: 1; translate: 0; }
+  to { opacity: 0; translate: var(--page-exit-offset); }
+}
 @keyframes page-enter {
-  from { opacity: 0; transform: translateX(clamp(40px, 6vw, 80px)); }
-  to { opacity: 1; transform: none; }
+  from { opacity: 0; translate: var(--page-enter-offset); }
+  to { opacity: 1; translate: 0; }
+}
+
+.date-part { display: inline-grid; overflow: hidden; padding-block: .1em; margin-block: -.1em; }
+.date-value { display: inline-block; animation: date-change .22s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes date-change {
+  from { opacity: .25; transform: translateY(var(--date-offset)); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .blob-canvas {
@@ -114,6 +136,7 @@ input[type="range"] { accent-color: var(--acc); cursor: ew-resize; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group(*) { animation: none !important; }
 }
 
 @page { size: auto; margin: 14mm; }
@@ -125,7 +148,6 @@ input[type="range"] { accent-color: var(--acc); cursor: ew-resize; }
   canvas, .site-header, .site-footer, .print-actions, .skip-link { display: none !important; }
   .resume-page { padding: 0 !important; gap: 20px !important; max-width: none !important; }
   .resume-page .page-title { font-size: 54pt; }
-  .resume-page .resume-bio { font-size: 11pt; max-width: none; }
   .resume-page .experience-row { padding: 12px 18px; break-inside: avoid; grid-template-columns: 1fr 2fr; }
   .resume-page .experience-company { font-size: 22pt; }
   .resume-page .experience-description { font-size: 10pt; }

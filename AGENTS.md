@@ -15,7 +15,8 @@ This is Josh Johnson’s personal site, rewritten with Next.js App Router, React
 - Use Tailwind utilities and shared CSS design tokens. Instrument Serif and Bricolage Grotesque are self-hosted through Fontsource.
 - Preserve the chrome shading from `docs/design/scripts/blob.js`. The production renderer in `src/lib/blob.js` now uses the user-requested independent gravity simulation in `src/lib/blob-physics.ts`; the original archived script remains unchanged. Keep its canvas mounted across navigation, ease speed by route, and disable pointer listeners away from Home.
 - Theme follows the operating system only. Honor live changes to `prefers-color-scheme` and `prefers-reduced-motion`.
-- Reserve the root scrollbar gutter. Animate page content from the right through the App Router template; keep the header and background outside it. Preserve client navigation and browser history.
+- Reserve the root scrollbar gutter. Use React ViewTransition boundaries in the App Router template for page exits and entrances, tagged by internal links according to Home → Uses → Resume order. Direct visits and refreshes must not animate. Keep the header and live background outside capture (`html` has no view-transition name). Preserve client navigation and browser history.
+- The Uses timeline is continuous (`step="any"`) with month-specific snapshots and animated year/month labels. Do not quantize the thumb when committing history. Preserve legacy year links and honor reduced motion.
 - Preserve keyboard access, visible focus, labeled controls, responsive layouts, and useful no-WebGL/no-JavaScript fallbacks.
 - Read the installed Next.js documentation in `node_modules/next/dist/docs/` when available before unfamiliar framework changes; use official docs as needed.
 - Scoped `AGENTS.md` files add directory guidance. `CLAUDE.md` files are relative symlinks to the corresponding `AGENTS.md`; update the canonical files.

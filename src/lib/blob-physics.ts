@@ -17,6 +17,8 @@ export class BlobSimulation {
   burst = 0;
   private pointer: Point | null = null;
   private pointerStrength = 0;
+  private impulses: [number, number, number][];
+  private burstEnergy = 0;
 
   constructor({ count = 7, scale = 1, aspect = 1, pull = .24 } = {}) {
     this.scale = scale;
@@ -31,6 +33,7 @@ export class BlobSimulation {
         mass: Math.pow(radius / (.4 * scale), 3),
       };
     });
+    this.impulses = this.particles.map(() => [0, 0, 0]);
   }
 
   private orbit(i: number): [number, number, number] {
@@ -54,15 +57,17 @@ export class BlobSimulation {
   }
 
   burstAt([x, y]: Point) {
-    this.burst = 1;
+    this.burstEnergy = 1;
     this.particles.forEach((particle, i) => {
       const dx = particle.position[0] - x + Math.sin(i * 12.9) * .22;
       const dy = particle.position[1] - y + Math.cos(i * 7.3) * .22;
       const length = Math.hypot(dx, dy) || 1;
       const impulse = (1.25 + (i * .618 % 1) * .55) * this.scale / Math.sqrt(particle.mass + .5);
-      particle.velocity[0] += dx / length * impulse;
-      particle.velocity[1] += dy / length * impulse;
-      particle.velocity[2] += Math.sin(i * 3 + 1) * .35 * this.scale;
+      // Queue a kick from the current position; transfer it into velocity over
+      // about 150 ms instead of jumping position, velocity, or blend shape.
+      this.impulses[i][0] += dx / length * impulse;
+      this.impulses[i][1] += dy / length * impulse;
+      this.impulses[i][2] += Math.sin(i * 3 + 1) * .35 * this.scale;
     });
   }
 
@@ -73,7 +78,8 @@ export class BlobSimulation {
       const dt = Math.min(remaining, 1 / 120);
       remaining -= dt;
       this.time += dt;
-      this.burst *= Math.exp(-dt / 1.65);
+      this.burstEnergy *= Math.exp(-dt / 1.65);
+      this.burst += (this.burstEnergy - this.burst) * (1 - Math.exp(-dt / .06));
       this.pointerStrength += ((this.pointer ? 1 : 0) - this.pointerStrength) * (1 - Math.exp(-dt * 3));
 
       const forces = this.particles.map((particle, i) => {
@@ -107,6 +113,9 @@ export class BlobSimulation {
 
       this.particles.forEach((particle, i) => {
         for (let axis = 0; axis < 3; axis++) {
+          const impulse = this.impulses[i][axis] * (1 - Math.exp(-dt / .05));
+          this.impulses[i][axis] -= impulse;
+          particle.velocity[axis] += impulse;
           particle.velocity[axis] = (particle.velocity[axis] + forces[i][axis] * dt) * Math.exp(-.72 * dt);
           particle.position[axis] += particle.velocity[axis] * dt;
         }

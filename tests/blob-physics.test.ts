@@ -10,6 +10,20 @@ function difference(a: BlobSimulation, b: BlobSimulation) {
   return a.particles.reduce((sum, particle, i) => sum + Math.hypot(...particle.position.map((value, axis) => value - b.particles[i].position[axis])), 0) / a.particles.length;
 }
 
+test("a click eases a velocity impulse from the current state without an instantaneous shape or position jump", () => {
+  const simulation = new BlobSimulation();
+  advance(simulation, 3);
+  const before = structuredClone(simulation.particles);
+  simulation.burstAt([.4, -.2]);
+  assert.deepEqual(simulation.particles, before);
+  assert.equal(simulation.burst, 0);
+  simulation.step(1 / 120);
+  assert.ok(simulation.burst > 0 && simulation.burst < .2);
+  simulation.particles.forEach((particle, i) => assert.ok(Math.hypot(...particle.position.map((value, axis) => value - before[i].position[axis])) < .01));
+  advance(simulation, .15);
+  assert.ok(simulation.burst > .7);
+});
+
 test("pointer gravity attracts particles individually rather than translating the scene", () => {
   const idle = new BlobSimulation();
   const attracted = new BlobSimulation();

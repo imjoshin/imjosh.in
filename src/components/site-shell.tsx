@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { DirectionalLink as Link } from "@/components/navigation-motion";
 import { usePathname } from "next/navigation";
 
 export const socialLinks = [

@@ -22,11 +22,11 @@ npm start      # preview the export
 ## Content and design
 
 - `docs/design/` contains the original supplied handoff, reference prototype, scripts, and twelve screenshots. The prototype runtime is not bundled or deployed.
-- `content/uses.ts` preserves the original gear timeline unchanged. `src/lib/uses.ts` derives eight inventory categories and the acquisition/retirement event log. Historical snapshots show inventory at the end of the selected year.
-- The Uses scrubber supports pointer and keyboard input, clickable year labels, shareable `?year=2014` URLs, and browser back/forward history. It defaults to the visitor’s current year.
+- `content/uses.ts` preserves the original gear timeline unchanged. `src/lib/uses.ts` derives eight inventory categories and the acquisition/retirement event log. Historical snapshots show inventory at the end of the selected month.
+- The Uses scrubber moves continuously without snapping, with animated year/month labels and month-specific changes. Arrow keys move one month; Shift + arrows move one year. Shareable `?month=2020-04` URLs and browser history work without reloads; existing `?year=2014` links still open year-end snapshots. It defaults to the visitor’s current month.
 - `content/resume.ts` contains verified LinkedIn roles, dates, and summarized responsibilities, replacing the handoff’s placeholders. Its comments record the sources and verification date.
-- `src/lib/blob.js` preserves the handoff’s chrome shading, with independent gravitational particles in `src/lib/blob-physics.ts`. The pointer acts as an additional gravity source; clicks scatter particles with momentum and a gradual recovery. A single lazy-loaded canvas persists across routes and hidden-tab pauses.
-- On inner pages, the background blurs and eases to a slow drift, with pointer interaction disabled. Returning Home eases it back to full speed and clears the blur. Content slides in from the right, while a reserved scrollbar gutter keeps the layout steady.
+- `src/lib/blob.js` preserves the handoff’s chrome shading, with independent gravitational particles in `src/lib/blob-physics.ts`. The pointer acts as an additional gravity source; clicks ease a velocity impulse into each particle over roughly 150 ms, with a gradual recovery. A single lazy-loaded canvas persists across routes and hidden-tab pauses.
+- On inner pages, the background blurs and eases to a slow drift, with pointer interaction disabled. Returning Home eases it back to full speed and clears the blur. Internal links animate page exits and entrances according to Home → Uses → Resume order. Direct visits, refreshes, and untyped history navigation do not run page transitions. The header and canvas remain outside the transition, and a reserved scrollbar gutter keeps the layout steady.
 - Theme follows the operating system. The résumé’s **Save as PDF** action opens the browser print dialog with a print-specific layout.
 
 The prior Gatsby source is preserved locally in ignored `.legacy-gatsby/` and in Git history. It is not used as a source of personal facts.

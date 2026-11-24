@@ -38,18 +38,45 @@ export function buildEvents(items: UsesItem[] = usesItems): GearEvent[] {
   }).sort((a, b) => a.date.localeCompare(b.date) || (a.op === b.op ? 0 : a.op === "-" ? -1 : 1));
 }
 
-export function usesAt(year: number, items: UsesItem[] = usesItems) {
-  const cutoff = `${year}-12`;
+export function usesAt(period: number | string, items: UsesItem[] = usesItems) {
+  const cutoff = typeof period === "number" ? `${period}-12` : period;
+  const prefix = String(period);
   const active = items.filter((item) => item.acquireDate <= cutoff && (item.active || item.doneDate > cutoff));
   return {
     categories: categories.map(([key, label]) => ({
       key, label,
       items: active.filter((item) => itemCategory(item) === key)
         .sort((a, b) => b.acquireDate.localeCompare(a.acquireDate))
-        .map((item) => ({ id: itemId(item), name: itemName(item), spec: itemSpec(item), isNew: item.acquireDate.startsWith(`${year}-`) })),
+        .map((item) => ({ id: itemId(item), name: itemName(item), spec: itemSpec(item), isNew: typeof period === "number" ? item.acquireDate.startsWith(`${period}-`) : item.acquireDate === period })),
     })),
-    changes: buildEvents(items).filter((event) => event.date.startsWith(`${year}-`)),
+    changes: buildEvents(items).filter((event) => typeof period === "number" ? event.date.startsWith(`${prefix}-`) : event.date === prefix),
   };
+}
+
+export function monthIndex(month: string): number {
+  const [year, value] = month.split("-").map(Number);
+  return (year - 2010) * 12 + value - 1;
+}
+
+export function monthAt(position: number): string {
+  const index = Math.max(0, Math.round(position));
+  return `${2010 + Math.floor(index / 12)}-${String(index % 12 + 1).padStart(2, "0")}`;
+}
+
+export function parseMonth(value: string | null, currentMonth: string): string {
+  if (!value || !/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) return currentMonth;
+  return value >= "2010-01" && value <= currentMonth ? value : currentMonth;
+}
+
+export function readTimelineMonth(params: URLSearchParams, currentMonth: string): string {
+  if (params.has("month")) return parseMonth(params.get("month"), currentMonth);
+  // Preserve existing year links as year-end snapshots, capped at today.
+  if (params.has("year")) {
+    const year = parseYear(params.get("year"), Number(currentMonth.slice(0, 4)));
+    const month = `${year}-12`;
+    return month > currentMonth ? currentMonth : month;
+  }
+  return currentMonth;
 }
 
 export function parseYear(value: string | null, currentYear: number): number {
