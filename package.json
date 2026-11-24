@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Josh Johnson’s personal site — Liquid Chrome, built with Next.js and Tailwind CSS.",
+  "description": "Josh Johnson’s personal site, built with Next.js and Tailwind CSS in the Liquid Chrome design.",
   "license": "0BSD",
   "engines": {
     "node": ">=24.0.0"

@@ -8,10 +8,10 @@ import { SiteFooter, SiteHeader } from "@/components/site-shell";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://imjosh.in"),
-  title: { default: "I'm Joshin' — Josh Johnson", template: "%s — Josh Johnson" },
+  title: { default: "I'm Joshin' - Josh Johnson", template: "%s - Josh Johnson" },
   description: "Hey! I’m Josh Johnson. I’m passionate about solving interesting problems and currently work at Tern. Engineer, sometimes product manager, and photographer.",
   alternates: { canonical: "/" },
-  openGraph: { type: "website", siteName: "imjosh.in", locale: "en_US", images: [{ url: "/social.png", width: 1200, height: 630, alt: "I'm Joshin' — Josh Johnson" }] },
+  openGraph: { type: "website", siteName: "imjosh.in", locale: "en_US", images: [{ url: "/social.png", width: 1200, height: 630, alt: "I'm Joshin' - Josh Johnson" }] },
   twitter: { card: "summary_large_image", creator: "@imjosh_in" },
 };
 

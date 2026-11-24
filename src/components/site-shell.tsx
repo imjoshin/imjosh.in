@@ -25,7 +25,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   return (
     <header className="site-header sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 px-gutter py-[22px]">
-      <Link className="font-display text-[28px] leading-none tracking-[-.01em] italic" href="/" aria-label="imjosh.in — home">imjosh.in</Link>
+      <Link className="font-display text-[28px] leading-none tracking-[-.01em] italic" href="/" aria-label="imjosh.in home">imjosh.in</Link>
       <nav aria-label="Main navigation" className="flex flex-wrap items-center gap-2">
         <Link className="pill" href="/uses/" aria-current={pathname.startsWith("/uses") ? "page" : undefined}>Uses</Link>
         <Link className="pill" href="/resume/" aria-current={pathname.startsWith("/resume") ? "page" : undefined}>Resume</Link>

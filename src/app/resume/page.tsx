@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { experience, education, recommendation } from "../../../content/resume";
 import { PrintButton } from "@/components/print-button";
 
-export const metadata: Metadata = { title: "Resume", description: "Josh Johnson — Senior Engineering Manager at Tern. Experience in engineering, product, and building things that make people’s lives easier.", alternates: { canonical: "/resume/" } };
+export const metadata: Metadata = { title: "Resume", description: "Josh Johnson, Senior Engineering Manager at Tern. Experience in engineering, product, and building things that make people’s lives easier.", alternates: { canonical: "/resume/" } };
 
 export default function ResumePage() {
   return (
@@ -41,7 +41,7 @@ export default function ResumePage() {
         <figure className="resume-extra panel flex flex-col gap-3 rounded-[24px] px-7 py-6">
           <h2 className="eyebrow">Kind words</h2>
           <blockquote className="font-display text-[28px] leading-[1.15] text-pretty italic">“{recommendation.quote}”</blockquote>
-          <figcaption className="text-[15px] text-muted">{recommendation.author} — {recommendation.context}</figcaption>
+          <figcaption className="text-[15px] text-muted">{recommendation.author} - {recommendation.context}</figcaption>
         </figure>
       </div>
     </main>

@@ -8,6 +8,7 @@ This is Josh Johnson’s personal site, rewritten with Next.js App Router, React
 - `content/uses.ts` is the authoritative gear timeline. Preserve its dates, specifications, names, and retirement history. Derive the eight display categories from it; do not duplicate the prototype event log.
 - Never infer personal facts from the previous Gatsby site. The handoff flags résumé dates, titles, and descriptions as placeholders. Publish only supplied or independently verified information; record provenance in `content/resume.ts`.
 - No Writing page, old generated hero imagery, theme toggle, or prototype runtime. Photography links to `https://www.jj.photos`.
+- Do not use em dashes in site copy, labels, or metadata. Rewrite the sentence or use a plain hyphen.
 
 ## Implementation
 

@@ -14,7 +14,7 @@ export type Experience = {
 export const experience: readonly Experience[] = [
   {
     company: "Tern",
-    dates: "Sep 2026 — now",
+    dates: "Sep 2026 - now",
     role: "Senior Engineering Manager",
     description: "Building connected systems and a delightful app for travel advisors.",
     // Responsibilities also supported by Josh's public announcement:
@@ -22,13 +22,13 @@ export const experience: readonly Experience[] = [
   },
   {
     company: "Alpine",
-    dates: "Apr 2025 — Sep 2026",
+    dates: "Apr 2025 - Sep 2026",
     role: "Founding Engineer",
     description: "Shipped features from design through deployment. Cut CI runtime by about 90% and built out observability, incident response, and AI developer tooling.",
   },
   {
     company: "Beeper",
-    dates: "May 2023 — Oct 2024",
+    dates: "May 2023 - Oct 2024",
     role: "Engineering Lead (Player/Coach)",
     description: "Led the desktop team as daily active users grew from 12,000 to 300,000. Built cross-platform delivery pipelines and helped integrate Beeper after its acquisition.",
     acquisition: {
@@ -39,7 +39,7 @@ export const experience: readonly Experience[] = [
   },
   {
     company: "Gatsby",
-    dates: "Jan 2022 — May 2023",
+    dates: "Jan 2022 - May 2023",
     role: "Staff Software Engineer → Product Manager",
     description: "Co-created the Slice API and shipped Gatsby 5. Moved into product for Gatsby Cloud and Framework, then Netlify Builds and Ecosystem after the acquisition.",
     acquisition: {
@@ -50,13 +50,13 @@ export const experience: readonly Experience[] = [
   },
   {
     company: "Duo Security",
-    dates: "Jan 2019 — Jan 2022",
+    dates: "Jan 2019 - Jan 2022",
     role: "Software Engineer II / III → Design Engineer",
     description: "Built administration and endpoint-health features. Led architecture refactors across web, Windows, and macOS, and introduced TypeScript to the admin panel.",
   },
   {
     company: "Barracuda",
-    dates: "Feb 2017 — Jan 2019",
+    dates: "Feb 2017 - Jan 2019",
     role: "Software Engineer I → II",
     description: "Built Backup features, developed support tooling in Go, and led development of the AWS Backup service.",
   },
