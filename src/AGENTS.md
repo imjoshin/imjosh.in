@@ -2,7 +2,7 @@
 
 Follow the root instructions and design handoff. Pages and layouts are Server Components unless they need browser APIs. Keep the canvas mounted in the root layout across client navigation. Use semantic headings, native controls, Next.js links for internal navigation, and shared design tokens. Preserve the original chrome shading in `lib/blob.js` while using `lib/blob-physics.ts` for the user-requested independent particle gravity and inertial click bursts.
 
-Inner pages blur the background, ease animation to a slow drift, and remove pointer listeners. Returning Home clears the blur and eases back up to full speed. Route changes and tab visibility must not reset particle positions or velocities. Keep page entrance animations outside the persistent background and header.
+Inner pages blur the background, ease animation to 4% of homepage speed, and remove pointer listeners. Returning Home clears the blur and eases back up to full speed. Route changes and tab visibility must not reset particle positions or velocities. Keep page entrance animations outside the persistent background and header.
 
 Hit-test clicks against the rendered surface. Apply eased velocity impulses and local burst shapes only to the clicked bubble and its connected component, using the surface-gap threshold. Empty-space clicks must not burst any bubbles. Keep gradual recovery and individual pointer gravity.
 

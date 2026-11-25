@@ -1,5 +1,7 @@
 import { BlobSimulation, BLOB_BLEND, BLOB_SEPARATED_BLEND, BLOB_RADIUS_BLEND, MAX_BLOB_PARTICLES } from './blob-physics.ts';
 
+const INNER_PAGE_SPEED = .04;
+
 // The handoff's chrome shader, driven by independent gravitational particles.
 export function initBlob(canvas, o = {}) {
   const gl = canvas.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: true });
@@ -76,7 +78,7 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
   const complexity = () => Math.max(1, Math.ceil(simulation.particles.length / 16));
   let resolutionComplexity = complexity();
   let home = o.home ?? true, interactive = false, paused = false;
-  let speed = home ? 1 : .18, dark = isDark() ? 1 : 0;
+  let speed = home ? 1 : INNER_PAGE_SPEED, dark = isDark() ? 1 : 0;
   let raf = 0, lastFrame = performance.now(), dead = false;
   function isDark() { return document.documentElement.dataset.theme === 'dark'; }
   const toWorld = (e) => {
@@ -123,7 +125,7 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
     raf = requestAnimationFrame(loop);
     const dt = Math.min(Math.max((now - lastFrame) / 1000, 0), .05);
     lastFrame = now;
-    speed += ((home ? 1 : .18) - speed) * (1 - Math.exp(-dt * 2.4));
+    speed += ((home ? 1 : INNER_PAGE_SPEED) - speed) * (1 - Math.exp(-dt * 2.4));
     simulation.step(dt * speed);
     if (complexity() !== resolutionComplexity) { resolutionComplexity = complexity(); resize(); }
     dark += ((isDark() ? 1 : 0) - dark) * (1 - Math.exp(-dt * 5));
