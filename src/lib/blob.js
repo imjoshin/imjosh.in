@@ -97,7 +97,7 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
   };
   const pm = e => { simulation.setPointer(toWorld(e)); };
   const pd = e => {
-    if (e.target.closest && e.target.closest('a,button,input')) return;
+    if (e.target.closest && e.target.closest('a,button,input,details')) return;
     // Hit-test the visible surface and kick only its connected group.
     simulation.burstAt(toWorld(e));
   };

@@ -128,11 +128,8 @@ input[type="range"] { accent-color: var(--acc); cursor: ew-resize; }
 .page-title em { color: var(--acc); }
 .social-link:hover { color: var(--acc); }
 
-@media (max-width: 420px) {
-  .site-header { gap: 14px; }
-  .site-header nav { gap: 6px; }
-  .site-header .pill { padding: 8px 12px; }
-}
+.mobile-menu-toggle { list-style: none; }
+.mobile-menu-toggle::-webkit-details-marker { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
