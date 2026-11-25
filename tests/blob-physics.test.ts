@@ -1,6 +1,6 @@
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
-import { BlobSimulation } from "../src/lib/blob-physics.ts";
+import { BlobSimulation, MIN_FRAGMENT_VOLUME } from "../src/lib/blob-physics.ts";
 
 function advance(simulation: BlobSimulation, seconds: number, step = 1 / 120) {
   for (let elapsed = 0; elapsed < seconds - 1e-8; elapsed += step) simulation.step(Math.min(step, seconds - elapsed));
@@ -20,8 +20,6 @@ function fixture(positions: [number, number, number][], connectionThreshold?: nu
   simulation.particles.forEach((particle, i) => {
     particle.position = [...positions[i]];
     particle.velocity = [0, 0, 0];
-    particle.radius = .3;
-    particle.mass = 1;
   });
   return simulation;
 }
@@ -39,7 +37,7 @@ test("empty-space clicks leave all bubbles alone", () => {
 test("a separated bubble gets no click impulse or shape change", () => {
   const idle = fixture([[0, 0, 0], [3, 0, 0]]);
   const clicked = fixture([[0, 0, 0], [3, 0, 0]]);
-  assert.deepEqual(clicked.burstAt([0, 0]), [0]);
+  assert.deepEqual(clicked.burstAt([0, 0]), [0, 2]);
   idle.step(1 / 120);
   clicked.step(1 / 120);
   assert.ok(clicked.particles[0].burst > 0);
@@ -56,16 +54,20 @@ test("a click reaches the entire connected chain but stops before a separate gro
 });
 
 test("connections respect the surface-gap threshold", () => {
-  assert.deepEqual(fixture([[0, 0, 0], [.99, 0, 0]]).burstAt([0, 0]), [0, 1]);
-  assert.deepEqual(fixture([[0, 0, 0], [1.01, 0, 0]]).burstAt([0, 0]), [0]);
-  assert.deepEqual(fixture([[0, 0, 0], [.99, 0, 0]], .2).burstAt([0, 0]), [0]);
+  const reference = new BlobSimulation({ count: 2 });
+  const [a, b] = reference.roots;
+  const connectedDistance = a.radius + b.radius + Math.min(reference.connectionThreshold, b.radius);
+  assert.deepEqual(fixture([[0, 0, 0], [connectedDistance - .01, 0, 0]]).burstAt([0, 0]), [0, 1]);
+  assert.deepEqual(fixture([[0, 0, 0], [connectedDistance + .01, 0, 0]]).burstAt([0, 0]), [0, 2]);
+  assert.deepEqual(fixture([[0, 0, 0], [connectedDistance - .01, 0, 0]], .2).burstAt([0, 0]), [0, 2]);
 });
 
 test("hit detection selects the front surface and includes the smooth bridge between bubbles", () => {
   const overlapping = fixture([[0, 0, 0], [0, 0, 1.5]]);
   assert.equal(overlapping.hitTest([0, 0]), 1);
-  assert.deepEqual(overlapping.burstAt([0, 0]), [1]);
-  const bridge = fixture([[-.45, 0, 0], [.45, 0, 0]]);
+  assert.deepEqual(overlapping.burstAt([0, 0]), [1, 2]);
+  const [a, b] = overlapping.roots;
+  const bridge = fixture([[-a.radius - .1, 0, 0], [b.radius + .1, 0, 0]]);
   assert.deepEqual(bridge.burstAt([0, 0]), [0, 1]);
 });
 
@@ -74,7 +76,8 @@ test("a click eases a velocity impulse from the current state without an instant
   advance(simulation, 3);
   const before = structuredClone(simulation.particles);
   assert.ok(simulation.burstAt(aim(simulation)).length > 0);
-  assert.deepEqual(simulation.particles, before);
+  assert.deepEqual(simulation.particles.map(({ position, velocity, displayVolume, burst }) => ({ position, velocity, displayVolume, burst })),
+    before.map(({ position, velocity, displayVolume, burst }) => ({ position, velocity, displayVolume, burst })));
   assert.equal(simulation.burst, 0);
   simulation.step(1 / 120);
   assert.ok(simulation.burst > 0 && simulation.burst < .2);
@@ -142,4 +145,163 @@ test("resizing preserves time and motion, and long frame gaps cannot destabilize
     assert.ok([...particle.position, ...particle.velocity].every(Number.isFinite));
     assert.ok(Math.hypot(...particle.position) < 10);
   }
+});
+
+function quarters() {
+  const simulation = fixture([[0, 0, 0]]);
+  simulation.burstAt([0, 0]);
+  simulation.particles[0].position = [-2, 0, 0];
+  simulation.particles[1].position = [2, 0, 0];
+  simulation.particles.forEach((particle) => particle.displayVolume = particle.volume);
+  simulation.burstAt(aim(simulation, 0));
+  simulation.burstAt(aim(simulation, 1));
+  simulation.particles.forEach((particle, i) => {
+    particle.position = [i * 2, 0, 0];
+    particle.displayVolume = particle.volume;
+  });
+  return simulation;
+}
+
+function assertVolume(simulation: BlobSimulation) {
+  simulation.roots.forEach((root, i) => {
+    const pieces = simulation.particles.filter((particle) => particle.root === i);
+    assert.ok(Math.abs(pieces.reduce((sum, particle) => sum + particle.volume, 0) - root.volume) < 1e-10);
+    assert.ok(Math.abs(pieces.reduce((sum, particle) => sum + particle.displayVolume, 0) - root.volume) < 1e-10);
+    pieces.forEach((particle) => assert.ok(Math.abs(particle.radius ** 3 - particle.volume) < 1e-10));
+  });
+}
+
+test("an isolated root splits into equal half-volume pieces from its current position and velocity", () => {
+  const simulation = fixture([[0, 0, 0]]);
+  simulation.particles[0].velocity = [.2, -.1, .05];
+  const before = structuredClone(simulation.particles[0]);
+  assert.deepEqual(simulation.burstAt([0, 0]), [0, 1]);
+  assert.equal(simulation.particles.length, 2);
+  for (const piece of simulation.particles) {
+    assert.equal(piece.volume, before.volume / 2);
+    assert.ok(Math.abs(piece.radius / before.radius - Math.cbrt(.5)) < 1e-10);
+    assert.equal(piece.mass, before.mass / 2);
+    assert.deepEqual(piece.position, before.position);
+    assert.deepEqual(piece.velocity, before.velocity);
+    assert.equal(piece.burst, 0);
+  }
+  assert.equal(simulation.renderRadius(simulation.particles[0]), before.radius);
+  assert.equal(simulation.renderRadius(simulation.particles[1]), 0);
+  simulation.step(1 / 120);
+  assert.ok(simulation.renderRadius(simulation.particles[1]) > 0);
+  simulation.particles.forEach((piece) => assert.ok(Math.hypot(...piece.position) < .01));
+  assertVolume(simulation);
+});
+
+test("attached roots separate without fragmentation or changes to their starting sizes", () => {
+  const simulation = fixture([[0, 0, 0], [.8, 0, 0]]);
+  const volumes = simulation.particles.map((particle) => particle.volume);
+  assert.deepEqual(simulation.burstAt([0, 0]), [0, 1]);
+  assert.equal(simulation.particles.length, simulation.roots.length);
+  advance(simulation, .5);
+  assert.deepEqual(simulation.particles.map((particle) => particle.volume), volumes);
+  assertVolume(simulation);
+});
+
+test("quarter-volume minimum pieces only move when clicked", () => {
+  const simulation = quarters();
+  assert.equal(simulation.particles.length, 4);
+  simulation.particles.forEach((particle) => assert.equal(particle.volume, simulation.roots[0].volume * MIN_FRAGMENT_VOLUME));
+  const piece = simulation.particles[0];
+  const impulse = [...piece.impulse];
+  assert.deepEqual(simulation.burstAt(aim(simulation)), [piece.id]);
+  assert.equal(simulation.particles.length, 4);
+  assert.notDeepEqual(piece.impulse, impulse);
+  assertVolume(simulation);
+});
+
+test("fresh fragments have time to move apart before they can merge", () => {
+  const simulation = fixture([[0, 0, 0]]);
+  simulation.burstAt([0, 0]);
+  advance(simulation, 1);
+  assert.equal(simulation.particles.length, 2);
+  assert.ok(Math.hypot(...simulation.particles[0].position.map((value, axis) => value - simulation.particles[1].position[axis])) > .5);
+  assertVolume(simulation);
+});
+
+test("touching fragments coalesce gradually while conserving volume and restoring the original root", () => {
+  const simulation = quarters();
+  simulation.particles.forEach((particle, i) => {
+    particle.position = [i * .1, 0, 0];
+    particle.velocity = [0, 0, 0];
+    particle.impulse = [0, 0, 0];
+    particle.mergeAfter = 0;
+  });
+  simulation.step(1 / 120);
+  assert.equal(simulation.particles.length, 4);
+  advance(simulation, .2);
+  assert.equal(simulation.particles.length, 4);
+  assert.ok(simulation.particles.some((particle) => particle.volume < simulation.roots[0].volume * MIN_FRAGMENT_VOLUME));
+  for (let i = 0; i < 240; i++) { simulation.step(1 / 120); assertVolume(simulation); }
+  assert.equal(simulation.particles.length, 1);
+  assert.ok(Math.abs(simulation.particles[0].radius - simulation.roots[0].radius) < 1e-10);
+});
+
+test("fragments naturally re-form the starting count and size without another click", () => {
+  const simulation = quarters();
+  advance(simulation, 20);
+  assert.equal(simulation.particles.length, simulation.roots.length);
+  assert.ok(Math.abs(simulation.particles[0].radius - simulation.roots[0].radius) < 1e-10);
+  assertVolume(simulation);
+});
+
+test("different complete roots never over-merge, even when they touch", () => {
+  const simulation = fixture([[0, 0, 0], [.2, 0, 0]]);
+  advance(simulation, 10);
+  assert.equal(simulation.particles.length, 2);
+  assert.deepEqual(simulation.particles.map((particle) => particle.radius), simulation.roots.map((root) => root.radius));
+  assertVolume(simulation);
+});
+
+test("rapid splitting, merging, resizing, and long frame gaps preserve root volumes and the fragment cap", () => {
+  const simulation = new BlobSimulation();
+  for (let frame = 0; frame < 1800; frame++) {
+    if (frame % 12 === 0) {
+      const index = frame % simulation.particles.length;
+      simulation.burstAt(aim(simulation, index));
+    }
+    if (frame % 90 === 0) simulation.setAspect(frame % 180 === 0 ? .6 : 1.8);
+    simulation.step(frame % 100 === 0 ? 20 : 1 / 60);
+    assertVolume(simulation);
+    assert.ok(simulation.particles.length >= simulation.roots.length);
+    assert.ok(simulation.particles.length <= simulation.roots.length * 4);
+    simulation.particles.forEach((particle) => assert.ok([...particle.position, ...particle.velocity].every(Number.isFinite)));
+  }
+});
+
+test("all eight roots can reach the 32-piece limit and still recover their exact original sizes", () => {
+  const simulation = new BlobSimulation({ count: 8 });
+  for (let root = 0; root < simulation.roots.length; root++) {
+    simulation.particles.forEach((particle) => {
+      particle.position = [20 + particle.id, 10, 0];
+      particle.velocity = [0, 0, 0];
+    });
+    const current = simulation.particles.find((particle) => particle.root === root)!;
+    current.position = [0, 0, 0];
+    simulation.burstAt([0, 0]);
+    simulation.particles.filter((particle) => particle.root === root).forEach((particle, i) => {
+      particle.position = [i ? 2 : -2, 0, 0];
+      particle.displayVolume = particle.volume;
+    });
+    simulation.burstAt([-2, 0]);
+    simulation.burstAt([2, 0]);
+    assertVolume(simulation);
+  }
+  assert.equal(simulation.particles.length, 32);
+  simulation.particles.forEach((particle) => {
+    particle.position = [Math.sin(particle.root * 1.9), Math.cos(particle.root * 2.7), .1 * (particle.id % 4)];
+    particle.displayVolume = particle.volume;
+  });
+  advance(simulation, 20);
+  assert.equal(simulation.particles.length, 8);
+  assertVolume(simulation);
+  simulation.roots.forEach((root, i) => {
+    const particle = simulation.particles.find((piece) => piece.root === i)!;
+    assert.ok(Math.abs(particle.radius - root.radius) < 1e-10);
+  });
 });

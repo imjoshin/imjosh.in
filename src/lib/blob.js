@@ -1,23 +1,26 @@
-import { BlobSimulation, BLOB_BLEND, BLOB_SEPARATED_BLEND } from './blob-physics.ts';
+import { BlobSimulation, BLOB_BLEND, BLOB_SEPARATED_BLEND, BLOB_RADIUS_BLEND, MAX_BLOB_PARTICLES } from './blob-physics.ts';
 
 // The handoff's chrome shader, driven by independent gravitational particles.
 export function initBlob(canvas, o = {}) {
   const gl = canvas.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: true });
   if (!gl) return { destroy() {}, setHome() {}, setPaused() {} };
   const N = Math.max(1, Math.min(8, Math.floor(o.count ?? 7))), S = o.scale ?? 1;
-  const simulation = new BlobSimulation({ count: N, scale: S, pull: o.pull ?? .24 });
+  // Pack burst states four per vector to stay within mobile WebGL uniform limits.
+  const capacity = Math.max(8, Math.min(MAX_BLOB_PARTICLES, Math.floor((gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS) - 6) / 5) * 4));
+  const simulation = new BlobSimulation({ count: N, scale: S, pull: o.pull ?? .24, maxParticles: capacity });
   const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
   const fs = `precision highp float;
-uniform vec2 uR;uniform float uT;uniform float uDark;uniform float uN;uniform float uS;uniform vec4 uParticles[8];
-float map(vec3 p){float d=1e3;float blendedBurst=0.;
- for(int i=0;i<8;i++){float f=float(i);if(f>=uN)break;
-  float b=clamp(uParticles[i].w,0.,1.);
-  float k=mix(${BLOB_BLEND},${BLOB_SEPARATED_BLEND},max(b,blendedBurst))*uS;
-  float r=(.36+.15*sin(f*2.1+1.))*uS*mix(1.,.72,b);
+uniform vec2 uR;uniform float uT;uniform float uDark;uniform float uN;uniform float uS;uniform vec4 uParticles[${capacity}];uniform vec4 uBursts[${capacity / 4}];
+float map(vec3 p){float d=1e3;float blendedBurst=0.;float blendedRadius=1e3;
+ for(int i=0;i<${capacity};i++){if(float(i)>=uN)break;
+  float r=uParticles[i].w;if(r<.0001)continue;
+  int lane=i-(i/4)*4;vec4 states=uBursts[i/4];
+  float b=clamp(lane==0?states.x:lane==1?states.y:lane==2?states.z:states.w,0.,1.);
+  float k=min(${BLOB_BLEND}*uS,min(r,blendedRadius)*${BLOB_RADIUS_BLEND}.0)*(1.-max(b,blendedBurst)*(1.-${BLOB_SEPARATED_BLEND}/${BLOB_BLEND}));
   float distance=length(p-uParticles[i].xyz)-r;
   float h=clamp(.5+.5*(distance-d)/k,0.,1.);
   d=mix(distance,d,h)-k*h*(1.-h);
-  blendedBurst=mix(b,blendedBurst,h);}
+  blendedBurst=mix(b,blendedBurst,h);blendedRadius=mix(r,blendedRadius,h);}
  return d;}
 vec3 nrm(vec3 p){vec2 e=vec2(.002,0.);return normalize(vec3(map(p+e.xyy)-map(p-e.xyy),map(p+e.yxy)-map(p-e.yxy),map(p+e.yyx)-map(p-e.yyx)));}
 void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
@@ -59,9 +62,9 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
   const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['uR', 'uT', 'uDark', 'uN', 'uS', 'uParticles[0]'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
+  const U = {}; ['uR', 'uT', 'uDark', 'uN', 'uS', 'uParticles[0]', 'uBursts[0]'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
 
-  const particles = new Float32Array(8 * 4);
+  const particles = new Float32Array(capacity * 4), bursts = new Float32Array(capacity);
   let home = o.home ?? true, interactive = false, paused = false;
   let speed = home ? 1 : .18, dark = isDark() ? 1 : 0;
   let raf = 0, lastFrame = performance.now(), dead = false;
@@ -114,13 +117,15 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
     dark += ((isDark() ? 1 : 0) - dark) * (1 - Math.exp(-dt * 5));
     simulation.particles.forEach((particle, i) => {
       particles.set(particle.position, i * 4);
-      particles[i * 4 + 3] = particle.burst;
+      particles[i * 4 + 3] = simulation.renderRadius(particle);
+      bursts[i] = particle.burst;
     });
     gl.uniform2f(U.uR, canvas.width, canvas.height);
     gl.uniform1f(U.uT, simulation.time);
     gl.uniform1f(U.uDark, dark);
-    gl.uniform1f(U.uN, N); gl.uniform1f(U.uS, S);
+    gl.uniform1f(U.uN, simulation.particles.length); gl.uniform1f(U.uS, S);
     gl.uniform4fv(U['uParticles[0]'], particles);
+    gl.uniform4fv(U['uBursts[0]'], bursts);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
   raf = requestAnimationFrame(loop);

@@ -6,4 +6,6 @@ Inner pages blur the background, ease animation to a slow drift, and remove poin
 
 Hit-test clicks against the rendered surface. Apply eased velocity impulses and local burst shapes only to the clicked bubble and its connected component, using the surface-gap threshold. Empty-space clicks must not burst any bubbles. Keep gradual recovery and individual pointer gravity.
 
+Preserve immutable root identities and volumes. An isolated root or its fragments can split into equal half-volume pieces, down to one quarter of the root's volume. Attached different roots separate without further fragmentation. Minimum-size pieces still receive a velocity impulse. Same-root fragments coalesce on contact after a cooldown, conserving volume and restoring the original count and exact sizes; complete roots never over-merge. Ease the displayed volume and merge positions, and pass actual dynamic radii/counts to the shader. Keep CPU hit-testing and the shader's surface field in sync.
+
 All three pages must remain readable with reduced motion and without WebGL. Do not add a theme switch; follow the OS. Keep print-specific résumé behavior in the global print stylesheet.
