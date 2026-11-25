@@ -73,6 +73,8 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
   const U = {}; ['uR', 'uT', 'uDark', 'uN', 'uS', 'uParticles[0]', 'uBursts[0]'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
 
   const particles = new Float32Array(capacity * 4), bursts = new Float32Array(capacity);
+  const complexity = () => Math.max(1, Math.ceil(simulation.particles.length / 16));
+  let resolutionComplexity = complexity();
   let home = o.home ?? true, interactive = false, paused = false;
   let speed = home ? 1 : .18, dark = isDark() ? 1 : 0;
   let raf = 0, lastFrame = performance.now(), dead = false;
@@ -85,7 +87,8 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
     const w = canvas.clientWidth, h = canvas.clientHeight;
     if (w <= 0 || h <= 0) return;
     let dpr = Math.min(devicePixelRatio, 1.5);
-    if (w * h * dpr * dpr > 2.4e6) dpr = Math.sqrt(2.4e6 / (w * h));
+    const pixelBudget = 2.4e6 / resolutionComplexity;
+    if (w * h * dpr * dpr > pixelBudget) dpr = Math.sqrt(pixelBudget / (w * h));
     canvas.width = Math.max(1, Math.round(w * dpr)); canvas.height = Math.max(1, Math.round(h * dpr));
     gl.viewport(0, 0, canvas.width, canvas.height);
     simulation.setAspect(w / Math.max(h, 1));
@@ -122,6 +125,7 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
     lastFrame = now;
     speed += ((home ? 1 : .18) - speed) * (1 - Math.exp(-dt * 2.4));
     simulation.step(dt * speed);
+    if (complexity() !== resolutionComplexity) { resolutionComplexity = complexity(); resize(); }
     dark += ((isDark() ? 1 : 0) - dark) * (1 - Math.exp(-dt * 5));
     simulation.particles.forEach((particle, i) => {
       particles.set(particle.position, i * 4);

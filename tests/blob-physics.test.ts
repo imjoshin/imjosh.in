@@ -162,6 +162,25 @@ function quarters() {
   return simulation;
 }
 
+function fragmentRoot(simulation: BlobSimulation, root: number) {
+  for (let level = 0; level < 4; level++) {
+    const pieces = simulation.particles.filter((particle) => particle.root === root);
+    for (const piece of pieces) {
+      simulation.particles.forEach((particle) => {
+        particle.position = [20 + particle.id, 10, 0];
+        particle.displayVolume = particle.volume;
+        particle.velocity = [0, 0, 0];
+      });
+      piece.position = [0, 0, 0];
+      simulation.burstAt([0, 0]);
+    }
+  }
+  simulation.particles.forEach((particle, i) => {
+    particle.position = [i * 2, 0, 0];
+    particle.displayVolume = particle.volume;
+  });
+}
+
 function assertVolume(simulation: BlobSimulation) {
   simulation.roots.forEach((root, i) => {
     const pieces = simulation.particles.filter((particle) => particle.root === i);
@@ -203,14 +222,15 @@ test("attached roots separate without fragmentation or changes to their starting
   assertVolume(simulation);
 });
 
-test("quarter-volume minimum pieces only move when clicked", () => {
-  const simulation = quarters();
-  assert.equal(simulation.particles.length, 4);
+test("four split levels produce sixteenth-volume minimum pieces that only move when clicked", () => {
+  const simulation = fixture([[0, 0, 0]]);
+  fragmentRoot(simulation, 0);
+  assert.equal(simulation.particles.length, 16);
   simulation.particles.forEach((particle) => assert.equal(particle.volume, simulation.roots[0].volume * MIN_FRAGMENT_VOLUME));
   const piece = simulation.particles[0];
   const impulse = [...piece.impulse];
   assert.deepEqual(simulation.burstAt(aim(simulation)), [piece.id]);
-  assert.equal(simulation.particles.length, 4);
+  assert.equal(simulation.particles.length, 16);
   assert.notDeepEqual(piece.impulse, impulse);
   assertVolume(simulation);
 });
@@ -236,7 +256,7 @@ test("touching fragments coalesce gradually while conserving volume and restorin
   assert.equal(simulation.particles.length, 4);
   advance(simulation, .2);
   assert.equal(simulation.particles.length, 4);
-  assert.ok(simulation.particles.some((particle) => particle.volume < simulation.roots[0].volume * MIN_FRAGMENT_VOLUME));
+  assert.ok(simulation.particles.some((particle) => particle.volume < simulation.roots[0].volume / 4));
   for (let i = 0; i < 240; i++) { simulation.step(1 / 120); assertVolume(simulation); }
   assert.equal(simulation.particles.length, 1);
   assert.ok(Math.abs(simulation.particles[0].radius - simulation.roots[0].radius) < 1e-10);
@@ -269,30 +289,18 @@ test("rapid splitting, merging, resizing, and long frame gaps preserve root volu
     simulation.step(frame % 100 === 0 ? 20 : 1 / 60);
     assertVolume(simulation);
     assert.ok(simulation.particles.length >= simulation.roots.length);
-    assert.ok(simulation.particles.length <= simulation.roots.length * 4);
+    assert.ok(simulation.particles.length <= simulation.roots.length / MIN_FRAGMENT_VOLUME);
     simulation.particles.forEach((particle) => assert.ok([...particle.position, ...particle.velocity].every(Number.isFinite)));
   }
 });
 
-test("all eight roots can reach the 32-piece limit and still recover their exact original sizes", () => {
+test("all eight roots can reach the 128-piece limit and still recover their exact original sizes", () => {
   const simulation = new BlobSimulation({ count: 8 });
   for (let root = 0; root < simulation.roots.length; root++) {
-    simulation.particles.forEach((particle) => {
-      particle.position = [20 + particle.id, 10, 0];
-      particle.velocity = [0, 0, 0];
-    });
-    const current = simulation.particles.find((particle) => particle.root === root)!;
-    current.position = [0, 0, 0];
-    simulation.burstAt([0, 0]);
-    simulation.particles.filter((particle) => particle.root === root).forEach((particle, i) => {
-      particle.position = [i ? 2 : -2, 0, 0];
-      particle.displayVolume = particle.volume;
-    });
-    simulation.burstAt([-2, 0]);
-    simulation.burstAt([2, 0]);
+    fragmentRoot(simulation, root);
     assertVolume(simulation);
   }
-  assert.equal(simulation.particles.length, 32);
+  assert.equal(simulation.particles.length, 128);
   simulation.particles.forEach((particle) => {
     particle.position = [Math.sin(particle.root * 1.9), Math.cos(particle.root * 2.7), .1 * (particle.id % 4)];
     particle.displayVolume = particle.volume;
@@ -304,6 +312,14 @@ test("all eight roots can reach the 32-piece limit and still recover their exact
     const particle = simulation.particles.find((piece) => piece.root === i)!;
     assert.ok(Math.abs(particle.radius - root.radius) < 1e-10);
   });
+});
+
+test("devices with a smaller render capacity never create fragments they cannot display", () => {
+  const simulation = new BlobSimulation({ count: 8, maxParticles: 32 });
+  for (let root = 0; root < simulation.roots.length; root++) fragmentRoot(simulation, root);
+  assert.equal(simulation.particles.length, 32);
+  assertVolume(simulation);
+  assert.ok(simulation.particles.every((particle) => particle.volume >= simulation.roots[particle.root].volume * MIN_FRAGMENT_VOLUME));
 });
 
 test("mixed-size and mixed-burst joins have the same surface regardless of particle order", () => {
