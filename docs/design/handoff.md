@@ -106,7 +106,7 @@ Fade `background` and `color` on `html` and `body` over `.4s` when the theme cha
 Data and logic: `scripts/uses.ts` and `reference/data.js`. The current year shows the full current inventory.
 
 ### Resume (`/resume`), screenshots 09–12
-1. **Title row:** "Josh *Johnson*". The bio: "Engineer, sometimes product manager. I like building things that make people's lives easier. Ann Arbor, MI — a proud Yooper gone South."
+1. **Title row:** "Josh *Johnson*". The bio: "I like building things that make people's lives easier. Ann Arbor, MI — a proud Yooper gone South."
    - Buttons: **LinkedIn ↗** is filled `--ink`, turning `--acc` on hover. **Save as PDF** is outlined and calls `window.print()`.
 2. **Experience card:** one row per job.
    - Each row is a grid of `repeat(auto-fit, minmax(220px, 1fr))`. The company and dates take the left column; the role and blurb span two columns.

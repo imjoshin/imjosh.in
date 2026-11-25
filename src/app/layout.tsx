@@ -5,13 +5,14 @@ import "@fontsource-variable/bricolage-grotesque/opsz.css";
 import "./globals.css";
 import { BlobCanvas } from "@/components/blob-canvas";
 import { SiteFooter, SiteHeader } from "@/components/site-shell";
+import socialImage from "../../public/social.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://imjosh.in"),
   title: { default: "I'm Joshin' - Josh Johnson", template: "%s - Josh Johnson" },
-  description: "Hey! I’m Josh Johnson. I’m passionate about solving interesting problems and currently work at Tern. Engineer, sometimes product manager, and photographer.",
+  description: "Hey! I’m Josh Johnson. I’m passionate about solving interesting problems and currently work at Tern.",
   alternates: { canonical: "/" },
-  openGraph: { type: "website", siteName: "imjosh.in", locale: "en_US", images: [{ url: "/social.png", width: 1200, height: 630, alt: "I'm Joshin' - Josh Johnson" }] },
+  openGraph: { type: "website", siteName: "imjosh.in", locale: "en_US", images: [{ url: socialImage.src, width: socialImage.width, height: socialImage.height, alt: "I'm Joshin' - Josh Johnson" }] },
   twitter: { card: "summary_large_image", creator: "@imjosh_in" },
 };
 

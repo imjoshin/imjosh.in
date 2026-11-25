@@ -9,6 +9,7 @@ This is Josh Johnson’s personal site, rewritten with Next.js App Router, React
 - Never infer personal facts from the previous Gatsby site. The handoff flags résumé dates, titles, and descriptions as placeholders. Publish only supplied or independently verified information; record provenance in `content/resume.ts`.
 - No Writing page, old generated hero imagery, theme toggle, or prototype runtime. Photography links to `https://www.jj.photos`.
 - Do not use em dashes in site copy, labels, or metadata. Rewrite the sentence or use a plain hyphen.
+- Do not restore the removed professional tagline in copy, metadata, or images. Keep social preview text and blob artwork in separate, non-overlapping regions.
 
 ## Implementation
 
@@ -28,6 +29,7 @@ This is Josh Johnson’s personal site, rewritten with Next.js App Router, React
 - `npm ci` installs the locked dependency tree; `npm run dev` starts local development.
 - `npm run check` runs strict TypeScript checks and gear timeline regression tests.
 - `npm run build` exports production routes into `out/`. `npm start` serves that export.
+- `npm run generate:social` recreates `public/social.png` from the local Instrument Serif fonts and `public/social-art.svg` using `scripts/generate-social.mjs`. The build runs it automatically. Import the image in metadata so its URL includes a content hash when it changes.
 - The postbuild script normalizes Next.js RSC segment filenames on Windows so exported client navigation works there as it does in Linux builds. Keep the normalization when changing the build command.
 - Check desktop and narrow mobile layouts, OS light/dark modes, motion preferences, scrubber/history behavior, navigation, missing routes, and résumé print layout when changing UI.
 - Use the local Netlify CLI (`npx netlify status`, `npx netlify deploy`) to inspect the existing site. The deploy command builds by default. `npm run deploy` publishes production when authorized. Do not create a second hosting project or change domains.

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="380" height="510" viewBox="0 0 380 510">
+  <defs>
+    <linearGradient id="chrome" x1=".15" y1="0" x2=".85" y2="1">
+      <stop stop-color="#89edff"/>
+      <stop offset=".17" stop-color="#a79bff"/>
+      <stop offset=".35" stop-color="#894cff"/>
+      <stop offset=".46" stop-color="#392469"/>
+      <stop offset=".53" stop-color="#10101c"/>
+      <stop offset=".72" stop-color="#171828"/>
+      <stop offset=".88" stop-color="#745bd9"/>
+      <stop offset="1" stop-color="#d3b6ff"/>
+    </linearGradient>
+    <radialGradient id="sheen" cx=".27" cy=".12" r=".85">
+      <stop stop-color="#fff"/>
+      <stop offset=".12" stop-color="#c7ffff"/>
+      <stop offset=".34" stop-color="#89a9ff"/>
+      <stop offset=".61" stop-color="#9255ff" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#a655ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="pearl" cx=".32" cy=".17" r=".8">
+      <stop stop-color="#fff"/>
+      <stop offset=".12" stop-color="#a7eaff"/>
+      <stop offset=".42" stop-color="#8554f6"/>
+      <stop offset=".58" stop-color="#262047"/>
+      <stop offset=".78" stop-color="#11121e"/>
+      <stop offset="1" stop-color="#6f5cab"/>
+    </radialGradient>
+    <filter id="glow" x="-.4" y="-.4" width="1.8" height="1.8">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="5"/></filter>
+    <path id="body" d="M168 29C229 9 293 43 298 108C302 153 278 182 244 204C221 219 214 237 226 258C247 293 244 335 216 362C185 393 133 390 102 360C71 330 67 282 91 249C111 222 134 211 134 191C133 168 100 156 96 119C90 76 122 42 168 29Z"/>
+    <clipPath id="body-clip"><use href="#body"/></clipPath>
+  </defs>
+  <use href="#body" fill="#6e3bc5" opacity=".65" filter="url(#glow)"/>
+  <use href="#body" fill="url(#chrome)" stroke="#ac78ff" stroke-opacity=".55" stroke-width="1.3"/>
+  <g clip-path="url(#body-clip)">
+    <ellipse cx="179" cy="80" rx="119" ry="106" fill="url(#sheen)"/>
+    <path d="M75 142C151 107 243 164 309 121L310 151C239 190 155 135 79 171Z" fill="#8067d6" opacity=".45" filter="url(#soft)"/>
+    <ellipse cx="193" cy="61" rx="13" ry="20" fill="#fff" opacity=".95" transform="rotate(-28 193 61)" filter="url(#soft)"/>
+    <ellipse cx="111" cy="271" rx="17" ry="22" fill="#a7eaff" opacity=".8" transform="rotate(27 111 271)" filter="url(#soft)"/>
+  </g>
+  <circle cx="310" cy="330" r="43" fill="#7e4ee6" opacity=".4" filter="url(#glow)"/>
+  <circle cx="310" cy="330" r="43" fill="url(#pearl)" stroke="#b09aff" stroke-opacity=".45"/>
+  <circle cx="77" cy="442" r="30" fill="#7e4ee6" opacity=".4" filter="url(#glow)"/>
+  <circle cx="77" cy="442" r="30" fill="url(#pearl)" stroke="#b09aff" stroke-opacity=".45"/>
+</svg>

@@ -10,7 +10,8 @@
   },
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1",
-    "build": "next build && node scripts/finalize-export.mjs",
+    "build": "npm run generate:social && next build && node scripts/finalize-export.mjs",
+    "generate:social": "node scripts/generate-social.mjs",
     "start": "serve out",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
