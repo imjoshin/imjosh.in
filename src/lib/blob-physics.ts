@@ -1,8 +1,8 @@
 export type Point = readonly [number, number];
 type Vector = [number, number, number];
-export const BLOB_BLEND = .8;
-export const BLOB_SEPARATED_BLEND = .1;
-export const BLOB_RADIUS_BLEND = 2;
+export const BLOB_BLEND = .2;
+export const BLOB_SEPARATED_BLEND = .07;
+export const BLOB_RADIUS_BLEND = .6;
 export const MAX_BLOB_PARTICLES = 32;
 export const MIN_FRAGMENT_VOLUME = .25;
 
@@ -39,7 +39,7 @@ export class BlobSimulation {
   private nextId = 0;
   private merges: Merge[] = [];
 
-  constructor({ count = 7, scale = 1, aspect = 1, pull = .24, connectionThreshold = BLOB_BLEND / 2, maxParticles = MAX_BLOB_PARTICLES } = {}) {
+  constructor({ count = 7, scale = 1, aspect = 1, pull = .24, connectionThreshold = 2 * BLOB_BLEND * Math.LN2, maxParticles = MAX_BLOB_PARTICLES } = {}) {
     this.scale = scale;
     this.aspect = aspect;
     this.pull = pull;
@@ -62,22 +62,31 @@ export class BlobSimulation {
   get burst() { return this.particles.reduce((maximum, particle) => Math.max(maximum, particle.burst), 0); }
   renderRadius(particle: Particle) { return Math.cbrt(Math.max(0, particle.displayVolume)); }
 
-  /** Same smooth-union field as the shader, including growing and merging fragments. */
-  private sample(point: Vector) {
-    let distance = 1e3, blendedBurst = 0, blendedRadius = 1e3, closest = Infinity, owner = -1;
+  blendWidth(particle: Particle) {
+    return Math.max(BLOB_SEPARATED_BLEND * this.scale,
+      Math.min(BLOB_BLEND * this.scale, this.renderRadius(particle) * BLOB_RADIUS_BLEND) * (1 - particle.burst * .55));
+  }
+
+  /** Pairwise gap where the two exponential fields first form a visible bridge. */
+  connectionGap(a: Particle, b: Particle) {
+    const aw = this.blendWidth(a), bw = this.blendWidth(b), total = aw + bw;
+    return Math.min(this.connectionThreshold, -aw * Math.log(aw / total) - bw * Math.log(bw / total));
+  }
+
+  /** Order-independent soft union. Widths depend on each blob, never the sampled point. */
+  sampleSurface(point: Vector) {
+    let density = 0, minimumWidth = Infinity, closest = Infinity, owner = -1;
     this.particles.forEach((particle, i) => {
       const radius = this.renderRadius(particle);
       if (radius < .0001) return;
       const signed = Math.hypot(...point.map((value, axis) => value - particle.position[axis])) - radius;
       if (signed < closest) { closest = signed; owner = i; }
-      const blend = Math.min(BLOB_BLEND * this.scale, Math.min(radius, blendedRadius) * BLOB_RADIUS_BLEND)
-        * (1 - Math.max(blendedBurst, particle.burst) * (1 - BLOB_SEPARATED_BLEND / BLOB_BLEND));
-      const weight = Math.max(0, Math.min(1, .5 + .5 * (signed - distance) / blend));
-      distance = signed * (1 - weight) + distance * weight - blend * weight * (1 - weight);
-      blendedBurst = particle.burst * (1 - weight) + blendedBurst * weight;
-      blendedRadius = radius * (1 - weight) + blendedRadius * weight;
+      const width = this.blendWidth(particle);
+      minimumWidth = Math.min(minimumWidth, width);
+      density += Math.exp(Math.max(-60, Math.min(20, -signed / width)));
     });
-    return { distance, owner };
+    // The minimum width makes this a conservative march distance even with mixed sizes.
+    return { distance: owner < 0 ? 1e3 : -Math.log(Math.max(density, 1e-26)) * minimumWidth, owner };
   }
 
   /** Ray march from the shader's camera through a pointer on the z=0 plane. */
@@ -86,7 +95,7 @@ export class BlobSimulation {
     const ray = [x / length, y / length, -4 / length];
     let depth = 0;
     for (let i = 0; i < 84; i++) {
-      const hit = this.sample([ray[0] * depth, ray[1] * depth, 4 + ray[2] * depth]);
+      const hit = this.sampleSurface([ray[0] * depth, ray[1] * depth, 4 + ray[2] * depth]);
       if (hit.distance < .002) return hit.owner >= 0 ? hit.owner : null;
       depth += hit.distance;
       if (depth > 10) break;
@@ -103,8 +112,7 @@ export class BlobSimulation {
         if (connected.has(i)) return;
         const distance = Math.hypot(...current.position.map((value, axis) => value - other.position[axis]));
         const radius = this.renderRadius(current), otherRadius = this.renderRadius(other);
-        const gap = Math.min(this.connectionThreshold, Math.min(radius, otherRadius) * BLOB_RADIUS_BLEND / 2)
-          * (1 - Math.max(current.burst, other.burst) * (1 - BLOB_SEPARATED_BLEND / BLOB_BLEND));
+        const gap = this.connectionGap(current, other);
         if (radius > .0001 && otherRadius > .0001 && distance <= radius + otherRadius + gap) {
           connected.add(i);
           queue.push(i);
@@ -281,7 +289,7 @@ export class BlobSimulation {
       });
       this.particles.forEach((particle, i) => {
         for (let axis = 0; axis < 3; axis++) {
-          const impulse = particle.impulse[axis] * (1 - Math.exp(-dt / .05));
+          const impulse = particle.impulse[axis] * (1 - Math.exp(-dt / .018));
           particle.impulse[axis] -= impulse;
           particle.velocity[axis] += impulse;
           particle.velocity[axis] = (particle.velocity[axis] + forces[i][axis] * dt) * Math.exp(-.72 * dt);

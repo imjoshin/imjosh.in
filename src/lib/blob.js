@@ -11,18 +11,26 @@ export function initBlob(canvas, o = {}) {
   const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
   const fs = `precision highp float;
 uniform vec2 uR;uniform float uT;uniform float uDark;uniform float uN;uniform float uS;uniform vec4 uParticles[${capacity}];uniform vec4 uBursts[${capacity / 4}];
-float map(vec3 p){float d=1e3;float blendedBurst=0.;float blendedRadius=1e3;
+float blendWidth(float radius,float burst){return max(${BLOB_SEPARATED_BLEND}*uS,min(${BLOB_BLEND}*uS,radius*${BLOB_RADIUS_BLEND})*(1.-burst*.55));}
+float map(vec3 p){float density=0.;float minimumWidth=1e3;
  for(int i=0;i<${capacity};i++){if(float(i)>=uN)break;
   float r=uParticles[i].w;if(r<.0001)continue;
   int lane=i-(i/4)*4;vec4 states=uBursts[i/4];
   float b=clamp(lane==0?states.x:lane==1?states.y:lane==2?states.z:states.w,0.,1.);
-  float k=min(${BLOB_BLEND}*uS,min(r,blendedRadius)*${BLOB_RADIUS_BLEND}.0)*(1.-max(b,blendedBurst)*(1.-${BLOB_SEPARATED_BLEND}/${BLOB_BLEND}));
+  float width=blendWidth(r,b);
   float distance=length(p-uParticles[i].xyz)-r;
-  float h=clamp(.5+.5*(distance-d)/k,0.,1.);
-  d=mix(distance,d,h)-k*h*(1.-h);
-  blendedBurst=mix(b,blendedBurst,h);blendedRadius=mix(r,blendedRadius,h);}
- return d;}
-vec3 nrm(vec3 p){vec2 e=vec2(.002,0.);return normalize(vec3(map(p+e.xyy)-map(p-e.xyy),map(p+e.yxy)-map(p-e.yxy),map(p+e.yyx)-map(p-e.yyx)));}
+  minimumWidth=min(minimumWidth,width);
+  density+=exp(clamp(-distance/width,-60.,20.));}
+ return -log(max(density,1e-26))*minimumWidth;}
+// Differentiate the surface directly instead of subtracting six nearby samples.
+vec3 nrm(vec3 p){vec3 gradient=vec3(0.);
+ for(int i=0;i<${capacity};i++){if(float(i)>=uN)break;
+  float radius=uParticles[i].w;if(radius<.0001)continue;
+  int lane=i-(i/4)*4;vec4 states=uBursts[i/4];
+  float burst=clamp(lane==0?states.x:lane==1?states.y:lane==2?states.z:states.w,0.,1.);
+  float width=blendWidth(radius,burst);vec3 delta=p-uParticles[i].xyz;float distance=length(delta);
+  gradient+=exp(clamp((radius-distance)/width,-60.,20.))*delta/(width*max(distance,.0001));}
+ return normalize(gradient+vec3(0.,0.,1e-10));}
 void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
  vec3 ro=vec3(0.,0.,4.),rd=normalize(vec3(uv,-1.6));
  float t=0.,hit=0.,md=1e3;

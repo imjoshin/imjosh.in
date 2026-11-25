@@ -8,4 +8,6 @@ Hit-test clicks against the rendered surface. Apply eased velocity impulses and 
 
 Preserve immutable root identities and volumes. An isolated root or its fragments can split into equal half-volume pieces, down to one quarter of the root's volume. Attached different roots separate without further fragmentation. Minimum-size pieces still receive a velocity impulse. Same-root fragments coalesce on contact after a cooldown, conserving volume and restoring the original count and exact sizes; complete roots never over-merge. Ease the displayed volume and merge positions, and pass actual dynamic radii/counts to the shader. Keep CPU hit-testing and the shader's surface field in sync.
 
+Use the order-independent exponential surface union and its analytic normals. Blend widths are properties of individual blobs; do not vary them with spatially blended radii or burst states, which creates creases in surface normals. Keep the conservative march distance and connection gap consistent with that field. Click impulses reach nearly full velocity in about 55 ms while preserving position and velocity at the instant of the click.
+
 All three pages must remain readable with reduced motion and without WebGL. Do not add a theme switch; follow the OS. Keep print-specific résumé behavior in the global print stylesheet.

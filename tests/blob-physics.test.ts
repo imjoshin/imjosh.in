@@ -56,7 +56,7 @@ test("a click reaches the entire connected chain but stops before a separate gro
 test("connections respect the surface-gap threshold", () => {
   const reference = new BlobSimulation({ count: 2 });
   const [a, b] = reference.roots;
-  const connectedDistance = a.radius + b.radius + Math.min(reference.connectionThreshold, b.radius);
+  const connectedDistance = a.radius + b.radius + reference.connectionGap(reference.particles[0], reference.particles[1]);
   assert.deepEqual(fixture([[0, 0, 0], [connectedDistance - .01, 0, 0]]).burstAt([0, 0]), [0, 1]);
   assert.deepEqual(fixture([[0, 0, 0], [connectedDistance + .01, 0, 0]]).burstAt([0, 0]), [0, 2]);
   assert.deepEqual(fixture([[0, 0, 0], [connectedDistance - .01, 0, 0]], .2).burstAt([0, 0]), [0, 2]);
@@ -304,4 +304,44 @@ test("all eight roots can reach the 32-piece limit and still recover their exact
     const particle = simulation.particles.find((piece) => piece.root === i)!;
     assert.ok(Math.abs(particle.radius - root.radius) < 1e-10);
   });
+});
+
+test("mixed-size and mixed-burst joins have the same surface regardless of particle order", () => {
+  const simulation = fixture([[-.35, 0, 0], [.35, 0, 0], [0, .45, .1]]);
+  simulation.particles.forEach((particle, i) => particle.burst = [0, .65, .95][i]);
+  const points = Array.from({ length: 101 }, (_, i) => [(i - 50) / 60, .1, .4] as [number, number, number]);
+  const distances = points.map((point) => simulation.sampleSurface(point).distance);
+  simulation.particles.reverse();
+  points.forEach((point, i) => assert.ok(Math.abs(simulation.sampleSurface(point).distance - distances[i]) < 1e-12));
+});
+
+test("surface normals remain continuous through joins with different radii and burst states", () => {
+  const simulation = fixture([[-.35, 0, 0], [.35, 0, 0], [0, .45, .1]]);
+  simulation.particles.forEach((particle, i) => particle.burst = [0, .65, .95][i]);
+  const normal = (point: [number, number, number]) => {
+    const epsilon = .0001;
+    const gradient = point.map((_, axis) => {
+      const plus = [...point] as [number, number, number], minus = [...point] as [number, number, number];
+      plus[axis] += epsilon; minus[axis] -= epsilon;
+      return (simulation.sampleSurface(plus).distance - simulation.sampleSurface(minus).distance) / (2 * epsilon);
+    });
+    const length = Math.hypot(...gradient);
+    return gradient.map((value) => value / length);
+  };
+  let previous = normal([-.8, .1, .4]);
+  for (let x = -.799; x <= .8; x += .001) {
+    const current = normal([x, .1, .4]);
+    assert.ok(Math.hypot(...current.map((value, axis) => value - previous[axis])) < .02);
+    previous = current;
+  }
+});
+
+test("click velocity ramps up within 55 ms without an instantaneous velocity change", () => {
+  const simulation = fixture([[0, 0, 0]]);
+  const velocity = [...simulation.particles[0].velocity];
+  simulation.burstAt([0, 0]);
+  assert.deepEqual(simulation.particles[0].velocity, velocity);
+  const queued = simulation.particles.map((particle) => Math.hypot(...particle.impulse));
+  advance(simulation, .055);
+  simulation.particles.forEach((particle, i) => assert.ok(Math.hypot(...particle.impulse) < queued[i] * .05));
 });
