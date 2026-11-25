@@ -128,6 +128,19 @@ input[type="range"] { accent-color: var(--acc); cursor: ew-resize; }
 .page-title em { color: var(--acc); }
 .social-link:hover { color: var(--acc); }
 
+.desktop-nav-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 4px;
+  height: 2px;
+  background: var(--acc);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .2s ease;
+}
+.desktop-nav-link:is(:hover, :focus-visible, [aria-current="page"])::after { transform: scaleX(1); }
+
 .mobile-menu-toggle { list-style: none; }
 .mobile-menu-toggle::-webkit-details-marker { display: none; }
 

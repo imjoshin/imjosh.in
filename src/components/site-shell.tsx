@@ -25,7 +25,7 @@ export function SocialLinks({ footer = false }: { footer?: boolean }) {
 function NavigationLinks({ pathname, mobile = false }: { pathname: string; mobile?: boolean }) {
   const className = mobile
     ? "flex min-h-11 items-center rounded-xl px-4 py-3 text-base font-medium hover:bg-ink hover:text-background aria-[current=page]:bg-line aria-[current=page]:text-accent"
-    : "pill";
+    : "desktop-nav-link relative inline-flex min-h-11 items-center py-2 text-base font-medium whitespace-nowrap text-muted hover:text-ink aria-[current=page]:text-ink";
   return (
     <>
       <Link className={className} href="/projects/" aria-current={pathname.startsWith("/projects") ? "page" : undefined}>Projects</Link>
@@ -84,7 +84,7 @@ export function SiteHeader() {
   return (
     <header className="site-header sticky top-0 z-20 flex items-center justify-between gap-4 px-gutter py-[22px]">
       <Link className="font-display text-[28px] leading-none tracking-[-.01em] italic" href="/" aria-label="imjosh.in home">imjosh.in</Link>
-      <nav aria-label="Main navigation" className="hidden items-center gap-2 md:flex">
+      <nav aria-label="Main navigation" className="hidden items-center gap-7 md:flex lg:gap-9">
         <NavigationLinks pathname={pathname} />
       </nav>
       <details ref={menu} className="group md:hidden">
