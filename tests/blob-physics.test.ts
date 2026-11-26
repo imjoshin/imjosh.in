@@ -163,7 +163,7 @@ function quarters() {
 }
 
 function fragmentRoot(simulation: BlobSimulation, root: number) {
-  for (let level = 0; level < 4; level++) {
+  for (let level = 0; level < 5; level++) {
     const pieces = simulation.particles.filter((particle) => particle.root === root);
     for (const piece of pieces) {
       simulation.particles.forEach((particle) => {
@@ -222,15 +222,15 @@ test("attached roots separate without fragmentation or changes to their starting
   assertVolume(simulation);
 });
 
-test("four split levels produce sixteenth-volume minimum pieces that only move when clicked", () => {
+test("five split levels produce thirty-second-volume minimum pieces that only move when clicked", () => {
   const simulation = fixture([[0, 0, 0]]);
   fragmentRoot(simulation, 0);
-  assert.equal(simulation.particles.length, 16);
+  assert.equal(simulation.particles.length, 32);
   simulation.particles.forEach((particle) => assert.equal(particle.volume, simulation.roots[0].volume * MIN_FRAGMENT_VOLUME));
   const piece = simulation.particles[0];
   const impulse = [...piece.impulse];
   assert.deepEqual(simulation.burstAt(aim(simulation)), [piece.id]);
-  assert.equal(simulation.particles.length, 16);
+  assert.equal(simulation.particles.length, 32);
   assert.notDeepEqual(piece.impulse, impulse);
   assertVolume(simulation);
 });
@@ -290,11 +290,12 @@ test("rapid splitting, merging, resizing, and long frame gaps preserve root volu
     assertVolume(simulation);
     assert.ok(simulation.particles.length >= simulation.roots.length);
     assert.ok(simulation.particles.length <= simulation.roots.length / MIN_FRAGMENT_VOLUME);
+    assert.ok(simulation.particles.length <= simulation.maxParticles);
     simulation.particles.forEach((particle) => assert.ok([...particle.position, ...particle.velocity].every(Number.isFinite)));
   }
 });
 
-test("all eight roots can reach the 128-piece limit and still recover their exact original sizes", () => {
+test("a scene at the 128-piece limit still recovers all eight roots' exact original sizes", () => {
   const simulation = new BlobSimulation({ count: 8 });
   for (let root = 0; root < simulation.roots.length; root++) {
     fragmentRoot(simulation, root);

@@ -114,7 +114,7 @@ test("a swept flight hits a bridge and does not burst surfaces beyond the travel
 
 test("a swept pellet pushes minimum-size fragments without tunneling or splitting again", () => {
   const { simulation } = fixture();
-  for (let level = 0; level < 4; level++) {
+  for (let level = 0; level < 5; level++) {
     simulation.particles.forEach((particle, i) => {
       particle.position = i === 0 ? [0, 0, 0] : [10 + i, 10, 0];
       particle.displayVolume = particle.volume;

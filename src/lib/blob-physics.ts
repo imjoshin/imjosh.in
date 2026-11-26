@@ -4,7 +4,7 @@ export const BLOB_BLEND = .2;
 export const BLOB_SEPARATED_BLEND = .07;
 export const BLOB_RADIUS_BLEND = .6;
 export const MAX_BLOB_PARTICLES = 128;
-export const MIN_FRAGMENT_VOLUME = 1 / 16;
+export const MIN_FRAGMENT_VOLUME = 1 / 32;
 
 export type RootBlob = Readonly<{ radius: number; volume: number }>;
 export type Particle = {
