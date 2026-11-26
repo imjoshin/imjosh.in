@@ -2,6 +2,7 @@ import { BlobSimulation, BLOB_BLEND, BLOB_SEPARATED_BLEND, BLOB_RADIUS_BLEND, MA
 import { PewMode, MAX_PELLETS } from './blob-pew.ts';
 
 const INNER_PAGE_SPEED = .04;
+const RESIZE_DELAY = 150;
 const STORAGE_KEY = 'imjosh.in:blobs:v1';
 
 // The handoff's chrome shader, driven by independent gravitational particles.
@@ -15,7 +16,7 @@ export function initBlob(canvas, o = {}) {
   const pew = new PewMode(simulation);
   const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
   const fs = `precision highp float;
-uniform vec2 uR;uniform float uT;uniform float uDark;uniform float uN;uniform float uS;uniform vec4 uParticles[${capacity}];uniform vec4 uBursts[${capacity / 4}];
+uniform vec2 uR;uniform float uAspect;uniform float uT;uniform float uDark;uniform float uN;uniform float uS;uniform vec4 uParticles[${capacity}];uniform vec4 uBursts[${capacity / 4}];
 float blendWidth(float radius,float burst){return max(${BLOB_SEPARATED_BLEND}*uS,min(${BLOB_BLEND}*uS,radius*${BLOB_RADIUS_BLEND})*(1.-burst*.55));}
 float map(vec3 p){float density=0.;float minimumWidth=1e3;
  for(int i=0;i<${capacity};i++){if(float(i)>=uN)break;
@@ -36,7 +37,7 @@ vec3 nrm(vec3 p){vec3 gradient=vec3(0.);
   float width=blendWidth(radius,burst);vec3 delta=p-uParticles[i].xyz;float distance=length(delta);
   gradient+=exp(clamp((radius-distance)/width,-60.,20.))*delta/(width*max(distance,.0001));}
  return normalize(gradient+vec3(0.,0.,1e-10));}
-void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
+void main(){vec2 uv=(gl_FragCoord.xy*2./uR-1.)*vec2(uAspect,1.);
  vec3 ro=vec3(0.,0.,4.),rd=normalize(vec3(uv,-1.6));
  float t=0.,hit=0.,md=1e3;
  for(int i=0;i<84;i++){float d=map(ro+rd*t);md=min(md,d);if(d<.002){hit=1.;break;}t+=d;if(t>10.)break;}
@@ -75,13 +76,13 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
   const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ['uR', 'uT', 'uDark', 'uN', 'uS', 'uParticles[0]', 'uBursts[0]'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
+  const U = {}; ['uR', 'uAspect', 'uT', 'uDark', 'uN', 'uS', 'uParticles[0]', 'uBursts[0]'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
 
   // A separate point pass leaves the chrome shading untouched. Perspective makes
   // pellets travel up from beneath the camera and shrink into the scene.
-  const pelletVertex = sh(gl.VERTEX_SHADER, `attribute vec3 aPellet;uniform vec2 uR;
+  const pelletVertex = sh(gl.VERTEX_SHADER, `attribute vec3 aPellet;uniform vec2 uR;uniform float uAspect;
 void main(){float depth=max(.01,4.-aPellet.z);
- gl_Position=vec4(aPellet.x*1.6*uR.y/uR.x,aPellet.y*1.6,0.,depth);
+ gl_Position=vec4(aPellet.x*1.6/uAspect,aPellet.y*1.6,0.,depth);
  gl_PointSize=clamp(.016*uR.y/depth,2.,12.);}`);
   const pelletFragment = sh(gl.FRAGMENT_SHADER, `precision mediump float;uniform float uDark;
 void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
@@ -93,6 +94,7 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
   if (!gl.getProgramParameter(pelletProgram, gl.LINK_STATUS)) throw new Error('Unable to link the pellet shader');
   const pelletLocation = gl.getAttribLocation(pelletProgram, 'aPellet');
   const pelletResolution = gl.getUniformLocation(pelletProgram, 'uR');
+  const pelletAspect = gl.getUniformLocation(pelletProgram, 'uAspect');
   const pelletDark = gl.getUniformLocation(pelletProgram, 'uDark');
   const pelletBuffer = gl.createBuffer(), pelletPositions = new Float32Array(MAX_PELLETS * 3);
   gl.bindBuffer(gl.ARRAY_BUFFER, pelletBuffer);
@@ -104,6 +106,7 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
   let home = o.home ?? true, interactive = false, paused = false;
   let speed = home ? 1 : INNER_PAGE_SPEED, dark = isDark() ? 1 : 0;
   let raf = 0, lastFrame = performance.now(), dead = false;
+  let viewWidth = 0, viewHeight = 0, resizeAfter = Infinity;
   function isDark() { return document.documentElement.dataset.theme === 'dark'; }
   const toWorld = (e) => {
     const r = canvas.getBoundingClientRect();
@@ -111,13 +114,23 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
   };
   const resize = () => {
     const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (w <= 0 || h <= 0 || (w === viewWidth && h === viewHeight)) return;
+    viewWidth = w; viewHeight = h;
+    simulation.setAspect(w / h);
+    resizeAfter = performance.now() + RESIZE_DELAY;
+  };
+  const resizeBuffer = () => {
+    resizeAfter = Infinity;
+    const w = viewWidth, h = viewHeight;
     if (w <= 0 || h <= 0) return;
     let dpr = Math.min(devicePixelRatio, 1.5);
     const pixelBudget = 2.4e6 / resolutionComplexity;
     if (w * h * dpr * dpr > pixelBudget) dpr = Math.sqrt(pixelBudget / (w * h));
-    canvas.width = Math.max(1, Math.round(w * dpr)); canvas.height = Math.max(1, Math.round(h * dpr));
+    const width = Math.max(1, Math.round(w * dpr)), height = Math.max(1, Math.round(h * dpr));
+    if (canvas.width === width && canvas.height === height) return;
+    if (canvas.width !== width) canvas.width = width;
+    if (canvas.height !== height) canvas.height = height;
     gl.viewport(0, 0, canvas.width, canvas.height);
-    simulation.setAspect(w / Math.max(h, 1));
   };
   const blockedTarget = target => target?.closest?.('a,button,input,select,textarea,details,[contenteditable]:not([contenteditable="false"])');
   const syncCursor = () => document.documentElement.toggleAttribute('data-pew-mode', pew.active);
@@ -167,7 +180,7 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
   try { restored = simulation.restore(JSON.parse(window.localStorage.getItem(STORAGE_KEY))); } catch { /* Storage may be unavailable or corrupt. */ }
   if (!restored) simulation.randomizePositions();
   resolutionComplexity = complexity();
-  resize();
+  resizeBuffer();
   const save = () => {
     try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(simulation.snapshot())); } catch { /* Animation also works without storage. */ }
   };
@@ -185,7 +198,10 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
     speed += ((home ? 1 : INNER_PAGE_SPEED) - speed) * (1 - Math.exp(-dt * 2.4));
     simulation.step(dt * speed);
     pew.step(elapsed);
-    if (complexity() !== resolutionComplexity) { resolutionComplexity = complexity(); resize(); }
+    if (complexity() !== resolutionComplexity) { resolutionComplexity = complexity(); resizeAfter = now; }
+    // Keep drawing into the existing buffer during a resize. Reallocate only
+    // after it settles, immediately before drawing so no cleared frame appears.
+    if (now >= resizeAfter) resizeBuffer();
     dark += ((isDark() ? 1 : 0) - dark) * (1 - Math.exp(-dt * 5));
     simulation.particles.forEach((particle, i) => {
       particles.set(particle.position, i * 4);
@@ -196,6 +212,8 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     gl.uniform2f(U.uR, canvas.width, canvas.height);
+    // Projection follows the CSS viewport even while the buffer size is held.
+    gl.uniform1f(U.uAspect, simulation.aspect);
     gl.uniform1f(U.uT, simulation.time);
     gl.uniform1f(U.uDark, dark);
     gl.uniform1f(U.uN, simulation.particles.length); gl.uniform1f(U.uS, S);
@@ -209,6 +227,7 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, pelletPositions);
       gl.enableVertexAttribArray(pelletLocation); gl.vertexAttribPointer(pelletLocation, 3, gl.FLOAT, false, 0, 0);
       gl.uniform2f(pelletResolution, canvas.width, canvas.height);
+      gl.uniform1f(pelletAspect, simulation.aspect);
       gl.uniform1f(pelletDark, isDark() ? 1 : 0);
       gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       gl.drawArrays(gl.POINTS, 0, pew.pellets.length);
