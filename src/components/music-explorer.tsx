@@ -26,7 +26,7 @@ function Ranking({ items, empty, kind }: { items: RankedMusic[]; empty: string; 
   return <div className="music-collection" style={motion.containerStyle}><ol ref={motion.setRoot} className="music-ranking">{motion.rows.map(({ item, phase }) => <li ref={motion.bind(item.key)} key={item.key} data-phase={phase} data-last={item.last || undefined} inert={phase === "exit" ? true : undefined} aria-hidden={phase === "exit" || undefined} style={phase === "exit" ? motion.exitStyle(item.key) : undefined}>
     <span className="w-5 shrink-0 text-[14px] text-muted tabular-nums">{String(item.rank).padStart(2, "0")}</span>
     <Cover item={item} className="h-12 w-12 shrink-0 rounded-lg" />
-    <div className="min-w-0 flex-1"><MusicLink entity={{ kind: item.kind, name: item.name, artists: item.artists, url: item.url, image: item.kind !== "artist" ? item.image : null }} className="block truncate font-medium">{item.name}</MusicLink>{item.kind !== "artist" && <p className="truncate text-[14px] text-muted"><MusicArtists names={item.artists} /></p>}</div>
+    <div className="min-w-0 flex-1"><MusicLink entity={{ kind: item.kind, name: item.name, artists: item.artists, url: item.url, image: item.kind !== "artist" ? item.image : null }} className="block w-fit max-w-full truncate font-medium">{item.name}</MusicLink>{item.kind !== "artist" && <p className="truncate text-[14px] text-muted"><MusicArtists names={item.artists} /></p>}</div>
     <span className="shrink-0 text-[14px] text-muted tabular-nums"><MusicNumber value={item.plays} /><span className="sr-only"> recorded plays</span></span>
   </li>)}{!items.length && <li className="music-ranking-empty text-muted">{empty}</li>}</ol></div>;
 }
