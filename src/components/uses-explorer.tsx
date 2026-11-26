@@ -96,7 +96,10 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
           {changes.map((event) => <li key={`${event.date}:${event.op}:${itemId(event.item)}`} className={`grid grid-cols-[80px_18px_minmax(0,1fr)] items-baseline gap-2 text-base ${event.op === "+" ? "text-accent" : "text-muted"}`}>
             <time dateTime={event.date} className="text-[13px] text-muted">{months[Number(event.date.slice(5, 7)) - 1]}</time>
             <span className="font-semibold" aria-label={event.op === "+" ? "Acquired" : "Retired"}>{event.op === "+" ? "+" : "−"}</span>
-            <GearDetails key={`${itemId(event.item)}:${selectedYear}`} item={event.item} className={event.op === "-" ? "line-through" : ""}>{itemName(event.item)}</GearDetails>
+            <GearDetails key={`${itemId(event.item)}:${selectedYear}`} item={event.item} className="flex items-start gap-2">
+              <span className="mt-[3px]"><GearCategoryIcon category={event.category} /></span>
+              <span className={event.op === "-" ? "line-through" : ""}>{itemName(event.item)}</span>
+            </GearDetails>
           </li>)}
         </ul> : <p className="font-display text-2xl text-muted italic">A quiet year. Nothing in, nothing out.</p>}
       </section>
