@@ -2,7 +2,7 @@
 
 import { DirectionalLink as Link } from "@/components/navigation-motion";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const socialLinks = [
   ["GitHub", "https://github.com/imjoshin"],
@@ -46,6 +46,14 @@ function NavigationLinks({ pathname, mobile = false }: { pathname: string; mobil
 export function SiteHeader() {
   const pathname = usePathname();
   const menu = useRef<HTMLDetailsElement>(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    function onScroll() { setScrolled(window.scrollY > 8); }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const details = menu.current;
@@ -82,7 +90,8 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="site-header sticky top-0 z-20 flex items-center justify-between gap-4 px-gutter py-[22px]">
+    <header data-scrolled={scrolled} className="site-header sticky top-0 z-20 flex items-center justify-between gap-4 px-gutter py-[22px]">
+      <span aria-hidden="true" className="site-header-backdrop pointer-events-none absolute inset-x-0 top-0 -bottom-8 -z-10"><span /></span>
       <Link className="font-display text-[28px] leading-none tracking-[-.01em] italic" href="/" aria-label="imjosh.in home">imjosh.in</Link>
       <nav aria-label="Main navigation" className="hidden items-center gap-7 md:flex lg:gap-9">
         <NavigationLinks pathname={pathname} />

@@ -169,6 +169,41 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 }
 @media print { .gear-popover { display: none !important; } }
 
+.site-header-backdrop::before,
+.site-header-backdrop > span,
+.site-header-backdrop::after {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .35s cubic-bezier(.22, 1, .36, 1);
+}
+
+/* Overlapping masks soften the blur as it reaches below the navigation. */
+.site-header-backdrop::before {
+  content: "";
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 88%, transparent), color-mix(in srgb, var(--bg) 70%, transparent) 60%, transparent);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  mask-image: linear-gradient(to bottom, #000 60%, transparent);
+}
+
+.site-header-backdrop > span {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  mask-image: linear-gradient(to bottom, #000 35%, transparent 90%);
+}
+
+.site-header-backdrop::after {
+  content: "";
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  mask-image: linear-gradient(to bottom, #000 20%, transparent 75%);
+}
+
+.site-header[data-scrolled="true"] .site-header-backdrop::before,
+.site-header[data-scrolled="true"] .site-header-backdrop > span,
+.site-header[data-scrolled="true"] .site-header-backdrop::after { opacity: 1; }
+
 .desktop-nav-link::after {
   content: "";
   position: absolute;
