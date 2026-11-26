@@ -15,24 +15,16 @@
 :root {
   --font-display: "Instrument Serif", Georgia, serif;
   color-scheme: light dark;
-  --bg: #eceaf3;
-  --ink: #15131d;
-  --mute: #5d5a6c;
-  --line: rgba(21, 19, 29, .16);
-  --acc: #5b45d6;
-  --panel: rgba(236, 234, 243, .74);
+  --bg: light-dark(#eceaf3, #0c0b12);
+  --ink: light-dark(#15131d, #edebf5);
+  --mute: light-dark(#5d5a6c, #a09db2);
+  --line: light-dark(rgba(21, 19, 29, .16), rgba(237, 235, 245, .15));
+  --acc: light-dark(#5b45d6, #a597ff);
+  --panel: light-dark(rgba(236, 234, 243, .74), rgba(16, 15, 24, .7));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0c0b12;
-    --ink: #edebf5;
-    --mute: #a09db2;
-    --line: rgba(237, 235, 245, .15);
-    --acc: #a597ff;
-    --panel: rgba(16, 15, 24, .7);
-  }
-}
+:root:where([data-theme="light"]) { color-scheme: light; }
+:root:where([data-theme="dark"]) { color-scheme: dark; }
 
 html, body {
   background: var(--bg);

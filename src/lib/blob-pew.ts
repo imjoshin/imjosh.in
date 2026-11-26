@@ -1,7 +1,7 @@
 import { BlobSimulation, type Point, type Vector } from "./blob-physics.ts";
 
 export const PELLET_INTERVAL = .1;
-export const PELLET_SPEED = 9;
+export const PELLET_SPEED = 11;
 export const PELLET_LIFETIME = 1.4;
 export const MAX_PELLETS = 16;
 const PELLET_IMPACT_STRENGTH = 1.25;

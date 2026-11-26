@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import type { BlobController } from "@/lib/blob";
 
+const THEME_STORAGE_KEY = "imjosh.in:theme";
+
 export function BlobCanvas() {
   const ref = useRef<HTMLCanvasElement>(null);
   const pathname = usePathname();
@@ -25,7 +27,14 @@ export function BlobCanvas() {
     let generation = 0;
 
     function syncTheme() {
-      document.documentElement.dataset.theme = theme.matches ? "dark" : "light";
+      let override: string | null = null;
+      try { override = window.localStorage.getItem(THEME_STORAGE_KEY); } catch { /* Follow the OS when storage is unavailable. */ }
+      document.documentElement.dataset.theme = override === "light" || override === "dark"
+        ? override : theme.matches ? "dark" : "light";
+    }
+
+    function onStorage(event: StorageEvent) {
+      if (event.key === THEME_STORAGE_KEY || event.key === null) syncTheme();
     }
 
     function stop() {
@@ -35,6 +44,7 @@ export function BlobCanvas() {
     }
 
     async function syncAnimation() {
+      syncTheme();
       const current = ++generation;
       canvas!.style.visibility = motion.matches ? "hidden" : "visible";
       if (engine.current) {
@@ -55,6 +65,7 @@ export function BlobCanvas() {
     syncTheme();
     const firstFrame = requestAnimationFrame(() => void syncAnimation());
     theme.addEventListener("change", syncTheme);
+    window.addEventListener("storage", onStorage);
     motion.addEventListener("change", syncAnimation);
     document.addEventListener("visibilitychange", syncAnimation);
     canvas.addEventListener("webglcontextlost", onContextLost);
@@ -64,6 +75,7 @@ export function BlobCanvas() {
       cancelAnimationFrame(firstFrame);
       stop();
       theme.removeEventListener("change", syncTheme);
+      window.removeEventListener("storage", onStorage);
       motion.removeEventListener("change", syncAnimation);
       document.removeEventListener("visibilitychange", syncAnimation);
       canvas.removeEventListener("webglcontextlost", onContextLost);
