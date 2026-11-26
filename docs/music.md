@@ -88,7 +88,7 @@ npm run music:push
 npm run music:sync -- --prod
 ```
 
-Push merges listening partitions and preserves production token rotation unless `--credentials` is supplied. Avoid simultaneous administrative writes. The scheduled worker has a conditional, expiring lock against overlapping scheduled jobs.
+Push merges listening partitions and preserves production token rotation unless `--credentials` is supplied. Avoid simultaneous administrative writes. The scheduled worker has a conditional, expiring lock against overlapping scheduled jobs. Runs that arrive while a worker is active are skipped, including during the daily full sync.
 
 Generate the internal worker key once and import it without committing or printing its value:
 
@@ -97,7 +97,7 @@ node --experimental-strip-types scripts/music.ts job-key
 npx netlify env:import .music/job.env
 ```
 
-`music-schedule` runs every 15 minutes and starts the authenticated background worker. Recent plays are collected every run; full library and affinity snapshots refresh once per UTC day. Frequent collection reduces gaps in Spotify's limited recent-history window. `state/job.json` records job outcomes. Large imports run locally, outside the scheduler's time limit.
+`music-schedule` runs every 5 minutes and starts the authenticated background worker. Recent plays are collected every run; full library and affinity snapshots refresh once per UTC day. Frequent collection reduces gaps in Spotify's limited recent-history window. `state/job.json` records job outcomes. Large imports run locally, outside the scheduler's time limit.
 
 `/api/music?file=manifest.json` lists the immutable dataset files the browser can request. The endpoint accepts only that manifest and hashed dataset filenames from the public store. A new manifest is published after all its datasets are written. Local development reads the pulled `public/music/` mirror, including offline. The build runs `music:prepare` and preserves the Windows RSC filename normalization.
 
