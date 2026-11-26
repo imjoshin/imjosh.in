@@ -19,7 +19,7 @@ export default function ProjectsPage() {
       <div className="flex flex-col gap-5">
         {projects.map((project, index) => (
           <article key={project.domain} className="group panel relative grid items-center gap-6 rounded-[24px] p-4 transition-colors hover:border-accent sm:p-6 md:grid-cols-[1.15fr_1fr] md:gap-8 lg:gap-10">
-            <div className="overflow-hidden rounded-[12px] border border-line">
+            <div className="relative overflow-hidden rounded-[12px] border border-line">
               <Image
                 className="aspect-video w-full object-cover object-top"
                 src={project.preview}
@@ -27,9 +27,9 @@ export default function ProjectsPage() {
                 loading={index === 0 ? "eager" : "lazy"}
                 unoptimized
               />
+              {project.building && <span className="pointer-events-none absolute top-3 right-3 rounded-full border border-accent/30 bg-background/95 px-3 py-1 text-[14px] font-medium text-accent">Building</span>}
             </div>
             <div className="flex flex-col items-start gap-4 px-1 pb-2 sm:px-0 md:py-3">
-              {project.building && <span className="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-[14px] font-medium text-accent">Building</span>}
               <h2 className="font-display text-[clamp(36px,4vw,52px)] leading-none tracking-[-.02em] transition-colors group-hover:text-accent">
                 <a className="after:absolute after:inset-0 after:rounded-[24px] focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-offset-4 focus-visible:after:outline-accent" href={project.url} target="_blank" rel="noopener noreferrer">
                   {project.name}<span className="sr-only"> (opens in a new tab)</span>
