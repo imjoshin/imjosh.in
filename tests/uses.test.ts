@@ -1,5 +1,6 @@
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
+import { existsSync } from "node:fs";
 import { usesItems } from "../content/uses.ts";
 import { buildEvents, itemId, monthAt, monthIndex, parseMonth, parseYear, readTimelineMonth, usesAt } from "../src/lib/uses.ts";
 
@@ -76,4 +77,36 @@ test("the November 17 phone upgrade preserves exact dates and monthly history", 
     ["2026-11-17", "-", "Pixel 9 Pro"],
     ["2026-11-17", "+", "Pixel 11 Pro"],
   ]);
+});
+
+test("every historical product has sourced details and a local product image", () => {
+  for (const item of usesItems) {
+    assert.ok(item.producer.trim(), item.model);
+    assert.ok(Object.keys(item.specs).length >= 4, item.model);
+    assert.ok(Object.values(item.specs).every((value) => typeof value === "string" && value.trim()), item.model);
+    assert.ok(item.image.alt.trim(), item.model);
+    assert.match(item.image.src, /^\/gear\/[a-z0-9-]+\.(png|webp)$/);
+    assert.ok(existsSync(new URL(`../public${item.image.src}`, import.meta.url)), item.image.src);
+    assert.ok(item.image.sourceUrl?.startsWith("https://"), item.model);
+    assert.ok(item.sources.length > 0 && item.sources.every((source) => source.url.startsWith("https://")), item.model);
+    if (item.releaseYear !== null) assert.ok(item.releaseYear <= Number(item.acquireDate.slice(0, 4)), item.model);
+  }
+});
+
+test("expanded specifications preserve the recorded ownership configuration", () => {
+  const fields = { cpu: "Processor", ram: "Memory", gpu: "Graphics", storage: "Storage", case: "Case", cooling: "Cooling", motherboard: "Motherboard", psu: "Power supply", os: "Operating system", size: "Screen size", resolution: "Resolution", panelType: "Panel", refreshRate: "Refresh rate", display: "Display", focalLength: "Focal length", maxAperture: "Maximum aperture" };
+  for (const item of usesItems) {
+    for (const [field, label] of Object.entries(fields)) {
+      const value = (item as unknown as Record<string, unknown>)[field];
+      if (value) assert.equal(item.specs[label], value, `${item.model}: ${label}`);
+    }
+  }
+});
+
+test("snapshot details refer to the authoritative products at historical and current dates", () => {
+  for (const month of ["2010-06", "2015-10", "2020-04", "2024-04", "2026-11"]) {
+    for (const item of usesAt(month).categories.flatMap((category) => category.items)) {
+      assert.equal(item.details, usesItems.find((original) => itemId(original) === item.id));
+    }
+  }
 });

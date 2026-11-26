@@ -49,7 +49,7 @@ export function usesAt(period: number | string, items: UsesItem[] = usesItems) {
       key, label,
       items: active.filter((item) => itemCategory(item) === key)
         .sort((a, b) => b.acquireDate.localeCompare(a.acquireDate))
-        .map((item) => ({ id: itemId(item), name: itemName(item), spec: itemSpec(item), isNew: item.acquireDate === prefix || item.acquireDate.startsWith(`${prefix}-`) })),
+        .map((item) => ({ id: itemId(item), name: itemName(item), spec: itemSpec(item), details: item, isNew: item.acquireDate === prefix || item.acquireDate.startsWith(`${prefix}-`) })),
     })),
     changes: buildEvents(items).filter((event) => event.date === prefix || event.date.startsWith(`${prefix}-`)),
   };

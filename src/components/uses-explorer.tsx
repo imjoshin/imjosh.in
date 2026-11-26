@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import { itemId, itemName, monthAt, monthIndex, readTimelineMonth, usesAt } from "@/lib/uses";
 import { AnimatedDate } from "@/components/animated-date";
+import { GearDetails } from "@/components/gear-details";
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -25,6 +26,7 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
 
   const maximum = monthIndex(currentMonth);
   const month = monthAt(selection.position);
+  const selectedYear = Number(month.slice(0, 4));
   const currentYear = Number(currentMonth.slice(0, 4));
   const monthLabel = new Date(`${month}-01T12:00:00Z`).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
 
@@ -51,6 +53,7 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
   }
 
   const inventory = useMemo(() => usesAt(month), [month]);
+  const changes = useMemo(() => usesAt(selectedYear).changes, [selectedYear]);
   const tickYears = Array.from(new Set([2010, 2014, 2018, 2022, currentYear])).filter((tick) => tick <= currentYear).sort((a, b) => a - b);
 
   return (
@@ -84,7 +87,7 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
             {category.items.length ? category.items.map((item) => (
               <div key={item.id} className="flex flex-col gap-[3px]">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-[18px] leading-[1.2] font-medium">{item.name}</h3>
+                  <GearDetails key={`${item.id}:${month}`} item={item.details} heading>{item.name}</GearDetails>
                   {item.isNew && <span className="rounded-full bg-accent px-2 py-[3px] text-[11px] leading-none font-semibold tracking-[.08em] text-background uppercase">new</span>}
                 </div>
                 {item.spec && <p className="text-[14px] leading-[1.35] text-muted">{item.spec}</p>}
@@ -95,15 +98,15 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
       </section>
 
       <section className="panel flex flex-col gap-[14px] rounded-[20px] p-6" aria-labelledby="changes-title">
-        <h2 id="changes-title" className="eyebrow">Changes in {monthLabel}</h2>
-        <p className="sr-only" role="status">Showing {inventory.categories.reduce((sum, category) => sum + category.items.length, 0)} items and {inventory.changes.length} changes in {monthLabel}.</p>
-        {inventory.changes.length ? <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-x-7 gap-y-[10px]">
-          {inventory.changes.map((event) => <li key={`${event.date}:${event.op}:${itemId(event.item)}`} className={`grid grid-cols-[48px_18px_minmax(0,1fr)] items-baseline gap-2 text-base ${event.op === "+" ? "text-accent" : "text-muted"}`}>
+        <h2 id="changes-title" className="eyebrow">Changes in {selectedYear}</h2>
+        <p className="sr-only" role="status">Showing {inventory.categories.reduce((sum, category) => sum + category.items.length, 0)} items in {monthLabel} and {changes.length} changes in {selectedYear}.</p>
+        {changes.length ? <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-x-7 gap-y-[10px]">
+          {changes.map((event) => <li key={`${event.date}:${event.op}:${itemId(event.item)}`} className={`grid grid-cols-[48px_18px_minmax(0,1fr)] items-baseline gap-2 text-base ${event.op === "+" ? "text-accent" : "text-muted"}`}>
             <time dateTime={event.date} className="text-[13px] text-muted">{months[Number(event.date.slice(5, 7)) - 1]}{event.date.length > 7 ? ` ${Number(event.date.slice(8, 10))}` : ""}</time>
             <span className="font-semibold" aria-label={event.op === "+" ? "Acquired" : "Retired"}>{event.op === "+" ? "+" : "−"}</span>
-            <span className={event.op === "-" ? "line-through" : ""}>{itemName(event.item)}</span>
+            <GearDetails key={`${itemId(event.item)}:${selectedYear}`} item={event.item} className={event.op === "-" ? "line-through" : ""}>{itemName(event.item)}</GearDetails>
           </li>)}
-        </ul> : <p className="font-display text-2xl text-muted italic">A quiet month. Nothing in, nothing out.</p>}
+        </ul> : <p className="font-display text-2xl text-muted italic">A quiet year. Nothing in, nothing out.</p>}
       </section>
       <noscript><p className="text-muted">You’re viewing the latest gear. Enable JavaScript to explore earlier months.</p></noscript>
     </>
