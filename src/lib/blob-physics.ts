@@ -23,6 +23,22 @@ export type Particle = {
   mergeAfter: number;
 };
 type Merge = { target: number; source: number; volume: number; elapsed: number; progress: number };
+type BlobState = {
+  version: 1;
+  scale: number;
+  rootVolumes: number[];
+  aspect: number;
+  time: number;
+  nextId: number;
+  particles: Particle[];
+  merges: Merge[];
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null;
+const nonnegative = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value) && value >= 0;
+const unit = (value: unknown): value is number => nonnegative(value) && value <= 1;
+const vector = (value: unknown): value is Vector => Array.isArray(value) && value.length === 3 && value.every((axis) => typeof axis === "number" && Number.isFinite(axis));
+const cloneParticle = (particle: Particle): Particle => ({ ...particle, position: [...particle.position], velocity: [...particle.velocity], impulse: [...particle.impulse] });
 
 /** Persistent root volumes, with inertial fragments that coalesce back into their root. */
 export class BlobSimulation {
@@ -61,6 +77,85 @@ export class BlobSimulation {
 
   get burst() { return this.particles.reduce((maximum, particle) => Math.max(maximum, particle.burst), 0); }
   renderRadius(particle: Particle) { return Math.cbrt(Math.max(0, particle.displayVolume)); }
+
+  /** Fresh loads scatter within the visible scene instead of repeating the same orbit. */
+  randomizePositions(random = Math.random) {
+    for (let attempt = 0; attempt < 16; attempt++) {
+      for (const particle of this.particles) {
+        particle.position = [(random() * 2 - 1) * this.aspect * 1.4 * this.scale,
+          (random() * 2 - 1) * 1.55 * this.scale, (random() * 2 - 1) * .6 * this.scale];
+      }
+      if (this.particles.length === 1 || !this.isSingleBlob(this.particles)) return;
+    }
+    // Even an unlucky random sequence must leave at least two separate groups.
+    this.particles.forEach((particle, i) => particle.position[1] = (i % 2 ? 1 : -1) * (1.1 + random() * .45) * this.scale);
+  }
+
+  snapshot(): BlobState {
+    return {
+      version: 1, scale: this.scale, rootVolumes: this.roots.map((root) => root.volume),
+      aspect: this.aspect, time: this.time, nextId: this.nextId,
+      particles: this.particles.map(cloneParticle), merges: this.merges.map((merge) => ({ ...merge })),
+    };
+  }
+
+  /** Validate before replacing live state, including fragments and in-flight merges. */
+  restore(state: unknown): boolean {
+    if (!isRecord(state) || state.version !== 1 || state.scale !== this.scale
+      || !Array.isArray(state.rootVolumes) || state.rootVolumes.length !== this.roots.length
+      || !state.rootVolumes.every((volume, i) => volume === this.roots[i].volume)
+      || !nonnegative(state.aspect) || state.aspect === 0 || !nonnegative(state.time)
+      || !nonnegative(state.nextId) || !Number.isSafeInteger(state.nextId)
+      || !Array.isArray(state.particles) || state.particles.length < this.roots.length || state.particles.length > this.maxParticles
+      || !Array.isArray(state.merges) || state.merges.length > state.particles.length / 2) return false;
+    const nextId = state.nextId;
+    const validParticle = (particle: unknown): particle is Particle => {
+      if (!isRecord(particle) || !nonnegative(particle.root) || !Number.isInteger(particle.root) || particle.root >= this.roots.length) return false;
+      const volume = this.roots[particle.root].volume;
+      return nonnegative(particle.id) && Number.isSafeInteger(particle.id) && particle.id < nextId
+        && vector(particle.position) && vector(particle.velocity) && vector(particle.impulse)
+        && nonnegative(particle.volume) && particle.volume > 0 && particle.volume <= volume
+        && nonnegative(particle.displayVolume) && particle.displayVolume <= volume
+        && nonnegative(particle.radius) && Math.abs(particle.radius ** 3 - particle.volume) < volume * 1e-8
+        && nonnegative(particle.mass) && Math.abs(particle.mass - particle.volume / (.4 * this.scale) ** 3) < 1e-8
+        && unit(particle.burst) && unit(particle.burstEnergy) && nonnegative(particle.mergeAfter);
+    };
+    if (!state.particles.every(validParticle)) return false;
+    const particles = state.particles as Particle[];
+    const byId = new Map(particles.map((particle) => [particle.id, particle]));
+    if (byId.size !== particles.length || this.roots.some((root, i) => {
+      const pieces = particles.filter((particle) => particle.root === i);
+      return Math.abs(pieces.reduce((sum, particle) => sum + particle.volume, 0) - root.volume) > root.volume * 1e-8
+        || Math.abs(pieces.reduce((sum, particle) => sum + particle.displayVolume, 0) - root.volume) > root.volume * 1e-8;
+    })) return false;
+    const occupied = new Set<number>();
+    for (const merge of state.merges) {
+      if (!isRecord(merge) || !nonnegative(merge.target) || !nonnegative(merge.source)
+        || !nonnegative(merge.volume) || merge.volume === 0 || !nonnegative(merge.elapsed) || merge.elapsed >= .4 || !unit(merge.progress)) return false;
+      const target = byId.get(merge.target), source = byId.get(merge.source);
+      const fraction = merge.elapsed / .4;
+      if (!target || !source || target.root !== source.root || target.id === source.id
+        || occupied.has(target.id) || occupied.has(source.id) || merge.volume > this.roots[source.root].volume
+        || Math.abs(merge.progress - fraction * fraction * (3 - 2 * fraction)) > 1e-8
+        || Math.abs(source.volume - merge.volume * (1 - merge.progress)) > this.roots[source.root].volume * 1e-8) return false;
+      occupied.add(target.id); occupied.add(source.id);
+    }
+    const restored = particles.map(cloneParticle);
+    const ratio = this.aspect / state.aspect;
+    for (const particle of restored) {
+      particle.position[0] *= ratio;
+      particle.velocity[0] *= ratio;
+      particle.impulse[0] *= ratio;
+    }
+    if (this.isSingleBlob(restored)) return false;
+    this.particles.splice(0, this.particles.length, ...restored);
+    this.time = state.time;
+    this.nextId = nextId;
+    this.merges = (state.merges as Merge[]).map((merge) => ({ ...merge }));
+    this.pointer = null;
+    this.pointerStrength = 0;
+    return true;
+  }
 
   blendWidth(particle: Particle) {
     return Math.max(BLOB_SEPARATED_BLEND * this.scale,
@@ -103,12 +198,17 @@ export class BlobSimulation {
     return null;
   }
 
-  private connectedTo(index: number): Particle[] {
+  private isSingleBlob(particles: Particle[]) {
+    const visible = particles.filter((particle) => this.renderRadius(particle) >= .0001);
+    return visible.length > 0 && this.connectedTo(0, visible).length === visible.length;
+  }
+
+  private connectedTo(index: number, particles = this.particles): Particle[] {
     const connected = new Set([index]);
     const queue = [index];
     for (let cursor = 0; cursor < queue.length; cursor++) {
-      const current = this.particles[queue[cursor]];
-      this.particles.forEach((other, i) => {
+      const current = particles[queue[cursor]];
+      particles.forEach((other, i) => {
         if (connected.has(i)) return;
         const distance = Math.hypot(...current.position.map((value, axis) => value - other.position[axis]));
         const radius = this.renderRadius(current), otherRadius = this.renderRadius(other);
@@ -119,7 +219,7 @@ export class BlobSimulation {
         }
       });
     }
-    return queue.map((i) => this.particles[i]);
+    return queue.map((i) => particles[i]);
   }
 
   private orbit(i: number): Vector {

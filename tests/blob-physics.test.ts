@@ -361,3 +361,95 @@ test("click velocity ramps up within 55 ms without an instantaneous velocity cha
   advance(simulation, .055);
   simulation.particles.forEach((particle, i) => assert.ok(Math.hypot(...particle.impulse) < queued[i] * .05));
 });
+
+test("fresh positions vary, stay within the scene, and avoid a single connected blob on desktop and mobile", () => {
+  for (const aspect of [.45, 1, 1.8]) {
+    const first = new BlobSimulation({ aspect });
+    const second = new BlobSimulation({ aspect });
+    first.randomizePositions(() => .2);
+    second.randomizePositions(() => .8);
+    assert.notDeepEqual(first.particles.map((particle) => particle.position), second.particles.map((particle) => particle.position));
+    for (const simulation of [first, second]) {
+      assertVolume(simulation);
+      simulation.particles.forEach(({ position: [x, y, z] }) => {
+        assert.ok(Math.abs(x) <= aspect * 1.4 && Math.abs(y) <= 1.55 && Math.abs(z) <= .6);
+      });
+      assert.equal(new BlobSimulation({ aspect }).restore(simulation.snapshot()), true);
+    }
+  }
+});
+
+test("saved fragments, velocities, pending impulses, and time resume with the same motion after JSON storage", () => {
+  const original = fixture([[-1.5, 0, 0], [1.5, 0, 0]]);
+  original.burstAt(aim(original));
+  original.step(1 / 120);
+  const restored = new BlobSimulation({ count: 2 });
+  assert.equal(restored.restore(JSON.parse(JSON.stringify(original.snapshot()))), true);
+  assert.deepEqual(restored.snapshot(), original.snapshot());
+  advance(original, 1);
+  advance(restored, 1);
+  assert.deepEqual(restored.snapshot(), original.snapshot());
+  const snapshot = restored.snapshot();
+  snapshot.particles[0].position[0] += 10;
+  assert.notDeepEqual(snapshot.particles, restored.particles);
+});
+
+test("a saved merge continues smoothly and restores the root's exact volume", () => {
+  const original = fixture([[0, 0, 0], [3, 0, 0]]);
+  original.burstAt([0, 0]);
+  original.particles.forEach((particle) => {
+    particle.impulse = [0, 0, 0];
+    particle.mergeAfter = 0;
+  });
+  advance(original, .2);
+  assert.equal(original.snapshot().merges.length, 1);
+  const restored = new BlobSimulation({ count: 2 });
+  assert.equal(restored.restore(JSON.parse(JSON.stringify(original.snapshot()))), true);
+  advance(original, .5);
+  advance(restored, .5);
+  assert.deepEqual(restored.snapshot(), original.snapshot());
+  assert.equal(restored.particles.length, 2);
+  assertVolume(restored);
+});
+
+test("restoring at a different viewport aspect preserves relative positions and motion", () => {
+  const original = fixture([[-1.5, 0, 0], [1.5, 0, 0]]);
+  original.burstAt(aim(original));
+  original.step(1 / 120);
+  const restored = new BlobSimulation({ count: 2, aspect: .5 });
+  assert.equal(restored.restore(original.snapshot()), true);
+  original.setAspect(.5);
+  assert.deepEqual(restored.snapshot(), original.snapshot());
+});
+
+test("a single connected group is discarded, including a chain with disconnected endpoints", () => {
+  for (const positions of [
+    [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+    [[-1, 0, 0], [-.25, 0, 0], [.5, 0, 0]],
+  ] as [number, number, number][][]) {
+    const restored = new BlobSimulation({ count: 3 });
+    const before = restored.snapshot();
+    assert.equal(restored.restore(fixture(positions).snapshot()), false);
+    assert.deepEqual(restored.snapshot(), before);
+  }
+});
+
+test("invalid or incompatible saved state is ignored without changing the simulation", () => {
+  const original = fixture([[-1.5, 0, 0], [1.5, 0, 0]]);
+  const valid = original.snapshot();
+  const variants: unknown[] = [null, {}, { ...valid, version: 0 }, { ...valid, scale: 2 },
+    { ...valid, aspect: 0 }, { ...valid, time: Infinity }, { ...valid, nextId: 0 },
+    { ...valid, particles: [] }, { ...valid, particles: [valid.particles[0], valid.particles[0]] },
+    { ...valid, merges: [{ target: 0, source: 100, volume: .1, elapsed: 0, progress: 0 }] },
+    ...["position", "velocity", "impulse"].map((field) => ({ ...valid, particles: valid.particles.map((particle) => ({ ...particle, [field]: [NaN, 0, 0] })) })),
+    ...["volume", "displayVolume", "radius", "mass", "root", "burst", "burstEnergy", "mergeAfter"].map((field) => ({ ...valid, particles: valid.particles.map((particle) => ({ ...particle, [field]: -1 })) })),
+  ];
+  for (const state of variants) {
+    assert.equal(original.restore(state), false);
+    assert.deepEqual(original.snapshot(), valid);
+  }
+  assert.equal(new BlobSimulation({ count: 3 }).restore(valid), false);
+  const fragmented = new BlobSimulation({ count: 8 });
+  fragmentRoot(fragmented, 0);
+  assert.equal(new BlobSimulation({ count: 8, maxParticles: 8 }).restore(fragmented.snapshot()), false);
+});

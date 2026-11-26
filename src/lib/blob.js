@@ -1,6 +1,7 @@
 import { BlobSimulation, BLOB_BLEND, BLOB_SEPARATED_BLEND, BLOB_RADIUS_BLEND, MAX_BLOB_PARTICLES } from './blob-physics.ts';
 
 const INNER_PAGE_SPEED = .04;
+const STORAGE_KEY = 'imjosh.in:blobs:v1';
 
 // The handoff's chrome shader, driven by independent gravitational particles.
 export function initBlob(canvas, o = {}) {
@@ -118,6 +119,17 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
     if (!enabled) leave();
   }
   resize();
+  let restored = false;
+  try { restored = simulation.restore(JSON.parse(window.localStorage.getItem(STORAGE_KEY))); } catch { /* Storage may be unavailable or corrupt. */ }
+  if (!restored) simulation.randomizePositions();
+  resolutionComplexity = complexity();
+  resize();
+  const save = () => {
+    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(simulation.snapshot())); } catch { /* Animation also works without storage. */ }
+  };
+  save();
+  const saveInterval = window.setInterval(save, 2000);
+  window.addEventListener('pagehide', save);
   const ro = new ResizeObserver(resize); ro.observe(canvas);
   setHome(home);
   const loop = now => {
@@ -148,11 +160,15 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
     setPaused(value) {
       if (dead || paused === value) return;
       paused = value;
+      if (paused) save();
       setHome(home);
       cancelAnimationFrame(raf);
       if (!paused) { lastFrame = performance.now(); raf = requestAnimationFrame(loop); }
     },
     destroy() {
+      save();
+      window.clearInterval(saveInterval);
+      window.removeEventListener('pagehide', save);
       dead = true;
       cancelAnimationFrame(raf);
       ro.disconnect();
