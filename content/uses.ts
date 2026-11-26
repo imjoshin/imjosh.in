@@ -109,7 +109,7 @@ export type UsesItem = (
     (Active | Retired) & {
         producer: string;
         releaseYear: number | null;
-        image: { src: string; alt: string; sourceUrl: string; note?: string; backgroundRemoved?: boolean };
+        image: { src: string; alt: string; sourceUrl: string; note?: string; backgroundRemoved?: boolean; colorAdjusted?: boolean };
         specs: Record<string, string>;
         sources: { label: string; url: string }[];
         acquireDate: string;
@@ -143,10 +143,10 @@ export const usesItems: UsesItem[] = [
         "producer": "Custom build",
         "releaseYear": null,
         "image": {
-            "src": "/gear/custom-h440.png",
-            "alt": "NZXT H440 product view",
-            "note": "NZXT H440 case shown. Custom configuration listed below.",
-            "sourceUrl": "https://www.pngkit.com/png/full/353-3533409_nzxt-h440-matte-black-blue-ca-h442w-m4.png"
+            "src": "/gear/custom-h440-white.png",
+            "alt": "White NZXT H440 case",
+            "note": "White NZXT H440 case shown. Custom configuration listed below.",
+            "sourceUrl": "https://www.pngkit.com/png/full/316-3161597_nzxt-h440-white-mid-tower-computer-case-nzxt.png"
         },
         "specs": {
             "Processor": "Intel Core i7-4790K 4 GHz Quad-Core",
@@ -154,6 +154,7 @@ export const usesItems: UsesItem[] = [
             "Graphics": "MSI GeForce GTX 970 4GB",
             "Storage": "Crucial BX100 250GB SSD",
             "Case": "NZXT H440",
+            "Case color": "White",
             "Cooling": "Cooler Master Hyper 212 EVO",
             "Motherboard": "MSI Z97-GAMING 7",
             "Power supply": "EVGA SuperNOVA 850 G2 850W",
@@ -650,16 +651,17 @@ export const usesItems: UsesItem[] = [
         "producer": "Logitech",
         "releaseYear": 2022,
         "image": {
-            "src": "/gear/logitech-mx3s.png",
-            "alt": "Logitech MX Master 3S product view",
-            "sourceUrl": "https://laptopclinic.co.ke/cdn/shop/files/mx-master-3s-mouse-top-side-view-pale-gray_1024x.png?v=1770144867"
+            "src": "/gear/logitech-mx3s-black.png",
+            "alt": "Black Logitech MX Master 3S product view",
+            "sourceUrl": "https://resource.logitech.com/c_fill,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/mice/mx-master-3s/2025-update/mx-master-3s-bluetooth-edition-left-front-view-black-new-8.png"
         },
         "specs": {
             "Sensor": "8,000 DPI Darkfield",
             "Connection": "Bluetooth LE and Logi Bolt",
             "Scrolling": "MagSpeed electromagnetic wheel",
             "Charging": "USB-C",
-            "Battery life": "Up to 70 days"
+            "Battery life": "Up to 70 days",
+            "Color": "Black"
         },
         "sources": [
             {
@@ -922,17 +924,19 @@ export const usesItems: UsesItem[] = [
         "producer": "LG",
         "releaseYear": 2009,
         "image": {
-            "src": "/gear/lg-banter.png",
-            "alt": "LG Banter product view",
+            "src": "/gear/lg-banter-black.png",
+            "alt": "Black LG Banter product view",
             "sourceUrl": "https://www.lg.com/content/dam/channel/wcms/ca_en/images/cell-phones/lg265t/gallery/large05.jpg",
-            "backgroundRemoved": true
+            "backgroundRemoved": true,
+            "colorAdjusted": true
         },
         "specs": {
             "Form factor": "Slider with four-row QWERTY keyboard",
             "Camera": "1.3MP",
             "Connectivity": "Bluetooth",
             "Expansion": "microSD up to 16GB",
-            "Audio": "MP3 music player"
+            "Audio": "MP3 music player",
+            "Color": "Black"
         },
         "sources": [
             {
@@ -953,7 +957,7 @@ export const usesItems: UsesItem[] = [
         "releaseYear": 2012,
         "image": {
             "src": "/gear/nexus4.png",
-            "alt": "Google Nexus 4 product view",
+            "alt": "Black Google Nexus 4 product view",
             "sourceUrl": "https://www.svetandroida.cz/media/2015/04/LG-Nexus-4-16-GB-schwarz.png"
         },
         "specs": {
@@ -962,7 +966,8 @@ export const usesItems: UsesItem[] = [
             "Display": "4.7-inch IPS, 1280 × 768",
             "Rear camera": "8MP",
             "Battery": "2,100mAh",
-            "Charging": "Micro-USB and Qi wireless"
+            "Charging": "Micro-USB and Qi wireless",
+            "Color": "Black"
         },
         "sources": [
             {
@@ -983,7 +988,7 @@ export const usesItems: UsesItem[] = [
         "releaseYear": 2015,
         "image": {
             "src": "/gear/lg-g4.png",
-            "alt": "LG G4 product view",
+            "alt": "Black LG G4 product view",
             "sourceUrl": "https://cdn2.cellphones.com.vn/x/media/catalog/product/g/4/g4.png",
             "backgroundRemoved": true
         },
@@ -993,7 +998,8 @@ export const usesItems: UsesItem[] = [
             "Display": "5.5-inch IPS Quantum, 2560 × 1440",
             "Rear camera": "16MP, f/1.8, optical stabilization",
             "Battery": "3,000mAh, removable",
-            "Expansion": "microSD"
+            "Expansion": "microSD",
+            "Color": "Black"
         },
         "sources": [
             {
@@ -1013,10 +1019,11 @@ export const usesItems: UsesItem[] = [
         "producer": "Samsung",
         "releaseYear": 2016,
         "image": {
-            "src": "/gear/samsung-s7edge.png",
-            "alt": "Samsung Galaxy S7 Edge product view",
+            "src": "/gear/samsung-s7edge-black.png",
+            "alt": "Black Samsung Galaxy S7 Edge product view",
             "sourceUrl": "https://www.pinclipart.com/picdir/middle/205-2059880_samsung-s7-front-view-mockup-samsung-galaxy-s7.png",
-            "backgroundRemoved": true
+            "backgroundRemoved": true,
+            "colorAdjusted": true
         },
         "specs": {
             "Display": "5.5-inch curved Quad HD Super AMOLED",
@@ -1024,7 +1031,8 @@ export const usesItems: UsesItem[] = [
             "Rear camera": "12MP Dual Pixel, f/1.7",
             "Battery": "3,600mAh",
             "Water resistance": "IP68",
-            "Expansion": "microSD"
+            "Expansion": "microSD",
+            "Color": "Black"
         },
         "sources": [
             {
@@ -1044,9 +1052,10 @@ export const usesItems: UsesItem[] = [
         "producer": "Google",
         "releaseYear": 2017,
         "image": {
-            "src": "/gear/pixel2xl.png",
-            "alt": "Google Pixel 2 XL product view",
-            "sourceUrl": "https://www.pngkey.com/png/full/202-2020367_clip-art-black-and-white-google-pixel-xl.png"
+            "src": "/gear/pixel2xl-black.png",
+            "alt": "Black Google Pixel 2 XL product view",
+            "sourceUrl": "https://www.pngkey.com/png/full/202-2020367_clip-art-black-and-white-google-pixel-xl.png",
+            "colorAdjusted": true
         },
         "specs": {
             "Processor": "Qualcomm Snapdragon 835",
@@ -1054,7 +1063,8 @@ export const usesItems: UsesItem[] = [
             "Display": "6-inch QHD+ pOLED, 2880 × 1440",
             "Rear camera": "12.2MP dual-pixel",
             "Battery": "3,520mAh",
-            "Water resistance": "IP67"
+            "Water resistance": "IP67",
+            "Color": "Black"
         },
         "sources": [
             {
@@ -1074,9 +1084,10 @@ export const usesItems: UsesItem[] = [
         "producer": "Google",
         "releaseYear": 2018,
         "image": {
-            "src": "/gear/pixel3xl.png",
-            "alt": "Google Pixel 3 XL product view",
-            "sourceUrl": "https://media2.gsm55.com/media/device/4305/4305.png"
+            "src": "/gear/pixel3xl-black.png",
+            "alt": "Black Google Pixel 3 XL product view",
+            "sourceUrl": "https://media2.gsm55.com/media/device/4305/4305.png",
+            "colorAdjusted": true
         },
         "specs": {
             "Processor": "Qualcomm Snapdragon 845",
@@ -1085,7 +1096,8 @@ export const usesItems: UsesItem[] = [
             "Rear camera": "12.2MP dual-pixel",
             "Front cameras": "Dual 8MP cameras",
             "Battery": "3,430mAh",
-            "Charging": "USB-C and Qi wireless"
+            "Charging": "USB-C and Qi wireless",
+            "Color": "Black"
         },
         "sources": [
             {
@@ -1106,7 +1118,7 @@ export const usesItems: UsesItem[] = [
         "releaseYear": 2021,
         "image": {
             "src": "/gear/pixel6pro.png",
-            "alt": "Google Pixel 6 Pro product view",
+            "alt": "Black Google Pixel 6 Pro product view",
             "sourceUrl": "https://i.ebayimg.com/images/g/1FIAAOSwoPVkR7aS/s-l640.png"
         },
         "specs": {
@@ -1116,7 +1128,8 @@ export const usesItems: UsesItem[] = [
             "Rear cameras": "50MP wide, 12MP ultrawide, 48MP telephoto",
             "Optical zoom": "4× telephoto",
             "Battery": "5,003mAh (typical)",
-            "Water resistance": "IP68"
+            "Water resistance": "IP68",
+            "Color": "Black"
         },
         "sources": [
             {
@@ -1136,9 +1149,10 @@ export const usesItems: UsesItem[] = [
         "producer": "Google",
         "releaseYear": 2022,
         "image": {
-            "src": "/gear/pixel7pro.png",
-            "alt": "Google Pixel 7 Pro product view",
-            "sourceUrl": "https://telefonon.ru/wp-content/uploads/2022/09/google-pixel-7-pro.png"
+            "src": "/gear/pixel7pro-black.png",
+            "alt": "Black Google Pixel 7 Pro product view",
+            "sourceUrl": "https://telefonon.ru/wp-content/uploads/2022/09/google-pixel-7-pro.png",
+            "colorAdjusted": true
         },
         "specs": {
             "Processor": "Google Tensor G2",
@@ -1147,7 +1161,8 @@ export const usesItems: UsesItem[] = [
             "Rear cameras": "50MP wide, 12MP ultrawide, 48MP telephoto",
             "Optical zoom": "5× telephoto",
             "Battery": "5,000mAh (typical)",
-            "Water resistance": "IP68"
+            "Water resistance": "IP68",
+            "Color": "Black"
         },
         "sources": [
             {
@@ -1167,9 +1182,10 @@ export const usesItems: UsesItem[] = [
         "producer": "Google",
         "releaseYear": 2024,
         "image": {
-            "src": "/gear/pixel9pro.png",
-            "alt": "Google Pixel 9 Pro product view",
-            "sourceUrl": "https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/309145_0_liywir.png"
+            "src": "/gear/pixel9pro-black.png",
+            "alt": "Black Google Pixel 9 Pro product view",
+            "sourceUrl": "https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/309145_0_liywir.png",
+            "colorAdjusted": true
         },
         "specs": {
             "Processor": "Google Tensor G4",
@@ -1178,7 +1194,8 @@ export const usesItems: UsesItem[] = [
             "Rear cameras": "50MP wide, 48MP ultrawide, 48MP telephoto",
             "Optical zoom": "5× telephoto",
             "Battery": "4,700mAh (typical)",
-            "Water resistance": "IP68"
+            "Water resistance": "IP68",
+            "Color": "Black"
         },
         "sources": [
             {
@@ -1198,9 +1215,10 @@ export const usesItems: UsesItem[] = [
         "producer": "Google",
         "releaseYear": 2026,
         "image": {
-            "src": "/gear/pixel11pro.png",
-            "alt": "Google Pixel 11 Pro product view",
-            "sourceUrl": "https://cdn.beebom.com/mobile/google-pixel-11-pro-back-front-3.png"
+            "src": "/gear/pixel11pro-black.png",
+            "alt": "Black Google Pixel 11 Pro product view",
+            "sourceUrl": "https://cdn.beebom.com/mobile/google-pixel-11-pro-back-front-3.png",
+            "colorAdjusted": true
         },
         "specs": {
             "Processor": "Google Tensor G6",
@@ -1209,7 +1227,8 @@ export const usesItems: UsesItem[] = [
             "Rear cameras": "50MP wide, 48MP ultrawide, 48MP telephoto",
             "Optical zoom": "5× telephoto",
             "Battery": "4,850mAh (typical)",
-            "Wireless charging": "Qi2.2, up to 25W"
+            "Wireless charging": "Qi2.2, up to 25W",
+            "Color": "Black"
         },
         "sources": [
             {

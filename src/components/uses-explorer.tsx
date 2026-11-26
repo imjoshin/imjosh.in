@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import { itemId, itemName, monthAt, monthIndex, readTimelineMonth, usesAt } from "@/lib/uses";
 import { AnimatedDate } from "@/components/animated-date";
 import { GearDetails } from "@/components/gear-details";
+import { GearCategoryIcon } from "@/components/gear-category-icon";
 
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
   const [currentMonth, setCurrentMonth] = useState(initialMonth);
@@ -81,15 +82,10 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
       <section aria-label={`Equipment in ${monthLabel}`} className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,250px),1fr))] gap-[14px]">
         {inventory.categories.map((category) => (
           <article key={category.key} className="panel flex min-h-[120px] flex-col gap-[14px] rounded-[20px] px-[22px] py-5">
-            <div className="eyebrow flex items-baseline justify-between">
-              <h2>{category.label}</h2><span aria-label={`${category.items.length} items`}>{category.items.length ? String(category.items.length).padStart(2, "0") : ""}</span>
-            </div>
+            <h2 className="eyebrow flex items-center gap-2.5"><GearCategoryIcon category={category.key} />{category.label}</h2>
             {category.items.length ? category.items.map((item) => (
               <div key={item.id} className="flex flex-col gap-[3px]">
-                <div className="flex flex-wrap items-center gap-2">
-                  <GearDetails key={`${item.id}:${month}`} item={item.details} heading>{item.name}</GearDetails>
-                  {item.isNew && <span className="rounded-full bg-accent px-2 py-[3px] text-[11px] leading-none font-semibold tracking-[.08em] text-background uppercase">new</span>}
-                </div>
+                <GearDetails key={`${item.id}:${month}`} item={item.details} heading>{item.name}</GearDetails>
                 {item.spec && <p className="text-[14px] leading-[1.35] text-muted">{item.spec}</p>}
               </div>
             )) : <p className="font-display text-[22px] text-muted italic">nothing yet</p>}
@@ -101,8 +97,8 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
         <h2 id="changes-title" className="eyebrow">Changes in {selectedYear}</h2>
         <p className="sr-only" role="status">Showing {inventory.categories.reduce((sum, category) => sum + category.items.length, 0)} items in {monthLabel} and {changes.length} changes in {selectedYear}.</p>
         {changes.length ? <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-x-7 gap-y-[10px]">
-          {changes.map((event) => <li key={`${event.date}:${event.op}:${itemId(event.item)}`} className={`grid grid-cols-[48px_18px_minmax(0,1fr)] items-baseline gap-2 text-base ${event.op === "+" ? "text-accent" : "text-muted"}`}>
-            <time dateTime={event.date} className="text-[13px] text-muted">{months[Number(event.date.slice(5, 7)) - 1]}{event.date.length > 7 ? ` ${Number(event.date.slice(8, 10))}` : ""}</time>
+          {changes.map((event) => <li key={`${event.date}:${event.op}:${itemId(event.item)}`} className={`grid grid-cols-[80px_18px_minmax(0,1fr)] items-baseline gap-2 text-base ${event.op === "+" ? "text-accent" : "text-muted"}`}>
+            <time dateTime={event.date} className="text-[13px] text-muted">{months[Number(event.date.slice(5, 7)) - 1]}</time>
             <span className="font-semibold" aria-label={event.op === "+" ? "Acquired" : "Retired"}>{event.op === "+" ? "+" : "−"}</span>
             <GearDetails key={`${itemId(event.item)}:${selectedYear}`} item={event.item} className={event.op === "-" ? "line-through" : ""}>{itemName(event.item)}</GearDetails>
           </li>)}
