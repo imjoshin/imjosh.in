@@ -171,8 +171,8 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 @keyframes music-toast-arrive { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 @keyframes music-toast-away { to { opacity: 0; transform: translateY(18px); } }
 @media (max-width: 767px) {
-  .music-now-playing-region { left: 0; right: 0; bottom: 0; width: 100%; }
-  .music-now-playing { border-radius: 20px 20px 0 0; border-bottom: 0; padding: 18px 48px calc(18px + env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left)); }
+  .music-now-playing-region { left: 0; right: 0; bottom: calc(16px + max(48px, env(safe-area-inset-bottom, 0px), var(--music-viewport-bottom, 0px))); width: 100%; }
+  .music-now-playing { border-radius: 20px; padding: 18px 48px 18px max(18px, env(safe-area-inset-left)); }
 }
 .music-select { appearance: none; color: var(--ink); border: 1px solid var(--line); border-radius: 12px; min-height: 44px; background: var(--panel); padding: 10px 34px 10px 14px; font: 14px "Bricolage Grotesque Variable", sans-serif; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23858098' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; }
 .music-history-filters { --music-header-offset: 88px; position: sticky; top: calc(var(--music-header-offset) + 12px); z-index: 15; width: min(100%, 176px); margin-block: -13px; border: 1px solid var(--line); border-radius: 20px; padding: 12px; background: var(--panel); backdrop-filter: blur(18px); }
