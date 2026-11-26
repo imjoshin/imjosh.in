@@ -149,7 +149,7 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-album-rank { position: absolute; bottom: 8px; left: 8px; border-radius: 999px; padding: 3px 9px; background: #0c0b12bb; color: #edebf5; font-size: 12px; backdrop-filter: blur(8px); }
 .music-select-label { display: flex; flex-direction: column; gap: 7px; color: var(--mute); font-size: 12px; }
 .music-select { appearance: none; color: var(--ink); border: 1px solid var(--line); border-radius: 12px; min-height: 44px; background: var(--panel); padding: 10px 34px 10px 14px; font: 14px "Bricolage Grotesque Variable", sans-serif; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23858098' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; }
-.music-history-filters { --music-header-offset: 88px; position: sticky; top: calc(var(--music-header-offset) + 12px); z-index: 15; width: min(100%, 320px); margin-block: -13px; border: 1px solid var(--line); border-radius: 20px; padding: 12px; background: var(--panel); backdrop-filter: blur(18px); }
+.music-history-filters { --music-header-offset: 88px; position: sticky; top: calc(var(--music-header-offset) + 12px); z-index: 15; width: min(100%, 176px); margin-block: -13px; border: 1px solid var(--line); border-radius: 20px; padding: 12px; background: var(--panel); backdrop-filter: blur(18px); }
 .music-history-filters .music-select-label { min-width: 0; }
 .music-history-filters .music-select { min-width: 0; width: 100%; }
 @media print { .music-history-filters { position: static; } }
@@ -160,13 +160,20 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-chart-tooltip { position: absolute; top: 12px; left: clamp(min(138px, 50%), var(--chart-tooltip-x, 50%), max(50%, calc(100% - 138px))); z-index: 6; width: 260px; max-width: calc(100% - 16px); transform: translateX(-50%); pointer-events: none; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; color: var(--ink); background: color-mix(in srgb, var(--bg) 95%, transparent); backdrop-filter: blur(16px); box-shadow: 0 8px 24px #0002; animation: music-tooltip-appear .14s ease-out; }
 .music-chart-tooltip[data-placement="bottom"] { top: auto; bottom: 12px; }
 .music-chart-tooltip[data-many="true"] .music-tooltip-label { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.music-day-column .music-day-bar { transition: opacity .18s, filter .18s; }
+.music-day-column .music-day-bar { transition: height .48s cubic-bezier(.22,1,.36,1), opacity .18s, filter .18s; }
 .music-chart-surface[data-inspecting="true"] .music-day-column:not([data-active]) .music-day-bar { opacity: .28; }
 .music-day-column[data-active] .music-day-bar { filter: brightness(1.2); }
 .music-day-column[data-active] > span:last-child { color: var(--acc); }
 @keyframes music-tooltip-appear { from { opacity: 0; } to { opacity: 1; } }
 .music-ranking > li { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-.music-ranking > li:last-child { border: 0; padding-bottom: 0; }
+.music-ranking > li[data-last="true"], .music-ranking > .music-ranking-empty { border: 0; padding-bottom: 0; }
+.music-collection { min-width: 0; margin: -6px; padding: 6px; overflow: clip; transition: height .48s cubic-bezier(.22,1,.36,1); }
+.music-collection > :is(ol, .music-album-grid) { position: relative; }
+.music-ranking > .music-ranking-empty { padding-block: 32px; }
+.music-collection [data-phase="enter"] { animation: music-item-arrive .48s cubic-bezier(.22,1,.36,1) backwards; }
+.music-collection [data-phase="exit"] { animation: music-item-away .48s cubic-bezier(.22,1,.36,1) both; pointer-events: none; }
+.music-point[data-phase="enter"], .music-series-presence[data-phase="enter"] { animation: music-fade-in .48s ease-out backwards; }
+.music-point[data-phase="exit"], .music-series-presence[data-phase="exit"] { animation: music-fade-out .48s ease-in both; }
 .music-tabs { display: flex; gap: 4px; border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
 .music-tabs button { min-height: 36px; padding: 6px 14px; border-radius: 999px; font-size: 13px; color: var(--mute); }
 .music-tabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
@@ -174,16 +181,12 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-swap { min-width: 0; }
 .music-swap[data-phase="out"] > .music-swap-content { animation: music-away .15s ease-in both; }
 .music-swap[data-phase="in"] > .music-swap-content { animation: music-arrive .44s cubic-bezier(.22,1,.36,1) both; }
-.music-swap[data-phase="in"] :is(.music-album, .music-ranking > li) { animation: music-arrive .5s cubic-bezier(.22,1,.36,1) both; animation-delay: calc(var(--music-order, 0) * 28ms); }
-.music-history-swap > .music-swap-content { display: flex; flex-direction: column; gap: 20px; }
 .music-record-label .music-swap-content { width: 100%; height: 100%; display: grid; place-items: center; }
-.music-day-bar { transition: height .5s cubic-bezier(.22,1,.36,1); }
 .music-tabs button { transition: color .2s, background-color .2s; }
 .music-season-layout { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 24px; }
 .music-season-inspector { border-left: 1px solid var(--line); padding-left: 24px; }
 .music-season-line { transition: opacity .22s; }
 .music-season-path { transition: stroke-width .2s; }
-.music-swap[data-phase="in"] .music-season-line { animation: music-line-arrive .6s cubic-bezier(.22,1,.36,1) backwards; }
 .music-series-dot { width: 8px; height: 8px; flex: none; border-radius: 50%; }
 .music-season-legend { display: flex; flex-wrap: wrap; gap: 8px; max-height: 220px; overflow-y: auto; padding: 3px; scrollbar-width: thin; }
 .music-season-legend button { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; max-width: 100%; border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; font-size: 13px; text-align: left; transition: background-color .2s, border-color .2s; }
@@ -194,7 +197,10 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-season-table th:first-child { position: sticky; left: 0; text-align: left; background: var(--bg); max-width: 250px; overflow: hidden; text-overflow: ellipsis; }
 @keyframes music-away { to { opacity: 0; transform: translateY(-7px); filter: blur(2px); } }
 @keyframes music-arrive { from { opacity: 0; transform: translateY(14px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
-@keyframes music-line-arrive { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes music-item-arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes music-item-away { to { opacity: 0; transform: translateY(-8px); } }
+@keyframes music-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes music-fade-out { to { opacity: 0; } }
 @media (max-width: 760px) {
   .music-season-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .music-season-inspector { border-left: 0; border-top: 1px solid var(--line); padding: 20px 0 0; }
