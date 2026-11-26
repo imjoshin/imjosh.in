@@ -97,7 +97,7 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
             <time dateTime={event.date} className="text-[13px] text-muted">{months[Number(event.date.slice(5, 7)) - 1]}</time>
             <span className="font-semibold" aria-label={event.op === "+" ? "Acquired" : "Retired"}>{event.op === "+" ? "+" : "−"}</span>
             <GearDetails key={`${itemId(event.item)}:${selectedYear}`} item={event.item} className="flex items-start gap-2">
-              <span className="mt-[3px]"><GearCategoryIcon category={event.category} /></span>
+              <span className="mt-[3px]"><GearCategoryIcon category={event.category} muted={event.op === "-"} /></span>
               <span className={event.op === "-" ? "line-through" : ""}>{itemName(event.item)}</span>
             </GearDetails>
           </li>)}

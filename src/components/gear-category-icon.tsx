@@ -12,6 +12,6 @@ const paths: Record<GearCategory, ReactNode> = {
   phone: <><rect x="6" y="2" width="12" height="20" rx="2.5" /><path d="M10 5h4M11 19h2" /></>,
 };
 
-export function GearCategoryIcon({ category }: { category: GearCategory }) {
-  return <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-accent/80">{paths[category]}</svg>;
+export function GearCategoryIcon({ category, muted = false }: { category: GearCategory; muted?: boolean }) {
+  return <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 ${muted ? "text-muted" : "text-accent/80"}`}>{paths[category]}</svg>;
 }
