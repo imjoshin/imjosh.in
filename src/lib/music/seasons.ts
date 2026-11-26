@@ -1,5 +1,6 @@
 import type { Listen, MusicSeason, MusicSeasonalDataset, SeasonalMetric, SeasonalMetricData, SeasonalSeries } from "./types.ts";
 import { MUSIC_TIMEZONE, publicMusicListens } from "./aggregate.ts";
+import { musicEntityKey } from "./entity-links.ts";
 
 const names = ["Winter", "Spring", "Summer", "Fall"];
 const textKey = (value: string) => value.normalize("NFKC").trim().replace(/\s+/g, " ").toLocaleLowerCase("en-US");
@@ -34,7 +35,7 @@ export function aggregateSeasons(input: Listen[], now = new Date(), timezone = M
         const track = listen.track;
         const entries = metric === "genres" ? track.genres.map(name => ({ key: textKey(name), name: textKey(name), artists: [] as string[] }))
           : metric === "artists" ? track.artists.map(name => ({ key: textKey(name), name, artists: [] as string[] }))
-          : track.album ? [{ key: `${track.artists.map(textKey).sort().join("|")}|${textKey(track.album)}`, name: track.album, artists: track.artists }] : [];
+          : track.album ? [{ key: musicEntityKey("album", track.album, track.albumArtists?.length ? track.albumArtists : track.artists), name: track.album, artists: track.albumArtists?.length ? track.albumArtists : track.artists }] : [];
         const unique = new Map(entries.filter(item => item.key && item.name).map(item => [item.key, item]));
         if (unique.size) classifiedPlays++;
         for (const [key, item] of unique) {

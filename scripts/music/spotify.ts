@@ -84,8 +84,9 @@ export async function collectSpotify(store: MusicStore, full = false, genreBudge
       for (const row of rows) {
         if (row.track) remember(row.track);
         if (row.album?.tracks) {
-          for (const t of row.album.tracks.items || []) remember({ ...t, album: { name: row.album.name, images: row.album.images, genres: row.album.genres } });
-          if (row.album.tracks.next) for (const t of await pages(row.album.tracks.next)) remember({ ...t, album: { name: row.album.name, images: row.album.images, genres: row.album.genres } });
+          const album = { ...row.album, tracks: undefined };
+          for (const t of row.album.tracks.items || []) remember({ ...t, album });
+          if (row.album.tracks.next) for (const t of await pages(row.album.tracks.next)) remember({ ...t, album });
         }
       }
       await writeJson(store, `snapshots/spotify/${endpoint.split("?")[0].replaceAll("/", "-")}.json.gz`, { fetchedAt, items: rows });

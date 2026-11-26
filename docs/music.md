@@ -30,6 +30,10 @@ Each distinct genre and credited artist receives one count per play; albums use 
 
 ## Spotify connection and collection
 
+Track, album, and artist names use the shared `MusicLink` hover card, including seasonal legends, inspectors, tables, and chart details. The immutable `entities` dataset is loaded on the first interaction and cached for the page session. Cards show all-time recorded listens, first/last recorded dates in Eastern Time, distinct tracks for artists/albums, approved artwork and genres, and measured duration when known. Affinity favorites without dated plays show zero recorded listens and no invented dates. Private library membership alone never seeds a public entity. Album totals use the provider's album-artist credits when available, combining tracks with guest recording artists.
+
+Known Spotify IDs link directly to the appropriate track, album, or artist; missing IDs use a Spotify search. Cards open on hover/focus, allow the pointer to enter the card, and dismiss with Escape or outside interaction. Down Arrow moves keyboard focus into the card; a first touch previews it and the card's Spotify link opens the item. Floating cards are portaled outside clipped/animated lists, stay within the viewport, and follow the existing reduced-motion and theme preferences. The normal links remain useful without JavaScript.
+
 Use Node 24 and the existing linked Netlify project. Authorization Code with PKCE needs no client secret. Register `http://127.0.0.1:8888/callback/spotify` in the Spotify app, then:
 
 ```powershell

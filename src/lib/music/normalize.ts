@@ -36,6 +36,7 @@ export function spotifyListen(row: Row, rawRef: string): Listen | null {
   const track = musicTrack(title, artists, {
     platformId: uri,
     album: clean(api ? t.album?.name : row.master_metadata_album_album_name) || null,
+    albumArtists: api ? (t.album?.artists || []).map((artist: Row) => clean(artist.name)).filter(Boolean) : [],
     isrc: clean(t.external_ids?.isrc) || null,
     url: api ? t.external_urls?.spotify || null : uri ? `https://open.spotify.com/${podcast ? "episode" : "track"}/${uri.split(":").at(-1)}` : null,
     image: api ? t.album?.images?.[0]?.url || null : null,

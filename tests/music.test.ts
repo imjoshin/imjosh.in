@@ -11,7 +11,7 @@ import { aggregateSeasons, musicSeason } from "../src/lib/music/seasons.ts";
 import { importMusic } from "../scripts/music/import.ts";
 import { localStore, allListens, readJson, writeJson, saveListens } from "../scripts/music/store.ts";
 import { publishMusic } from "../scripts/music/publish.ts";
-import type { Listen, MusicDataset, MusicManifest, MusicSeasonalDataset } from "../src/lib/music/types.ts";
+import type { Listen, MusicDataset, MusicEntityDataset, MusicManifest, MusicSeasonalDataset } from "../src/lib/music/types.ts";
 
 const exportRow = { ts: "2026-06-02T15:03:00Z", ms_played: 180000, master_metadata_track_name: "A Song", master_metadata_album_artist_name: "An Artist", master_metadata_album_album_name: "An Album", spotify_track_uri: "spotify:track:abc123", ip_addr: "PRIVATE-IP", username: "PRIVATE-NAME" };
 const listen = (overrides: Partial<Listen> = {}): Listen => ({ ...spotifyListen(exportRow, "private/source")!, ...overrides });
@@ -177,6 +177,7 @@ test("ZIP import preserves unsupported data and original bytes, reports malforme
   assert.equal((await readJson<MusicDataset>(publicStore, filtered.files["all/all"]))!.stats.plays, 0);
   const favorites = await readJson<{ ranges: { short_term: { tracks: unknown[]; artists: unknown[] } } }>(publicStore, filtered.files.spotify);
   assert.deepEqual(favorites!.ranges.short_term, { tracks: [], artists: [] });
+  assert.deepEqual((await readJson<MusicEntityDataset>(publicStore, filtered.files.entities))!.entities, {});
   // Track/album genre evidence must also filter affinity tracks, even if artist genres are ordinary.
   await writeJson(store, "catalog/genres.json", { "an artist": { genres: ["indie rock"], provider: "test", fetchedAt: now.toISOString(), artistId: null } });
   await writeJson(store, "catalog/spotify-tracks.json.gz", { song: { name: "A Song", artists: [{ name: "An Artist" }], album: { genres: ["children's music"] } } });
@@ -207,6 +208,8 @@ test("ZIP import preserves unsupported data and original bytes, reports malforme
   await publishMusic(store, publicStore, now);
   const unverified = (await readJson<MusicManifest>(publicStore, "manifest.json"))!;
   assert.equal((await readJson<MusicDataset>(publicStore, unverified.files["all/all"]))!.stats.plays, 0);
+  const unverifiedEntities = JSON.stringify(await readJson<MusicEntityDataset>(publicStore, unverified.files.entities));
+  assert.equal(unverifiedEntities.includes("unverified video"), false); assert.equal(unverifiedEntities.includes("Uploader"), false);
   await writeJson(store, "catalog/google-tracks.json.gz", { "verified-id": musicTrack("Verified Song", ["Verified Artist"], { platformId: "verified-id", album: "Verified Album", genres: ["indie"] }) });
   await publishMusic(store, publicStore, now);
   const verified = (await readJson<MusicManifest>(publicStore, "manifest.json"))!;

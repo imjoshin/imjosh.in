@@ -1,6 +1,7 @@
 import type { Listen, MusicDataset, MusicManifest, MusicPlatform, MusicStats, RankedMusic } from "./types.ts";
 import { aggregationListens } from "./normalize.ts";
 import { isExcludedMusic } from "./genres.ts";
+import { musicEntityKey } from "./entity-links.ts";
 
 export const MUSIC_TIMEZONE = "America/New_York";
 export const publicMusicListens = (input: Listen[], now: Date) => aggregationListens(input).filter(l => l.media === "music" && !l.privateSession && !isExcludedMusic(l.track) && Date.parse(l.playedAt) <= now.getTime());
@@ -38,7 +39,11 @@ export function aggregateMusic(input: Listen[], now = new Date(), timezone = MUS
         stats.hours[p.hour]++;
         add(tracks, l.track.key, l.track.title, l);
         for (const name of l.track.artists) add(artists, name.toLocaleLowerCase("en-US"), name, l);
-        if (l.track.album) add(albums, `${l.track.artists.join("|").toLowerCase()}|${l.track.album.toLowerCase()}`, l.track.album, l);
+        if (l.track.album) {
+          const names = l.track.albumArtists?.length ? l.track.albumArtists : l.track.artists;
+          const key = musicEntityKey("album", l.track.album, names);
+          add(albums, key, l.track.album, l); albums.get(key)!.artists = names;
+        }
         const month = months.get(p.month) || { month: p.month, plays: 0, msPlayed: 0 }; month.plays++; month.msPlayed += l.msPlayed || 0; months.set(p.month, month);
       }
       const ranked = (map: Map<string, RankedMusic>) => [...map.values()].sort((a, b) => b.plays - a.plays || b.msPlayed - a.msPlayed || a.key.localeCompare(b.key)).slice(0, 30);

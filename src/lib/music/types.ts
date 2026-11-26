@@ -6,6 +6,7 @@ export interface MusicTrack {
   title: string;
   artists: string[];
   album: string | null;
+  albumArtists?: string[];
   platformId: string | null;
   isrc: string | null;
   url: string | null;
@@ -40,6 +41,33 @@ export interface RankedMusic {
   url: string | null;
   plays: number;
   msPlayed: number;
+}
+
+export type MusicEntityKind = "track" | "album" | "artist";
+export interface MusicEntityRef {
+  kind: MusicEntityKind;
+  name: string;
+  artists?: string[];
+  url?: string | null;
+  image?: string | null;
+}
+export interface MusicEntity extends MusicEntityRef {
+  key: string;
+  plays: number;
+  firstListen: string | null;
+  lastListen: string | null;
+  genres: string[];
+  album?: string | null;
+  albumArtists?: string[];
+  tracks: number;
+  msPlayed: number;
+  durationKnown: number;
+}
+export interface MusicEntityDataset {
+  version: 1;
+  generatedAt: string;
+  timezone: string;
+  entities: Record<string, MusicEntity>;
 }
 
 export interface MusicStats {
@@ -85,6 +113,7 @@ export interface SeasonalSeries {
   key: string;
   name: string;
   artists: string[];
+  url?: string | null;
   /** Recorded plays for every season, including seasons outside this series' top five. */
   plays: number[];
 }
