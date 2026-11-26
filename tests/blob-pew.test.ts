@@ -75,6 +75,19 @@ test("pellets travel from below the camera before a surface impact splits and pu
   assert.equal(simulation.particles.length, 2);
   assert.ok(simulation.particles.every((particle) => Math.hypot(...particle.impulse) > 0));
   assert.ok(Math.abs(simulation.particles.reduce((sum, particle) => sum + particle.volume, 0) - simulation.roots[0].volume) < 1e-10);
+
+  const clicked = fixture().simulation;
+  clicked.burstAt([0, 0]);
+  // Pellet impacts separate fragments faster while retaining the eased onset.
+  assert.deepEqual(simulation.particles.map((particle) => particle.velocity), clicked.particles.map((particle) => particle.velocity));
+  for (let i = 0; i < 7; i++) {
+    simulation.step(1 / 120);
+    clicked.step(1 / 120);
+  }
+  simulation.particles.forEach((particle, i) => {
+    const ratio = Math.hypot(...particle.velocity) / Math.hypot(...clicked.particles[i].velocity);
+    assert.ok(ratio > 1.2 && ratio < 1.3, `Expected a modest pellet velocity boost, got ${ratio}`);
+  });
 });
 
 test("the first blob absorbs a pellet and protects a separate blob behind it", () => {

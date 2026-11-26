@@ -274,16 +274,16 @@ export class BlobSimulation {
     return child;
   }
 
-  private kick(particle: Particle, [x, y]: Point, spread: Vector = [0, 0, 0]) {
+  private kick(particle: Particle, [x, y]: Point, spread: Vector = [0, 0, 0], strength = 1) {
     particle.burstEnergy = 1;
     particle.mergeAfter = this.time + 1.25;
     const dx = particle.position[0] - x + Math.sin(particle.id * 12.9) * .22;
     const dy = particle.position[1] - y + Math.cos(particle.id * 7.3) * .22;
     const length = Math.hypot(dx, dy) || 1;
     const impulse = (1.25 + (particle.id * .618 % 1) * .55) * this.scale / Math.sqrt(particle.mass + .5);
-    particle.impulse[0] += dx / length * impulse + spread[0];
-    particle.impulse[1] += dy / length * impulse + spread[1];
-    particle.impulse[2] += Math.sin(particle.id * 3 + 1) * .35 * this.scale + spread[2];
+    particle.impulse[0] += (dx / length * impulse + spread[0]) * strength;
+    particle.impulse[1] += (dy / length * impulse + spread[1]) * strength;
+    particle.impulse[2] += (Math.sin(particle.id * 3 + 1) * .35 * this.scale + spread[2]) * strength;
   }
 
   /** Return stable identities, since fragments can change the particle array. */
@@ -294,15 +294,15 @@ export class BlobSimulation {
   }
 
   /** Stop at the first surface along this frame's flight, including thin fragments. */
-  burstAlong(from: Vector, to: Vector): number[] {
+  burstAlong(from: Vector, to: Vector, strength = 1): number[] {
     const direction = to.map((axis, i) => axis - from[i]) as Vector;
     const hit = this.raycast(from, direction, Math.hypot(...direction));
     if (!hit) return [];
     const [x, y, z] = hit.point;
-    return this.burstParticle(hit.owner, [4 * x / (4 - z), 4 * y / (4 - z)]);
+    return this.burstParticle(hit.owner, [4 * x / (4 - z), 4 * y / (4 - z)], strength);
   }
 
-  private burstParticle(hit: number, point: Point): number[] {
+  private burstParticle(hit: number, point: Point, strength = 1): number[] {
     const connected = this.connectedTo(hit);
     // Attached roots separate as whole blobs. One root may split into smaller pieces.
     const attachedRoots = new Set(connected.map((particle) => particle.root)).size > 1;
@@ -312,11 +312,11 @@ export class BlobSimulation {
       if (child) {
         const angle = particle.id * 2.4 + .7;
         const spread: Vector = [Math.cos(angle) * this.scale, Math.sin(angle) * this.scale, .15 * this.scale];
-        this.kick(particle, point, spread);
-        this.kick(child, point, spread.map((value) => -value) as Vector);
+        this.kick(particle, point, spread, strength);
+        this.kick(child, point, spread.map((value) => -value) as Vector, strength);
         affected.push(particle.id, child.id);
       } else {
-        this.kick(particle, point);
+        this.kick(particle, point, [0, 0, 0], strength);
         affected.push(particle.id);
       }
     }

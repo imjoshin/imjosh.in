@@ -4,6 +4,7 @@ export const PELLET_INTERVAL = .1;
 export const PELLET_SPEED = 9;
 export const PELLET_LIFETIME = 1.4;
 export const MAX_PELLETS = 16;
+const PELLET_IMPACT_STRENGTH = 1.25;
 
 export type Pellet = { position: Vector; velocity: Vector; age: number };
 
@@ -68,7 +69,7 @@ export class PewMode {
       const pellet = this.pellets[i];
       const next = pellet.position.map((axis, j) => axis + pellet.velocity[j] * elapsed) as Vector;
       pellet.age += elapsed;
-      if (pellet.age >= PELLET_LIFETIME || this.simulation.burstAlong(pellet.position, next).length > 0) {
+      if (pellet.age >= PELLET_LIFETIME || this.simulation.burstAlong(pellet.position, next, PELLET_IMPACT_STRENGTH).length > 0) {
         this.pellets.splice(i, 1);
       } else {
         pellet.position = next;
