@@ -1,4 +1,5 @@
 import { BlobSimulation, BLOB_BLEND, BLOB_SEPARATED_BLEND, BLOB_RADIUS_BLEND, MAX_BLOB_PARTICLES } from './blob-physics.ts';
+import { PewMode, MAX_PELLETS } from './blob-pew.ts';
 
 const INNER_PAGE_SPEED = .04;
 const STORAGE_KEY = 'imjosh.in:blobs:v1';
@@ -11,6 +12,7 @@ export function initBlob(canvas, o = {}) {
   // Pack burst states four per vector to stay within mobile WebGL uniform limits.
   const capacity = Math.max(8, Math.min(MAX_BLOB_PARTICLES, Math.floor((gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS) - 6) / 5) * 4));
   const simulation = new BlobSimulation({ count: N, scale: S, pull: o.pull ?? .24, maxParticles: capacity });
+  const pew = new PewMode(simulation);
   const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
   const fs = `precision highp float;
 uniform vec2 uR;uniform float uT;uniform float uDark;uniform float uN;uniform float uS;uniform vec4 uParticles[${capacity}];uniform vec4 uBursts[${capacity / 4}];
@@ -75,6 +77,27 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
   const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   const U = {}; ['uR', 'uT', 'uDark', 'uN', 'uS', 'uParticles[0]', 'uBursts[0]'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
 
+  // A separate point pass leaves the chrome shading untouched. Perspective makes
+  // pellets travel up from beneath the camera and shrink into the scene.
+  const pelletVertex = sh(gl.VERTEX_SHADER, `attribute vec3 aPellet;uniform vec2 uR;
+void main(){float depth=max(.01,4.-aPellet.z);
+ gl_Position=vec4(aPellet.x*1.6*uR.y/uR.x,aPellet.y*1.6,0.,depth);
+ gl_PointSize=clamp(.016*uR.y/depth,2.,12.);}`);
+  const pelletFragment = sh(gl.FRAGMENT_SHADER, `precision mediump float;uniform float uDark;
+void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
+ float alpha=1.-smoothstep(.7,1.,r);gl_FragColor=vec4(vec3(uDark)*alpha,alpha);}`);
+  const pelletProgram = gl.createProgram();
+  gl.attachShader(pelletProgram, pelletVertex); gl.attachShader(pelletProgram, pelletFragment);
+  gl.bindAttribLocation(pelletProgram, loc, 'aPellet');
+  gl.linkProgram(pelletProgram);
+  if (!gl.getProgramParameter(pelletProgram, gl.LINK_STATUS)) throw new Error('Unable to link the pellet shader');
+  const pelletLocation = gl.getAttribLocation(pelletProgram, 'aPellet');
+  const pelletResolution = gl.getUniformLocation(pelletProgram, 'uR');
+  const pelletDark = gl.getUniformLocation(pelletProgram, 'uDark');
+  const pelletBuffer = gl.createBuffer(), pelletPositions = new Float32Array(MAX_PELLETS * 3);
+  gl.bindBuffer(gl.ARRAY_BUFFER, pelletBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, pelletPositions.byteLength, gl.DYNAMIC_DRAW);
+
   const particles = new Float32Array(capacity * 4), bursts = new Float32Array(capacity);
   const complexity = () => Math.max(1, Math.ceil(simulation.particles.length / 16));
   let resolutionComplexity = complexity();
@@ -96,17 +119,37 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
     gl.viewport(0, 0, canvas.width, canvas.height);
     simulation.setAspect(w / Math.max(h, 1));
   };
-  const pm = e => { simulation.setPointer(toWorld(e)); };
+  const blockedTarget = target => target?.closest?.('a,button,input,select,textarea,details,[contenteditable]:not([contenteditable="false"])');
+  const syncCursor = () => document.documentElement.toggleAttribute('data-pew-mode', pew.active);
+  const pm = e => {
+    const point = toWorld(e);
+    simulation.setPointer(point);
+    pew.setAim(point);
+    if (blockedTarget(e.target) || (e.pointerType === 'mouse' && !(e.buttons & 1))) pew.stop();
+  };
   const pd = e => {
-    if (e.target.closest && e.target.closest('a,button,input,details')) return;
+    if (blockedTarget(e.target)) { pew.stop(); return; }
+    if (e.button !== 0) return;
+    if (pew.active) {
+      if (e.pointerType === 'mouse') { pew.setAim(toWorld(e)); pew.start(); }
+      return;
+    }
     // Hit-test the visible surface and kick only its connected group.
     simulation.burstAt(toWorld(e));
   };
-  const leave = () => simulation.setPointer(null);
-  const up = e => { if (e.pointerType !== 'mouse') leave(); };
+  const leave = () => { simulation.setPointer(null); pew.stop(); };
+  const up = e => { pew.stop(); if (e.pointerType !== 'mouse') leave(); };
+  const kd = e => {
+    if (e.repeat || e.isComposing || e.altKey || e.ctrlKey || e.metaKey
+      || e.target?.closest?.('input,select,textarea,[contenteditable]:not([contenteditable="false"])')) return;
+    pew.type(e.key);
+    syncCursor();
+  };
   function setHome(value) {
     home = value;
     const enabled = home && !paused && !dead;
+    pew.setHome(enabled);
+    syncCursor();
     if (interactive === enabled) return;
     interactive = enabled;
     const method = enabled ? 'addEventListener' : 'removeEventListener';
@@ -114,6 +157,7 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
     window[method]('pointerdown', pd);
     window[method]('pointerup', up);
     window[method]('pointercancel', leave);
+    window[method]('keydown', kd);
     document.documentElement[method]('pointerleave', leave);
     window[method]('blur', leave);
     if (!enabled) leave();
@@ -135,10 +179,12 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
   const loop = now => {
     if (dead || paused) return;
     raf = requestAnimationFrame(loop);
-    const dt = Math.min(Math.max((now - lastFrame) / 1000, 0), .05);
+    const elapsed = Math.max((now - lastFrame) / 1000, 0);
+    const dt = Math.min(elapsed, .05);
     lastFrame = now;
     speed += ((home ? 1 : INNER_PAGE_SPEED) - speed) * (1 - Math.exp(-dt * 2.4));
     simulation.step(dt * speed);
+    pew.step(elapsed);
     if (complexity() !== resolutionComplexity) { resolutionComplexity = complexity(); resize(); }
     dark += ((isDark() ? 1 : 0) - dark) * (1 - Math.exp(-dt * 5));
     simulation.particles.forEach((particle, i) => {
@@ -146,6 +192,9 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
       particles[i * 4 + 3] = simulation.renderRadius(particle);
       bursts[i] = particle.burst;
     });
+    gl.useProgram(pr);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     gl.uniform2f(U.uR, canvas.width, canvas.height);
     gl.uniform1f(U.uT, simulation.time);
     gl.uniform1f(U.uDark, dark);
@@ -153,6 +202,18 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
     gl.uniform4fv(U['uParticles[0]'], particles);
     gl.uniform4fv(U['uBursts[0]'], bursts);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
+    if (pew.pellets.length) {
+      pew.pellets.forEach((pellet, i) => pelletPositions.set(pellet.position, i * 3));
+      gl.useProgram(pelletProgram);
+      gl.bindBuffer(gl.ARRAY_BUFFER, pelletBuffer);
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, pelletPositions);
+      gl.enableVertexAttribArray(pelletLocation); gl.vertexAttribPointer(pelletLocation, 3, gl.FLOAT, false, 0, 0);
+      gl.uniform2f(pelletResolution, canvas.width, canvas.height);
+      gl.uniform1f(pelletDark, isDark() ? 1 : 0);
+      gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      gl.drawArrays(gl.POINTS, 0, pew.pellets.length);
+      gl.disable(gl.BLEND);
+    }
   };
   raf = requestAnimationFrame(loop);
   return {
@@ -175,6 +236,8 @@ void main(){vec2 uv=(gl_FragCoord.xy*2.-uR)/uR.y;
       setHome(false);
       gl.deleteBuffer(buf);
       gl.deleteShader(vertexShader); gl.deleteShader(fragmentShader); gl.deleteProgram(pr);
+      gl.deleteBuffer(pelletBuffer);
+      gl.deleteShader(pelletVertex); gl.deleteShader(pelletFragment); gl.deleteProgram(pelletProgram);
     },
   };
 }

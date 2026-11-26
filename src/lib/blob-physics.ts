@@ -1,5 +1,5 @@
 export type Point = readonly [number, number];
-type Vector = [number, number, number];
+export type Vector = [number, number, number];
 export const BLOB_BLEND = .2;
 export const BLOB_SEPARATED_BLEND = .07;
 export const BLOB_RADIUS_BLEND = .6;
@@ -186,14 +186,21 @@ export class BlobSimulation {
 
   /** Ray march from the shader's camera through a pointer on the z=0 plane. */
   hitTest([x, y]: Point): number | null {
-    const length = Math.hypot(x, y, 4);
-    const ray = [x / length, y / length, -4 / length];
+    return this.raycast([0, 0, 4], [x, y, -4])?.owner ?? null;
+  }
+
+  /** The same conservative surface march also sweeps moving projectiles. */
+  raycast(origin: Vector, direction: Vector, limit = 10) {
+    const length = Math.hypot(...direction);
+    if (length === 0) return null;
+    const ray = direction.map((axis) => axis / length);
     let depth = 0;
     for (let i = 0; i < 84; i++) {
-      const hit = this.sampleSurface([ray[0] * depth, ray[1] * depth, 4 + ray[2] * depth]);
-      if (hit.distance < .002) return hit.owner >= 0 ? hit.owner : null;
+      const point = origin.map((axis, i) => axis + ray[i] * depth) as Vector;
+      const hit = this.sampleSurface(point);
+      if (hit.distance < .002) return hit.owner >= 0 ? { owner: hit.owner, point } : null;
       depth += hit.distance;
-      if (depth > 10) break;
+      if (depth > limit) break;
     }
     return null;
   }
@@ -283,6 +290,19 @@ export class BlobSimulation {
   burstAt(point: Point): number[] {
     const hit = this.hitTest(point);
     if (hit === null) return [];
+    return this.burstParticle(hit, point);
+  }
+
+  /** Stop at the first surface along this frame's flight, including thin fragments. */
+  burstAlong(from: Vector, to: Vector): number[] {
+    const direction = to.map((axis, i) => axis - from[i]) as Vector;
+    const hit = this.raycast(from, direction, Math.hypot(...direction));
+    if (!hit) return [];
+    const [x, y, z] = hit.point;
+    return this.burstParticle(hit.owner, [4 * x / (4 - z), 4 * y / (4 - z)]);
+  }
+
+  private burstParticle(hit: number, point: Point): number[] {
     const connected = this.connectedTo(hit);
     // Attached roots separate as whole blobs. One root may split into smaller pieces.
     const attachedRoots = new Set(connected.map((particle) => particle.root)).size > 1;

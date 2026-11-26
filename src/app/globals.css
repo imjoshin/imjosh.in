@@ -114,6 +114,10 @@ body:has(.home-page) * {
 /* Keep links and the mobile navigation toggle reachable over the blobs. */
 body:has(.home-page) :is(a, summary) { pointer-events: auto; }
 
+html[data-pew-mode]:has(.home-page),
+html[data-pew-mode]:has(.home-page) body * { cursor: crosshair; }
+html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
+
 .pill {
   display: inline-flex;
   align-items: center;
