@@ -6,4 +6,4 @@ export default async () => {
   if (!response.ok) throw new Error(`Music background job was not accepted (${response.status})`);
 };
 // Capture recent plays frequently; the worker refreshes the complete snapshots once per day.
-export const config: Config = { schedule: "*/5 * * * *" };
+export const config: Config = { schedule: "* * * * *" };

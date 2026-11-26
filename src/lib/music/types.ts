@@ -136,3 +136,10 @@ export interface SpotifySnapshot {
   ranges: Record<string, { tracks: RankedMusic[]; artists: RankedMusic[] }>;
   playlists: { id: string; name: string; image: string | null; url: string; tracks: number }[];
 }
+
+export interface MusicPlaybackSnapshot {
+  version: 1;
+  checkedAt: string;
+  expiresAt: string;
+  track: { key: string; name: string; artists: string[]; album: string | null; url: string | null; image: string | null } | null;
+}

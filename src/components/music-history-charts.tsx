@@ -4,7 +4,7 @@ import { useId, useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { MusicDataset } from "@/lib/music/types";
 import { chartPointAt } from "@/lib/music/chart-interaction";
 import { MusicChartTooltip } from "./music-chart-tooltip";
-import { useMusicLineMotion, useMusicPresence } from "./music-motion";
+import { MusicNumber, useMusicLineMotion, useMusicPresence } from "./music-motion";
 
 const number = (value: number) => new Intl.NumberFormat("en-US").format(value);
 const monthLabel = (value: string) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}-01T12:00:00Z`));
@@ -49,7 +49,7 @@ export function ListeningChart({ data }: { data: MusicDataset }) {
       {selected && selectedPoint && <MusicChartTooltip id={tooltipId} title={monthLabel(selected.month)} rows={[{ key: selected.month, label: "Recorded plays", value: selected.plays }]} x={selectedPoint.x / 6} placement={selectedPoint.y < 95 ? "bottom" : "top"} secondary={share(selected.plays, data.stats.plays)} />}
     </div>
     <div className="mt-1 flex justify-between text-[13px] text-muted"><span>{months[0] ? monthLabel(months[0].month) : "History is on its way"}</span><span>{months.length > 1 ? monthLabel(months.at(-1)!.month) : ""}</span></div>
-    <details className="mt-3 text-[13px] text-muted"><summary className="cursor-pointer">View monthly counts</summary><ul className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1">{months.map(m => <li key={m.month} className="flex justify-between gap-2"><span>{monthLabel(m.month)}</span><span>{number(m.plays)}</span></li>)}</ul></details>
+    <details className="mt-3 text-[13px] text-muted"><summary className="cursor-pointer">View monthly counts</summary><ul className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1">{months.map(m => <li key={m.month} className="flex justify-between gap-2"><span>{monthLabel(m.month)}</span><span><MusicNumber value={m.plays} /></span></li>)}</ul></details>
   </figure>;
 }
 

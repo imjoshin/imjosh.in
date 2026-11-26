@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { type MusicDataset, type MusicEntityKind, type MusicManifest, type MusicSeasonalDataset, type RankedMusic, type SpotifySnapshot } from "@/lib/music/types";
 import { MusicSwap } from "./music-swap";
 import { MusicSeasonChart } from "./music-season-chart";
 import { ListeningChart, WeekdayChart } from "./music-history-charts";
 import { MusicNumber, useMusicListMotion } from "./music-motion";
 import { MusicArtists, MusicHoverProvider, MusicLink } from "./music-entity-link";
+import { MusicNowPlaying } from "./music-now-playing";
+import { useMusicCollection } from "./use-music-collection";
 import { spotifyEntityUrl } from "@/lib/music/entity-links";
 
-const number = (value: number) => new Intl.NumberFormat("en-US").format(value);
 const periodLabels: Record<string, string> = { all: "All time", "30d": "Last 30 days", "365d": "Last year" };
 const rangeLabels: Record<string, string> = { short_term: "Last 4 weeks", medium_term: "Last 6 months", long_term: "Last year" };
 const dateLabel = (value: string) => new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${value.slice(0, 10)}T12:00:00Z`));
@@ -40,18 +41,10 @@ function Rotation({ items }: { items: RankedMusic[] }) {
 
 interface Props { initialManifest: MusicManifest | null; initialData: MusicDataset | null; initialSpotify: SpotifySnapshot | null; initialSeasons: MusicSeasonalDataset | null }
 export function MusicExplorer({ initialManifest, initialData, initialSpotify, initialSeasons }: Props) {
-  const [manifest, setManifest] = useState(initialManifest), [data, setData] = useState(initialData), [spotify, setSpotify] = useState(initialSpotify);
   const [period, setPeriod] = useState("30d"), [range, setRange] = useState("short_term");
-  const datasets = useRef(new Map<string, MusicDataset>(initialManifest && initialData && initialManifest.files[`all/${initialData.period}`] ? [[initialManifest.files[`all/${initialData.period}`], initialData]] : []));
-  const [tab, setTab] = useState<"tracks" | "artists" | "albums">("tracks"), [error, setError] = useState(false), [loading, setLoading] = useState(false);
-  const [api, setApi] = useState(false);
+  const [tab, setTab] = useState<"tracks" | "artists" | "albums">("tracks");
+  const { manifest, data, spotify, seasons, playback, error, loading, api } = useMusicCollection({ manifest: initialManifest, data: initialData, spotify: initialSpotify, seasons: initialSeasons, playback: null }, period);
   const [headerHeight, setHeaderHeight] = useState<number | null>(null);
-  const [seasons, setSeasons] = useState(initialSeasons), [seasonsLoading, setSeasonsLoading] = useState(false), [seasonsError, setSeasonsError] = useState(false);
-  const read = async <T,>(file: string, useApi: boolean, signal?: AbortSignal): Promise<T> => {
-    const response = await fetch(useApi ? `/api/music?file=${encodeURIComponent(file)}` : `/music/${file}`, { signal });
-    if (!response.ok) throw new Error("Music data is unavailable");
-    return response.json() as Promise<T>;
-  };
   useEffect(() => {
     const header = document.querySelector<HTMLElement>(".site-header");
     if (!header) return;
@@ -61,40 +54,14 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
-    const controller = new AbortController();
-    const useApi = location.hostname === "imjosh.in" || location.hostname.endsWith(".netlify.app"); setApi(useApi);
-    read<MusicManifest>("manifest.json", useApi, controller.signal).then(setManifest).catch(() => { if (!controller.signal.aborted) setError(true); });
     const applyLocation = () => {
       const query = new URLSearchParams(location.search); setPeriod(query.get("period") || "30d");
       if (query.has("platform")) { query.delete("platform"); history.replaceState(history.state, "", `${location.pathname}${query.size ? `?${query}` : ""}${location.hash}`); }
     };
     applyLocation(); addEventListener("popstate", applyLocation);
-    return () => { controller.abort(); removeEventListener("popstate", applyLocation); };
+    return () => removeEventListener("popstate", applyLocation);
   }, []);
-  useEffect(() => {
-    if (!manifest) return;
-    const selectedPeriod = manifest.periods.includes(period) ? period : "30d";
-    if (selectedPeriod !== period) { setPeriod(selectedPeriod); return; }
-    const file = manifest.files[`all/${period}`]; if (!file) { setLoading(false); setError(true); return; }
-    const cached = datasets.current.get(file);
-    if (cached) { setData(cached); setLoading(false); setError(false); return; }
-    const controller = new AbortController(); setLoading(true);
-    read<MusicDataset>(file, api, controller.signal).then(value => { datasets.current.set(file, value); setData(value); setError(false); }).catch(() => { if (!controller.signal.aborted) setError(true); }).finally(() => { if (!controller.signal.aborted) setLoading(false); });
-    return () => controller.abort();
-  }, [manifest, period, api]);
-  useEffect(() => {
-    if (!manifest?.files.spotify) return;
-    const controller = new AbortController(); read<SpotifySnapshot>(manifest.files.spotify, api, controller.signal).then(setSpotify).catch(() => {});
-    return () => controller.abort();
-  }, [manifest, api]);
-  useEffect(() => {
-    if (!manifest) return;
-    const file = manifest.files["all/seasons"];
-    if (!file) { setSeasons(null); setSeasonsLoading(false); return; }
-    const controller = new AbortController(); setSeasonsLoading(true); setSeasonsError(false);
-    read<MusicSeasonalDataset>(file, api, controller.signal).then(setSeasons).catch(() => { if (!controller.signal.aborted) setSeasonsError(true); }).finally(() => { if (!controller.signal.aborted) setSeasonsLoading(false); });
-    return () => controller.abort();
-  }, [manifest, api]);
+  useEffect(() => { if (manifest && !manifest.periods.includes(period)) setPeriod("30d"); }, [manifest, period]);
   function filter(nextPeriod: string) {
     if (nextPeriod === period) return;
     setPeriod(nextPeriod);
@@ -125,10 +92,11 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
         {current && <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]"><ListeningChart data={current} /><WeekdayChart data={current} /></div>}
         <section className="panel rounded-[24px] p-5 sm:p-7" aria-labelledby="music-ranking-title"><div className="mb-5 flex flex-wrap items-center justify-between gap-4"><h2 id="music-ranking-title" className="font-display text-[36px] leading-none">The <em className="text-accent">favorites.</em></h2><div role="group" aria-label="Rank music by" className="music-tabs">{(["tracks", "artists", "albums"] as const).map(t => <button key={t} aria-pressed={tab === t} onClick={() => setTab(t)} className="capitalize">{t}</button>)}</div></div><Ranking kind={tab === "tracks" ? "track" : tab === "albums" ? "album" : "artist"} items={rankings.map(item => ({ ...item, key: `${tab}:${item.key}` }))} empty={stats?.plays ? "More metadata is needed for this view." : "The first chapters of this collection are still coming in."} /></section>
       </div>
-      <MusicSeasonChart data={seasons} loading={seasonsLoading} error={seasonsError} />
+      <MusicSeasonChart data={seasons} loading={!seasons && loading} error={!seasons && error} />
       </div>
     </section>
-    {spotify?.playlists.length ? <section aria-labelledby="music-playlists-title"><p className="music-label">Mixtapes, more or less</p><h2 id="music-playlists-title" className="mt-2 font-display text-[42px]">In the <em className="text-accent">collection.</em></h2><div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{spotify.playlists.slice(0, 9).map(p => <a key={p.id} className="panel flex items-center gap-4 rounded-[18px] p-4 hover:border-accent" href={p.url} target="_blank" rel="noopener noreferrer"><span className="music-playlist-icon" aria-hidden="true">♫</span><span className="min-w-0"><span className="block truncate font-medium">{p.name}</span><span className="mt-1 block text-[13px] text-muted">{number(p.tracks)} tracks · Spotify</span></span><span className="sr-only"> (opens in a new tab)</span></a>)}</div></section> : null}
+    {spotify?.playlists.length ? <section aria-labelledby="music-playlists-title"><p className="music-label">Mixtapes, more or less</p><h2 id="music-playlists-title" className="mt-2 font-display text-[42px]">In the <em className="text-accent">collection.</em></h2><div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{spotify.playlists.slice(0, 9).map(p => <a key={p.id} className="panel flex items-center gap-4 rounded-[18px] p-4 hover:border-accent" href={p.url} target="_blank" rel="noopener noreferrer"><span className="music-playlist-icon" aria-hidden="true">♫</span><span className="min-w-0"><span className="block truncate font-medium">{p.name}</span><span className="mt-1 block text-[13px] text-muted"><MusicNumber value={p.tracks} /> tracks · Spotify</span></span><span className="sr-only"> (opens in a new tab)</span></a>)}</div></section> : null}
     <noscript><p className="panel rounded-[20px] p-5">This is the saved music collection. Enable JavaScript to explore other periods.</p></noscript>
+    <MusicNowPlaying snapshot={playback} />
   </MusicHoverProvider>;
 }

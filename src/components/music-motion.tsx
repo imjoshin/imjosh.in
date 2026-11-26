@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { morphMusicLine, type MusicChartPoint } from "@/lib/music/chart-interaction";
+import { counterDigitPosition } from "@/lib/music/counter";
 
 const duration = 480;
 const ease = (progress: number) => 1 - (1 - progress) ** 3;
@@ -10,7 +11,7 @@ type Phase = "present" | "enter" | "exit";
 export interface MusicPresence<T> { item: T; phase: Phase }
 
 /** First visits render immediately. Updates retarget from the current frame, including interrupted updates. */
-export function useMusicLineMotion(target: MusicChartPoint[], baseline: number, enter = false) {
+export function useMusicLineMotion(target: MusicChartPoint[], baseline: number, enter = false, durationMs = duration) {
   const encoded = JSON.stringify(target);
   const [points, setPoints] = useState(() => enter ? target.map(point => ({ ...point, y: baseline })) : target);
   const current = useRef(points);
@@ -24,7 +25,7 @@ export function useMusicLineMotion(target: MusicChartPoint[], baseline: number, 
     if (motion.matches || !end.length) { finish(); return; }
     const began = performance.now();
     const tick = (now: number) => {
-      const progress = Math.min(1, (now - began) / duration);
+      const progress = Math.min(1, (now - began) / durationMs);
       if (progress === 1) { finish(); return; }
       current.current = morphMusicLine(start, end, ease(progress)); setPoints(current.current);
       frame = requestAnimationFrame(tick);
@@ -33,14 +34,22 @@ export function useMusicLineMotion(target: MusicChartPoint[], baseline: number, 
     const changed = () => { if (motion.matches) finish(); };
     motion.addEventListener("change", changed);
     return () => { cancelAnimationFrame(frame); motion.removeEventListener("change", changed); };
-  }, [encoded, baseline]);
+  }, [encoded, baseline, durationMs]);
   return points;
 }
 
 export function MusicNumber({ value }: { value: number }) {
-  const points = useMusicLineMotion([{ t: 0, x: 0, y: value }], 0);
+  const points = useMusicLineMotion([{ t: 0, x: 0, y: value }], 0, false, 750);
+  const current = points[0]?.y ?? value, moving = Math.abs(current - value) > 1e-7;
+  const length = (value: number) => String(Math.floor(Math.abs(value))).length;
+  const places = useRef(length(value));
+  places.current = moving ? Math.max(places.current, length(current), length(value)) : length(value);
   const format = (value: number) => number.format(Math.round(value));
-  return <><span aria-hidden="true">{format(points[0]?.y ?? value)}</span><span className="sr-only">{format(value)}</span></>;
+  return <><span aria-hidden="true" className="music-number" data-value={value} data-rendered-value={format(current)}>{current < 0 && "−"}{Array.from({ length: places.current }, (_, index) => {
+    const place = places.current - index - 1, position = counterDigitPosition(current, place);
+    const blank = place > 0 && Math.abs(current) < 10 ** place;
+    return <span className="music-number-place" key={place}>{index > 0 && (place + 1) % 3 === 0 && <span className="music-number-comma" style={{ opacity: Math.min(1, Math.max(0, Math.abs(current) - (10 ** (place + 1) - 1))) }}>,</span>}<span className="music-number-digit"><span className="music-number-reel" style={{ transform: `translateY(-${moving ? position : 0}em)` }}>{moving ? Array.from({ length: 11 }, (_, digit) => <span key={digit}>{digit === 0 && blank ? "\u00a0" : digit % 10}</span>) : <span>{Math.floor(position)}</span>}</span></span></span>;
+  })}</span><span className="sr-only">{format(value)}</span></>;
 }
 
 export function useMusicPresence<T extends { key: string }>(items: T[]): MusicPresence<T>[] {

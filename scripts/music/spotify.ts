@@ -46,6 +46,9 @@ export async function collectSpotify(store: MusicStore, full = false, genreBudge
     while (next) { if (visited.has(next)) throw new Error("Spotify pagination repeated a page"); visited.add(next); const page = await request(next); if (!page) break; const value = nested ? page.data[nested] : page.data; const items = value?.items || []; rows.push(...items); next = value?.next || null; }
     return rows;
   }
+  const playback = await request("me/player");
+  await writeJson(store, "state/spotify-playback.json", { checkedAt: new Date().toISOString(), data: playback?.data || null });
+  if (playback?.data.item) remember(playback.data.item);
   const last = await readJson<{ latest: string | null }>(store, "state/spotify-recent.json");
   let recentPath: string | null = "me/player/recently-played?limit=50", latest: string | null = null, oldest: string | null = null, returned = 0;
   const seenRecent = new Set<string>();
@@ -67,7 +70,7 @@ export async function collectSpotify(store: MusicStore, full = false, genreBudge
   let snapshot: SpotifySnapshot | null = null;
   if (full) {
     snapshot = { generatedAt: fetchedAt, ranges: {}, playlists: [] };
-    for (const endpoint of ["me", "me/player", "me/player/currently-playing", "me/player/devices", "me/player/queue"]) {
+    for (const endpoint of ["me", "me/player/currently-playing", "me/player/devices", "me/player/queue"]) {
       const result = await request(endpoint);
       if (result) { remember(result.data.item || result.data.currently_playing); for (const t of result.data.queue || []) remember(t); }
     }
