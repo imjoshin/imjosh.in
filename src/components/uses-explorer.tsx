@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import { itemId, itemName, monthAt, monthIndex, readTimelineMonth, usesAt } from "@/lib/uses";
 import { AnimatedDate } from "@/components/animated-date";
+import { AnimatedGearItems } from "@/components/animated-gear-items";
 import { GearDetails } from "@/components/gear-details";
 import { GearCategoryIcon } from "@/components/gear-category-icon";
 
@@ -83,12 +84,7 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
         {inventory.categories.map((category) => (
           <article key={category.key} className="panel flex min-h-[120px] flex-col gap-[14px] rounded-[20px] px-[22px] py-5">
             <h2 className="eyebrow flex items-center gap-2.5"><GearCategoryIcon category={category.key} />{category.label}</h2>
-            {category.items.length ? category.items.map((item) => (
-              <div key={item.id} className="flex flex-col gap-[3px]">
-                <GearDetails key={`${item.id}:${month}`} item={item.details} heading>{item.name}</GearDetails>
-                {item.spec && <p className="text-[14px] leading-[1.35] text-muted">{item.spec}</p>}
-              </div>
-            )) : <p className="font-display text-[22px] text-muted italic">nothing yet</p>}
+            <AnimatedGearItems items={category.items} month={month} direction={selection.direction} />
           </article>
         ))}
       </section>

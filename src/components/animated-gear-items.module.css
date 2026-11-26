@@ -1,0 +1,26 @@
+.list { margin-top: -14px; }
+.item { display: grid; grid-template-rows: 1fr; }
+.clip { min-height: 0; }
+.content { display: block; padding-top: 14px; }
+
+.item[data-phase="enter"] { animation: expand .22s cubic-bezier(.22, 1, .36, 1) both; }
+.item[data-phase="exit"] { animation: collapse .22s cubic-bezier(.22, 1, .36, 1) both; }
+.item:not([data-phase="idle"]) > .clip { overflow: hidden; }
+.item[data-phase="exit"] .content { animation: leave .22s cubic-bezier(.22, 1, .36, 1) both; }
+
+@keyframes expand {
+  from { grid-template-rows: 0fr; }
+  to { grid-template-rows: 1fr; }
+}
+@keyframes collapse {
+  from { grid-template-rows: 1fr; }
+  to { grid-template-rows: 0fr; }
+}
+@keyframes leave {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(calc(-1 * var(--date-offset))); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item[data-phase="exit"] { display: none; }
+}

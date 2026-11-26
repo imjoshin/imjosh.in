@@ -20,7 +20,7 @@ export function itemId(item: UsesItem) { return `${item.category}:${item.subtype
 
 export function itemSpec(item: UsesItem): string {
   if ((item.category === "desktop" && item.subtype === "computer") || item.category === "laptop") {
-    return [item.cpu, item.gpu, item.ram, item.storage].filter(Boolean).join(" · ");
+    return Object.values(item.specs).slice(0, 2).join(" · ");
   }
   if (item.category === "desktop" && item.subtype === "monitor") {
     return [item.resolution.replace("x", "×"), item.panelType, item.refreshRate, item.notes].filter(Boolean).join(" · ");

@@ -2,7 +2,7 @@ import { strict as assert } from "node:assert";
 import { test } from "node:test";
 import { existsSync } from "node:fs";
 import { usesItems } from "../content/uses.ts";
-import { buildEvents, itemId, monthAt, monthIndex, parseMonth, parseYear, readTimelineMonth, usesAt } from "../src/lib/uses.ts";
+import { buildEvents, itemId, itemSpec, monthAt, monthIndex, parseMonth, parseYear, readTimelineMonth, usesAt } from "../src/lib/uses.ts";
 
 test("the current snapshot contains exactly the authoritative active inventory", () => {
   const latest = usesAt(2026).categories.flatMap((category) => category.items.map((item) => item.id));
@@ -101,6 +101,18 @@ test("expanded specifications preserve the recorded ownership configuration", ()
       if (value) assert.equal(item.specs[label], value, `${item.model}: ${label}`);
     }
   }
+});
+
+test("computer summaries follow the first two specs with memory before graphics or processor", () => {
+  const computers = usesItems.filter((item) => item.category === "laptop" || item.subtype === "computer");
+  for (const item of computers) {
+    assert.deepEqual(Object.keys(item.specs).slice(0, 2), ["Memory", item.make === "Apple" ? "Processor" : "Graphics"]);
+  }
+  const desktop = computers.find((item) => item.make === "iBUYPOWER")!;
+  const macbook = computers.find((item) => item.make === "Apple")!;
+  assert.equal(itemSpec(desktop), "64GB DDR5-6000MHz · GeForce RTX 5080 16GB GDDR7");
+  assert.equal(itemSpec(macbook), "48GB unified memory · Apple M4 Pro (14-core CPU, 20-core GPU)");
+  assert.equal(itemSpec({ ...desktop, specs: { Storage: "4TB SSD", Memory: "64GB RAM", Graphics: "RTX 5080" } }), "4TB SSD · 64GB RAM");
 });
 
 test("snapshot details refer to the authoritative products at historical and current dates", () => {

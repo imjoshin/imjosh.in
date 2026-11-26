@@ -149,9 +149,9 @@ export const usesItems: UsesItem[] = [
             "sourceUrl": "https://www.pngkit.com/png/full/316-3161597_nzxt-h440-white-mid-tower-computer-case-nzxt.png"
         },
         "specs": {
-            "Processor": "Intel Core i7-4790K 4 GHz Quad-Core",
             "Memory": "16GB DDR3-1600 (G.Skill Ares)",
             "Graphics": "MSI GeForce GTX 970 4GB",
+            "Processor": "Intel Core i7-4790K 4 GHz Quad-Core",
             "Storage": "Crucial BX100 250GB SSD",
             "Case": "NZXT H440",
             "Case color": "White",
@@ -193,9 +193,9 @@ export const usesItems: UsesItem[] = [
             "sourceUrl": "https://res.cloudinary.com/corsair-pwa/image/upload/c_scale,q_auto,w_800/products/Cases/CC-9011173-WW/Gallery/220T_RGB_BLACK_01.png"
         },
         "specs": {
-            "Processor": "AMD Ryzen 7 3700X 3.6 GHz 8-Core",
             "Memory": "64GB DDR4-3600 (G.Skill Trident Z Neo)",
             "Graphics": "EVGA GeForce RTX 2070 SUPER 8GB",
+            "Processor": "AMD Ryzen 7 3700X 3.6 GHz 8-Core",
             "Storage": "Samsung 970 Evo 500GB NVMe + WD Gold 4TB HDD",
             "Case": "Corsair iCUE 220T RGB Airflow",
             "Cooling": "Cooler Master Hyper 212 RGB Black Edition",
@@ -235,9 +235,9 @@ export const usesItems: UsesItem[] = [
             "sourceUrl": "https://content.ibuypower.com/cdn-cgi/image/width%3D3840%2Cformat%3Dauto%2Cquality%3D85/https%3A/content.ibuypower.com/Images/Components/31681/RDY-KING-PRO-009-01-Hero-400.png?v=a6957bb4a77a20bcd67d06d2cec8fa64b441ac55"
         },
         "specs": {
-            "Processor": "Intel Core i9-14900KF (8x 3.20GHz + 16x 2.40GHz)",
             "Memory": "64GB DDR5-6000MHz",
             "Graphics": "GeForce RTX 5080 16GB GDDR7",
+            "Processor": "Intel Core i9-14900KF (8x 3.20GHz + 16x 2.40GHz)",
             "Storage": "4TB M.2 NVMe Gen4 SSD",
             "Case": "Montech King 95 Pro",
             "Cooling": "360mm AIO Liquid Cooling",
@@ -694,9 +694,9 @@ export const usesItems: UsesItem[] = [
             "backgroundRemoved": true
         },
         "specs": {
-            "Processor": "Intel Core i7-3630QM 2.4GHz",
             "Memory": "24GB DDR3 (8GB + 16GB upgrade)",
             "Graphics": "NVIDIA GeForce GTX 660M 2GB",
+            "Processor": "Intel Core i7-3630QM 2.4GHz",
             "Storage": "256GB Crucial M4 SSD + 750GB HDD",
             "Operating system": "Windows 8",
             "Display": "15.6\" Full HD Matte",
@@ -733,8 +733,8 @@ export const usesItems: UsesItem[] = [
             "backgroundRemoved": true
         },
         "specs": {
-            "Processor": "Apple M4 Pro (14-core CPU, 20-core GPU)",
             "Memory": "48GB unified memory",
+            "Processor": "Apple M4 Pro (14-core CPU, 20-core GPU)",
             "Storage": "512GB SSD",
             "Operating system": "macOS",
             "Display": "16\" Liquid Retina XDR",
@@ -770,9 +770,9 @@ export const usesItems: UsesItem[] = [
             "sourceUrl": "https://dlcdnwebimgs.asus.com/gain/CD8E933A-10C0-4E13-91D3-AB4A248A19A1/w800/fwebp"
         },
         "specs": {
-            "Processor": "Intel Core Ultra 9 185H",
             "Memory": "32GB LPDDR5X-7467",
             "Graphics": "GeForce RTX 4090 16GB GDDR6",
+            "Processor": "Intel Core Ultra 9 185H",
             "Storage": "2TB M.2 NVMe SSD PCIe 4.0",
             "Operating system": "Windows 11",
             "Display": "16\" 240Hz OLED WQXGA (DCI-P3)",
