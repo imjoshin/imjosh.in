@@ -11,10 +11,10 @@ npm ci
 npm run dev
 ```
 
-The site has four routes: `/`, `/projects/`, `/uses/`, and `/resume/`. Photography opens [jj.photos](https://www.jj.photos). Fonts are self-hosted, and all pages are statically rendered. No CMS, environment variables, database, or application server is required.
+The site has five routes: `/`, `/projects/`, `/uses/`, `/music/`, and `/resume/`. Photography opens [jj.photos](https://www.jj.photos). Fonts are self-hosted, and all pages are statically rendered. Music collection uses independent Netlify Functions and private Blobs storage; credentials are never shipped to the browser. See [the music pipeline guide](docs/music.md) for connection, imports, daily updates, and local production pulls.
 
 ```sh
-npm run check   # strict TypeScript checks and Uses regression tests
+npm run check   # strict TypeScript and gear, navigation, blob, and music regressions
 npm run build   # production static export in out/
 npm start      # preview the export
 ```
@@ -28,7 +28,7 @@ npm start      # preview the export
 - `content/resume.ts` contains verified LinkedIn roles, dates, and summarized responsibilities, replacing the handoff’s placeholders. Its comments record the sources and verification date.
 - `src/lib/blob.js` preserves the handoff’s chrome shading, with independent gravitational particles in `src/lib/blob-physics.ts`. The pointer acts as an additional gravity source. Clicks hit-test the visible surface and affect only that bubble and its connected group, using a surface-gap threshold that matches the chrome blend. Their velocity impulses ease in over roughly 55 ms, with local shape changes and gradual recovery. An order-independent exponential surface blend keeps joins smooth across different sizes and burst states. Empty-space clicks do not burst bubbles. A single lazy-loaded canvas persists across routes and hidden-tab pauses.
 - Each starting bubble has a persistent root identity and volume. Clicking an isolated root splits it into equal half-volume pieces, down to one sixteenth of its root's volume over four split levels. Minimum-size pieces only move. Attached different roots separate as whole blobs. After a short cooldown, touching fragments from the same root merge smoothly until the exact starting count and sizes return. Volume is conserved, and complete roots cannot over-merge. Rendering supports up to 128 pieces, with a lower capacity on devices with limited WebGL uniforms and an adaptive pixel budget for larger fragment counts.
-- On inner pages, the background blurs and eases to 4% of homepage speed, with pointer interaction disabled. Returning Home eases it back to full speed and clears the blur. Internal links animate page exits and entrances according to Home → Projects → Uses → Resume order. Direct visits, refreshes, and untyped history navigation do not run page transitions. The header and canvas remain outside the transition, and a reserved scrollbar gutter keeps the layout steady.
+- On inner pages, the background blurs and eases to 4% of homepage speed, with pointer interaction disabled. Returning Home eases it back to full speed and clears the blur. Internal links animate page exits and entrances according to Home → Projects → Uses → Music → Resume order. Direct visits, refreshes, and untyped history navigation do not run page transitions. The header and canvas remain outside the transition, and a reserved scrollbar gutter keeps the layout steady.
 - Theme follows the operating system. The résumé’s **Save as PDF** action opens the browser print dialog with a print-specific layout.
 - Desktop navigation uses borderless text links with accent underlines for the current page, hover, and keyboard focus. Below 768px, the header uses a hamburger menu with native disclosure behavior, including without JavaScript. It closes on navigation, Escape, outside clicks, and switching to the desktop layout.
 - The 1200 × 630 social card uses the local Instrument Serif fonts with text on the left and chrome artwork on the right. `npm run generate:social` rebuilds `public/social.png` from `scripts/generate-social.mjs` and `public/social-art.svg`; production builds run this automatically. Metadata imports the image so its content hash refreshes the preview URL when the artwork changes.

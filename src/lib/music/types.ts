@@ -1,0 +1,109 @@
+export type MusicPlatform = "spotify" | "google-play-music" | "youtube-music";
+export const platformLabels: Record<MusicPlatform, string> = { spotify: "Spotify", "google-play-music": "Google Play Music", "youtube-music": "YouTube Music" };
+
+export interface MusicTrack {
+  key: string;
+  title: string;
+  artists: string[];
+  album: string | null;
+  platformId: string | null;
+  isrc: string | null;
+  url: string | null;
+  image: string | null;
+  genres: string[];
+  labels?: string[];
+}
+
+/** Private canonical event. Raw provider records are archived separately, without field loss. */
+export interface Listen {
+  version: 1;
+  id: string;
+  platform: MusicPlatform;
+  playedAt: string;
+  timestampKind: "start" | "end" | "activity";
+  timestampPrecision: "second" | "minute";
+  msPlayed: number | null;
+  trackDurationMs: number | null;
+  skipped: boolean | null;
+  privateSession: boolean | null;
+  media: "music" | "podcast" | "video";
+  track: MusicTrack;
+  source: "extended-export" | "account-export" | "takeout" | "api";
+  rawRef: string;
+}
+
+export interface RankedMusic {
+  key: string;
+  name: string;
+  artists: string[];
+  image: string | null;
+  url: string | null;
+  plays: number;
+  msPlayed: number;
+}
+
+export interface MusicStats {
+  plays: number;
+  artists: number;
+  tracks: number;
+  msPlayed: number;
+  durationKnown: number;
+  genreUnknown: number;
+  firstListen: string | null;
+  lastListen: string | null;
+  topTracks: RankedMusic[];
+  topArtists: RankedMusic[];
+  topAlbums: RankedMusic[];
+  months: { month: string; plays: number; msPlayed: number }[];
+  weekdays: number[];
+  hours: number[];
+  platforms: Partial<Record<MusicPlatform, number>>;
+}
+
+export interface MusicDataset {
+  version: 1;
+  generatedAt: string;
+  timezone: string;
+  period: string;
+  platform: MusicPlatform | "all";
+  stats: MusicStats;
+}
+
+export interface MusicManifest {
+  version: 1;
+  generatedAt: string;
+  timezone: string;
+  periods: string[];
+  platforms: MusicPlatform[];
+  files: Record<string, string>;
+  notes: string[];
+}
+
+export type SeasonalMetric = "genres" | "artists" | "albums";
+export interface MusicSeason { key: string; label: string }
+export interface SeasonalSeries {
+  key: string;
+  name: string;
+  artists: string[];
+  /** Recorded plays for every season, including seasons outside this series' top five. */
+  plays: number[];
+}
+export interface SeasonalMetricData {
+  series: SeasonalSeries[];
+  classifiedPlays: number;
+  unclassifiedPlays: number;
+}
+export interface MusicSeasonalDataset {
+  version: 1;
+  generatedAt: string;
+  timezone: string;
+  platform: MusicPlatform | "all";
+  seasons: MusicSeason[];
+  metrics: Record<SeasonalMetric, SeasonalMetricData>;
+}
+
+export interface SpotifySnapshot {
+  generatedAt: string;
+  ranges: Record<string, { tracks: RankedMusic[]; artists: RankedMusic[] }>;
+  playlists: { id: string; name: string; image: string | null; url: string; tracks: number }[];
+}

@@ -1,4 +1,4 @@
-const pageOrder = ["/", "/projects", "/uses", "/resume"];
+const pageOrder = ["/", "/projects", "/uses", "/music", "/resume"];
 
 export function pageDirection(from: string, to: string): "forward" | "back" | "none" {
   const normalize = (path: string) => path.split(/[?#]/)[0].replace(/\/$/, "") || "/";

@@ -10,31 +10,43 @@
   },
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1",
-    "build": "npm run generate:social && next build && node scripts/finalize-export.mjs",
+    "build": "npm run music:prepare && npm run generate:social && next build && node scripts/finalize-export.mjs",
     "generate:social": "node scripts/generate-social.mjs",
     "start": "serve out",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "check": "npm run typecheck && npm test",
+    "music:auth": "node --experimental-strip-types scripts/music.ts auth",
+    "music:import": "node --experimental-strip-types scripts/music.ts import",
+    "music:sync": "node --experimental-strip-types scripts/music.ts sync",
+    "music:aggregate": "node --experimental-strip-types scripts/music.ts aggregate",
+    "music:pull": "node --experimental-strip-types scripts/music.ts pull",
+    "music:push": "node --experimental-strip-types scripts/music.ts push",
+    "music:prepare": "node --experimental-strip-types scripts/music.ts prepare",
+    "music:status": "node --experimental-strip-types scripts/music.ts status",
     "deploy:preview": "netlify deploy --context deploy-preview",
     "deploy": "netlify deploy --prod --context production"
   },
   "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "5.3.0",
+    "@fontsource/instrument-serif": "5.3.0",
+    "@netlify/blobs": "11.1.12",
+    "@netlify/functions": "6.1.2",
+    "csv-parse": "7.0.3",
+    "fflate": "0.8.3",
     "next": "16.4.6",
     "react": "19.3.1",
-    "react-dom": "19.3.1",
-    "@fontsource/instrument-serif": "5.3.0",
-    "@fontsource-variable/bricolage-grotesque": "5.3.0"
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.5",
-    "tailwindcss": "4.3.5",
-    "postcss": "8.5.33",
-    "typescript": "5.9.3",
     "@types/node": "26.6.6",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "netlify-cli": "27.20.1",
-    "serve": "14.2.8"
+    "postcss": "8.5.33",
+    "serve": "14.2.8",
+    "tailwindcss": "4.3.5",
+    "typescript": "5.9.3"
   }
 }

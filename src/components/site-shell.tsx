@@ -30,6 +30,7 @@ function NavigationLinks({ pathname, mobile = false }: { pathname: string; mobil
     <>
       <Link className={className} href="/projects/" aria-current={pathname.startsWith("/projects") ? "page" : undefined}>Projects</Link>
       <Link className={className} href="/uses/" aria-current={pathname.startsWith("/uses") ? "page" : undefined}>Uses</Link>
+      <Link className={className} href="/music/" aria-current={pathname.startsWith("/music") ? "page" : undefined}>Music</Link>
       <Link className={className} href="/resume/" aria-current={pathname.startsWith("/resume") ? "page" : undefined}>Resume</Link>
       <a className={className} href="https://www.jj.photos" target="_blank" rel="noopener noreferrer">
         Photography

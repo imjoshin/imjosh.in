@@ -12,3 +12,5 @@ coverage/
 .DS_Store
 test-results/
 playwright-report/
+.music/
+public/music/
