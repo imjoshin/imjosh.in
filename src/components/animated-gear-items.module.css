@@ -1,6 +1,6 @@
 .list { margin-top: -14px; }
 .item { display: grid; grid-template-rows: 1fr; }
-.clip { min-height: 0; }
+.clip { min-height: 0; min-width: 0; }
 .content { display: block; padding-top: 14px; }
 
 .item[data-phase="enter"] { animation: expand .22s cubic-bezier(.22, 1, .36, 1) both; }

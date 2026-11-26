@@ -149,9 +149,9 @@ export const usesItems: UsesItem[] = [
             "sourceUrl": "https://www.pngkit.com/png/full/316-3161597_nzxt-h440-white-mid-tower-computer-case-nzxt.png"
         },
         "specs": {
-            "Memory": "16GB DDR3-1600 (G.Skill Ares)",
-            "Graphics": "MSI GeForce GTX 970 4GB",
             "Processor": "Intel Core i7-4790K 4 GHz Quad-Core",
+            "Graphics": "MSI GeForce GTX 970 4GB",
+            "Memory": "16GB DDR3-1600 (G.Skill Ares)",
             "Storage": "Crucial BX100 250GB SSD",
             "Case": "NZXT H440",
             "Case color": "White",
@@ -193,9 +193,9 @@ export const usesItems: UsesItem[] = [
             "sourceUrl": "https://res.cloudinary.com/corsair-pwa/image/upload/c_scale,q_auto,w_800/products/Cases/CC-9011173-WW/Gallery/220T_RGB_BLACK_01.png"
         },
         "specs": {
-            "Memory": "64GB DDR4-3600 (G.Skill Trident Z Neo)",
-            "Graphics": "EVGA GeForce RTX 2070 SUPER 8GB",
             "Processor": "AMD Ryzen 7 3700X 3.6 GHz 8-Core",
+            "Graphics": "EVGA GeForce RTX 2070 SUPER 8GB",
+            "Memory": "64GB DDR4-3600 (G.Skill Trident Z Neo)",
             "Storage": "Samsung 970 Evo 500GB NVMe + WD Gold 4TB HDD",
             "Case": "Corsair iCUE 220T RGB Airflow",
             "Cooling": "Cooler Master Hyper 212 RGB Black Edition",
@@ -235,9 +235,9 @@ export const usesItems: UsesItem[] = [
             "sourceUrl": "https://content.ibuypower.com/cdn-cgi/image/width%3D3840%2Cformat%3Dauto%2Cquality%3D85/https%3A/content.ibuypower.com/Images/Components/31681/RDY-KING-PRO-009-01-Hero-400.png?v=a6957bb4a77a20bcd67d06d2cec8fa64b441ac55"
         },
         "specs": {
-            "Memory": "64GB DDR5-6000MHz",
-            "Graphics": "GeForce RTX 5080 16GB GDDR7",
             "Processor": "Intel Core i9-14900KF (8x 3.20GHz + 16x 2.40GHz)",
+            "Graphics": "GeForce RTX 5080 16GB GDDR7",
+            "Memory": "64GB DDR5-6000MHz",
             "Storage": "4TB M.2 NVMe Gen4 SSD",
             "Case": "Montech King 95 Pro",
             "Cooling": "360mm AIO Liquid Cooling",

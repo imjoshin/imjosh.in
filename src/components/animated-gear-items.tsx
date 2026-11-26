@@ -51,7 +51,11 @@ export function AnimatedGearItems({ items, month, direction }: { items: GearItem
             <div className={`${styles.content} ${phase === "enter" ? "date-value" : ""}`}>
               {item ? <div className="flex flex-col gap-[3px]">
                 <GearDetails key={`${id}:${month}`} item={item.details} heading>{item.name}</GearDetails>
-                {item.spec && <p className={`text-[14px] leading-[1.35] text-muted ${item.details.category === "laptop" || item.details.subtype === "computer" ? "line-clamp-2" : ""}`}>{item.spec}</p>}
+                {item.spec && <p className={`text-[14px] leading-[1.35] text-muted ${item.details.category === "laptop" ? "line-clamp-2" : ""}`}>
+                  {item.details.subtype === "computer"
+                    ? Object.entries(item.details.specs).slice(0, 2).map(([label, value]) => <span key={label} className="block truncate">{value}</span>)
+                    : item.spec}
+                </p>}
               </div> : <p className="font-display text-[22px] text-muted italic">nothing yet</p>}
             </div>
           </div>

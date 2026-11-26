@@ -103,14 +103,16 @@ test("expanded specifications preserve the recorded ownership configuration", ()
   }
 });
 
-test("computer summaries follow the first two specs with memory before graphics or processor", () => {
+test("computer summaries follow the first two specs with desktop processor and graphics first", () => {
   const computers = usesItems.filter((item) => item.category === "laptop" || item.subtype === "computer");
   for (const item of computers) {
-    assert.deepEqual(Object.keys(item.specs).slice(0, 2), ["Memory", item.make === "Apple" ? "Processor" : "Graphics"]);
+    assert.deepEqual(Object.keys(item.specs).slice(0, 2), item.subtype === "computer"
+      ? ["Processor", "Graphics"]
+      : ["Memory", item.make === "Apple" ? "Processor" : "Graphics"]);
   }
   const desktop = computers.find((item) => item.make === "iBUYPOWER")!;
   const macbook = computers.find((item) => item.make === "Apple")!;
-  assert.equal(itemSpec(desktop), "64GB DDR5-6000MHz · GeForce RTX 5080 16GB GDDR7");
+  assert.equal(itemSpec(desktop), "Intel Core i9-14900KF (8x 3.20GHz + 16x 2.40GHz) · GeForce RTX 5080 16GB GDDR7");
   assert.equal(itemSpec(macbook), "48GB unified memory · Apple M4 Pro (14-core CPU, 20-core GPU)");
   assert.equal(itemSpec({ ...desktop, specs: { Storage: "4TB SSD", Memory: "64GB RAM", Graphics: "RTX 5080" } }), "4TB SSD · 64GB RAM");
 });
