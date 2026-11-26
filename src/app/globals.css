@@ -104,6 +104,16 @@ button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--acc); outline-offset: 5px; }
 input[type="range"] { accent-color: var(--acc); cursor: ew-resize; }
 
+body:has(.home-page),
+body:has(.home-page) * {
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Keep links and the mobile navigation toggle reachable over the blobs. */
+body:has(.home-page) :is(a, summary) { pointer-events: auto; }
+
 .pill {
   display: inline-flex;
   align-items: center;
