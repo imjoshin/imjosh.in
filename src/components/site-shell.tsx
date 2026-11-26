@@ -115,7 +115,7 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   const pathname = usePathname();
-  if (pathname === "/") return null;
+  if (pathname === "/" || pathname.replace(/\/$/, "") === "/music") return null;
   return (
     <footer className="site-footer relative z-10 mt-auto flex flex-wrap items-center justify-between gap-4 border-t border-line bg-panel px-gutter py-6 backdrop-blur-[14px]">
       <Link className="text-[13px] font-medium tracking-[.06em] text-muted uppercase" href="/">imjosh.in</Link>
