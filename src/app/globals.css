@@ -204,10 +204,15 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-day-bar { min-height: 2px; border-radius: 5px 5px 0 0; background: linear-gradient(to top, color-mix(in srgb, var(--acc) 35%, transparent), var(--acc)); }
 .music-chart-surface { position: relative; min-width: 0; border-radius: 12px; touch-action: pan-y; }
 .music-chart-surface > svg { cursor: crosshair; }
-.music-chart-tooltip { position: absolute; top: 12px; left: clamp(min(138px, 50%), var(--chart-tooltip-x, 50%), max(50%, calc(100% - 138px))); z-index: 6; width: 260px; max-width: calc(100% - 16px); transform: translateX(-50%); pointer-events: none; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; color: var(--ink); background: color-mix(in srgb, var(--bg) 95%, transparent); backdrop-filter: blur(16px); box-shadow: 0 8px 24px #0002; animation: music-tooltip-appear .14s ease-out; }
-.music-chart-tooltip[data-placement="bottom"] { top: auto; bottom: 12px; }
+.music-chart-tooltip { position: absolute; z-index: 10; width: 260px; max-width: calc(100dvw - 24px); visibility: hidden; pointer-events: none; animation: music-tooltip-appear .14s ease-out; }
+.music-chart-tooltip[data-ready="true"] { visibility: visible; }
+.music-chart-tooltip-content { max-height: var(--chart-tooltip-max-height, calc(100dvh - 24px)); overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; color: var(--ink); background: color-mix(in srgb, var(--bg) 95%, transparent); backdrop-filter: blur(16px); box-shadow: 0 8px 24px #0002; }
 .music-chart-tooltip[data-linked="true"] { pointer-events: auto; }
-.music-season-plot .music-chart-tooltip { max-height: 150px; overflow-y: auto; overscroll-behavior: contain; }
+.music-chart-tooltip::before { content: ""; position: absolute; }
+.music-chart-tooltip[data-side="top"]::before { inset: auto 0 -12px; height: 12px; }
+.music-chart-tooltip[data-side="bottom"]::before { inset: -12px 0 auto; height: 12px; }
+.music-chart-tooltip[data-side="left"]::before { inset: 0 -12px 0 auto; width: 12px; }
+.music-chart-tooltip[data-side="right"]::before { inset: 0 auto 0 -12px; width: 12px; }
 .music-entity-link { transition: color .18s; }
 .music-entity-link:hover { color: var(--acc); }
 .music-entity-card { position: fixed; z-index: 80; width: min(350px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: auto; overscroll-behavior: contain; border: 1px solid var(--line); border-radius: 22px; padding: 22px; background: color-mix(in srgb, var(--bg) 96%, transparent); color: var(--ink); backdrop-filter: blur(22px); animation: music-card-arrive .18s ease-out backwards; }
