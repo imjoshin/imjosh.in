@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { type MusicDataset, type MusicEntityKind, type MusicManifest, type MusicSeasonalDataset, type RankedMusic, type SpotifySnapshot } from "@/lib/music/types";
 import { MusicSwap } from "./music-swap";
 import { MusicSeasonChart } from "./music-season-chart";
@@ -21,14 +21,16 @@ function Cover({ item, className = "" }: { item: RankedMusic; className?: string
   return <span className={`music-cover ${className}`}>{image ? <img src={image} alt="" loading="lazy" width="160" height="160" /> : <span aria-hidden="true">{item.name.slice(0, 1)}</span>}</span>;
 }
 
-function Ranking({ items, empty, kind }: { items: RankedMusic[]; empty: string; kind: MusicEntityKind }) {
-  const motion = useMusicListMotion(items.slice(0, 10).map((item, i, list) => ({ ...item, kind, rank: i + 1, last: i === list.length - 1 })));
-  return <div className="music-collection" style={motion.containerStyle}><ol ref={motion.setRoot} className="music-ranking">{motion.rows.map(({ item, phase }) => <li ref={motion.bind(item.key)} key={item.key} data-phase={phase} data-last={item.last || undefined} inert={phase === "exit" ? true : undefined} aria-hidden={phase === "exit" || undefined} style={phase === "exit" ? motion.exitStyle(item.key) : undefined}>
-    <span className="w-5 shrink-0 text-[14px] text-muted tabular-nums">{String(item.rank).padStart(2, "0")}</span>
+function Ranking({ items, empty, kind, resetKey }: { items: RankedMusic[]; empty: string; kind: MusicEntityKind; resetKey: string }) {
+  const scroll = useRef<HTMLDivElement>(null);
+  const motion = useMusicListMotion(items.slice(0, 100).map((item, i, list) => ({ ...item, kind, rank: i + 1, last: i === list.length - 1 })), 0);
+  useLayoutEffect(() => { scroll.current?.scrollTo({ top: 0, behavior: "instant" }); }, [kind, resetKey]);
+  return <div ref={scroll} className="music-ranking-scroll" role="region" aria-label={`Favorite ${kind === "artist" ? "artists" : kind === "album" ? "albums" : "tracks"}`} tabIndex={0}><div className="music-collection" style={motion.containerStyle}><ol ref={motion.setRoot} className="music-ranking">{motion.rows.map(({ item, phase }) => <li ref={motion.bind(item.key)} key={item.key} data-phase={phase} data-last={item.last || undefined} inert={phase === "exit" ? true : undefined} aria-hidden={phase === "exit" || undefined} style={phase === "exit" ? motion.exitStyle(item.key) : undefined}>
+    <span className="w-7 shrink-0 text-[14px] text-muted tabular-nums">{String(item.rank).padStart(2, "0")}</span>
     <Cover item={item} className="h-12 w-12 shrink-0 rounded-lg" />
     <div className="min-w-0 flex-1"><MusicLink entity={{ kind: item.kind, name: item.name, artists: item.artists, url: item.url, image: item.kind !== "artist" ? item.image : null }} className="block w-fit max-w-full truncate font-medium">{item.name}</MusicLink>{item.kind !== "artist" && <p className="truncate text-[14px] text-muted"><MusicArtists names={item.artists} /></p>}</div>
     <span className="shrink-0 text-[14px] text-muted tabular-nums"><MusicNumber value={item.plays} /><span className="sr-only"> recorded plays</span></span>
-  </li>)}{!items.length && <li className="music-ranking-empty text-muted">{empty}</li>}</ol></div>;
+  </li>)}{!items.length && <li className="music-ranking-empty text-muted">{empty}</li>}</ol></div></div>;
 }
 
 function Rotation({ items }: { items: RankedMusic[] }) {
@@ -101,7 +103,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
       <div aria-busy={loading} className="flex flex-col gap-5">
         <div className="music-stat-grid">{[["Recorded plays", stats?.plays || 0], ["Different artists", stats?.artists || 0], ["Different tracks", stats?.tracks || 0], ["Measured hours", Math.round((stats?.msPlayed || 0) / 3600000)]].map(([label, value]) => <div key={label} className="panel rounded-[20px] p-5 sm:p-6"><p className="music-label">{label}</p><p className="mt-3 font-display text-[clamp(44px,5vw,64px)] leading-none tabular-nums">{label === "Measured hours" && !stats?.durationKnown ? <span className="text-muted">Pending</span> : <MusicNumber value={Number(value)} />}</p></div>)}</div>
         {current && <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]"><ListeningChart data={current} /><WeekdayChart data={current} /></div>}
-        <section className="panel rounded-[24px] p-5 sm:p-7" aria-labelledby="music-ranking-title"><div className="mb-5 flex flex-wrap items-center justify-between gap-4"><h2 id="music-ranking-title" className="font-display text-[36px] leading-none">The <em className="text-accent">favorites.</em></h2><div role="group" aria-label="Rank music by" className="music-tabs">{(["tracks", "artists", "albums"] as const).map(t => <button key={t} aria-pressed={tab === t} onClick={() => setTab(t)} className="capitalize">{t}</button>)}</div></div><Ranking kind={tab === "tracks" ? "track" : tab === "albums" ? "album" : "artist"} items={rankings.map(item => ({ ...item, key: `${tab}:${item.key}` }))} empty={stats?.plays ? "More metadata is needed for this view." : "The first chapters of this collection are still coming in."} /></section>
+        <section className="panel rounded-[24px] p-5 sm:p-7" aria-labelledby="music-ranking-title"><div className="mb-5 flex flex-wrap items-center justify-between gap-4"><h2 id="music-ranking-title" className="font-display text-[36px] leading-none">The <em className="text-accent">favorites.</em></h2><div role="group" aria-label="Rank music by" className="music-tabs">{(["tracks", "artists", "albums"] as const).map(t => <button key={t} aria-pressed={tab === t} onClick={() => setTab(t)} className="capitalize">{t}</button>)}</div></div><Ranking kind={tab === "tracks" ? "track" : tab === "albums" ? "album" : "artist"} resetKey={`${period}:${current?.period}`} items={rankings.map(item => ({ ...item, key: `${tab}:${item.key}` }))} empty={stats?.plays ? "More metadata is needed for this view." : "The first chapters of this collection are still coming in."} /></section>
       </div>
       <MusicSeasonChart data={seasons} api={api} loading={!seasons && loading} error={!seasons && error} />
       </div>

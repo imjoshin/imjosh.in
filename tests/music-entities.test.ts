@@ -105,16 +105,16 @@ test("public hover downloads cover displayed music while totals retain history o
     return { async get(key) { return values.get(key) || null; }, async set(key, value) { values.set(key, value); }, async list(prefix) { return [...values.keys()].filter(key => key.startsWith(prefix)); } };
   };
   const privateStore = memory(), publicStore = memory();
-  const rows = Array.from({ length: 34 }, (_, i) => ({ ...event(`play-${i}`, "2026-11-25T12:00:00Z"), track: musicTrack(`Song ${i}`, ["Artist"], { album: "Album", albumArtists: ["Artist"] }) }));
+  const rows = Array.from({ length: 104 }, (_, i) => ({ ...event(`play-${i}`, "2026-11-25T12:00:00Z"), track: musicTrack(`Song ${i}`, ["Artist"], { album: "Album", albumArtists: ["Artist"] }) }));
   await saveListens(privateStore, rows);
   await writeJson(privateStore, "public/spotify.json", { generatedAt: now.toISOString(), playlists: [], ranges: { short_term: { artists: [], tracks: [{ key: "favorite", name: "Affinity favorite", artists: ["Favorite artist"], plays: 0, msPlayed: 0, image: null, url: null }] } } });
   await publishMusic(privateStore, publicStore, now);
   const manifest = (await readJson<MusicManifest>(publicStore, "manifest.json"))!;
   const stats = (await readJson<MusicDataset>(publicStore, manifest.files["all/all"]))!.stats;
   const entities = (await readJson<MusicEntityDataset>(publicStore, manifest.files.entities))!.entities;
-  assert.equal(stats.plays, 34);
-  assert.equal(entities[musicEntityKey("artist", "Artist")].plays, 34);
-  assert.equal(entities[musicEntityKey("album", "Album", ["Artist"])].tracks, 34);
+  assert.equal(stats.plays, 104);
+  assert.equal(entities[musicEntityKey("artist", "Artist")].plays, 104);
+  assert.equal(entities[musicEntityKey("album", "Album", ["Artist"])].tracks, 104);
   for (const track of stats.topTracks) assert.ok(entities[musicEntityKey("track", track.name, track.artists)]);
   const displayed = new Set(stats.topTracks.map(track => track.name));
   const omitted = rows.filter(row => !displayed.has(row.track.title));
@@ -123,5 +123,5 @@ test("public hover downloads cover displayed music while totals retain history o
   assert.ok(entities[musicEntityKey("track", "Affinity favorite", ["Favorite artist"])]);
   assert.ok(entities[musicEntityKey("artist", "Favorite artist")]);
   assert.equal((await privateStore.list("listens/")).length, 1);
-  assert.equal((await readJson<Listen[]>(privateStore, "listens/spotify/2026-11.json.gz"))!.length, 34);
+  assert.equal((await readJson<Listen[]>(privateStore, "listens/spotify/2026-11.json.gz"))!.length, 104);
 });

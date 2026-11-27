@@ -76,7 +76,7 @@ export function useMusicPresence<T extends { key: string }>(items: T[]): MusicPr
 
 interface Box { top: number; left: number; width: number }
 /** Only changed rows move. The list's own height and entering/leaving items animate independently. */
-export function useMusicListMotion<T extends { key: string }>(items: T[]) {
+export function useMusicListMotion<T extends { key: string }>(items: T[], padding = 12) {
   const encoded = JSON.stringify(items), rows = useMusicPresence(items);
   const root = useRef<HTMLElement | null>(null), nodes = useRef(new Map<string, HTMLElement>());
   const boxes = useRef(new Map<string, Box>()), animations = useRef(new Map<string, Animation>());
@@ -109,10 +109,10 @@ export function useMusicListMotion<T extends { key: string }>(items: T[]) {
   }, [rows]);
   useLayoutEffect(() => {
     if (!root.current) return;
-    const measure = () => setHeight(root.current!.getBoundingClientRect().height + 12);
+    const measure = () => setHeight(root.current!.getBoundingClientRect().height + padding);
     measure(); const observer = new ResizeObserver(measure); observer.observe(root.current);
     return () => observer.disconnect();
-  }, []);
+  }, [padding]);
   useEffect(() => {
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     const stop = () => { if (motion.matches) for (const animation of animations.current.values()) animation.cancel(); };

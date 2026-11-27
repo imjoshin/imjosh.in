@@ -243,8 +243,11 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-day-column[data-active] .music-day-bar { filter: brightness(1.2); }
 .music-day-column[data-active] > span:last-child { color: var(--acc); }
 @keyframes music-tooltip-appear { from { opacity: 0; } to { opacity: 1; } }
-.music-ranking > li { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-.music-ranking > li[data-last="true"], .music-ranking > .music-ranking-empty { border: 0; padding-bottom: 0; }
+.music-ranking-scroll { --music-ranking-row-height: 73px; max-height: calc(10 * var(--music-ranking-row-height)); margin-inline: -6px; padding-inline: 6px; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; overflow-anchor: none; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.music-ranking-scroll > .music-collection { margin-block: 0; padding-block: 0; }
+.music-ranking > li { display: flex; align-items: center; gap: 16px; height: var(--music-ranking-row-height); padding: 12px 0; border-bottom: 1px solid var(--line); }
+.music-ranking > li[data-last="true"] { border-bottom-color: transparent; }
+.music-ranking > .music-ranking-empty { height: auto; border: 0; }
 .music-collection { min-width: 0; margin: -6px; padding: 6px; overflow: clip; transition: height .48s cubic-bezier(.22,1,.36,1); }
 .music-collection > :is(ol, .music-album-grid) { position: relative; }
 .music-ranking > .music-ranking-empty { padding-block: 32px; }

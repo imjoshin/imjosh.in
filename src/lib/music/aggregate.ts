@@ -58,7 +58,7 @@ export function aggregateMusic(input: Listen[], now = new Date(), timezone = MUS
         const day = days.get(p.date);
         if (day) { day.plays++; day.msPlayed += l.msPlayed || 0; }
       }
-      const ranked = (map: Map<string, RankedMusic>) => [...map.values()].sort((a, b) => b.plays - a.plays || b.msPlayed - a.msPlayed || a.key.localeCompare(b.key)).slice(0, 30);
+      const ranked = (map: Map<string, RankedMusic>) => [...map.values()].sort((a, b) => b.plays - a.plays || b.msPlayed - a.msPlayed || a.key.localeCompare(b.key)).slice(0, 100);
       stats.artists = artists.size; stats.tracks = tracks.size; stats.topTracks = ranked(tracks); stats.topArtists = ranked(artists).map(a => ({ ...a, url: null })); stats.topAlbums = ranked(albums).map(a => ({ ...a, url: null })); stats.months = [...months.values()].sort((a, b) => a.month.localeCompare(b.month));
       if (period === "30d") stats.days = [...days.values()];
       const key = `${platform}/${period}`;

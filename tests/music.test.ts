@@ -89,6 +89,27 @@ test("Michigan calendar boundaries and missing durations remain honest", () => {
   assert.equal(result.datasets["all/all"].stats.firstListen, "2025-12-31");
 });
 
+test("favorites publish the top 100 tracks, artists, and albums for every period", () => {
+  const rows = ["2025-12-02T15:00:00Z", "2026-06-02T15:00:00Z"].flatMap((playedAt, year) => [
+    ...Array.from({ length: 105 }, (_, i) => {
+      const name = `Entry ${String(i).padStart(3, "0")}`;
+      return listen({ id: `${year}:${i}`, playedAt, msPlayed: 180000 - i, track: musicTrack(name, [name], { album: name }) });
+    }),
+    ...Array.from({ length: 3 }, (_, i) => listen({ id: `${year}:winner:${i}`, playedAt, track: musicTrack("Winner", ["Winner"], { album: "Winner" }) })),
+    ...Array.from({ length: 5 }, (_, i) => listen({ id: `${year}:kids:${i}`, playedAt, track: musicTrack("Kids", ["Kids"], { album: "Kids", genres: ["kids music"] }) })),
+  ]);
+  const { datasets, manifest } = aggregateMusic(rows, now);
+  assert.deepEqual(manifest.periods, ["all", "30d", "365d", "2026", "2025"]);
+  for (const dataset of Object.values(datasets)) {
+    for (const ranking of [dataset.stats.topTracks, dataset.stats.topArtists, dataset.stats.topAlbums]) {
+      assert.equal(ranking.length, 100, `${dataset.platform}/${dataset.period}`);
+      assert.equal(ranking[0].name, "Winner");
+      assert.equal(ranking.at(-1)!.name, "Entry 098");
+      assert.equal(ranking.some(item => item.name === "Kids"), false);
+    }
+  }
+});
+
 test("Disney credits and soundtrack albums are excluded without altering private records", () => {
   const disney = [
     musicTrack("You're Welcome", ["Dwayne Johnson", "Disney"]),
