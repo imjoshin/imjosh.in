@@ -1,0 +1,19 @@
+.heading, .intro, .social {
+  transform-origin: bottom left;
+  transition: scale .6s cubic-bezier(.22, 1, .36, 1);
+}
+
+.social { transform-origin: bottom right; }
+
+/* Scale the existing text boxes so every line keeps its original wrapping. */
+:global(html[data-pew-mode]) .heading { scale: .5; }
+:global(html[data-pew-mode]) .intro,
+:global(html[data-pew-mode]) .social { scale: .8; }
+
+@media (max-width: 639px) {
+  .social { transform-origin: bottom left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heading, .intro, .social { transition: none; }
+}

@@ -1,6 +1,7 @@
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
 import { initBlob } from "../src/lib/blob.js";
+import { BlobSimulation, type Point } from "../src/lib/blob-physics.ts";
 
 test("renderer input excludes links and controls, stops on release, and disarms across routes and pauses", (t) => {
   const attributes = new Set<string>();
@@ -14,7 +15,10 @@ test("renderer input excludes links and controls, stops on release, and disarms 
     localStorage: { getItem: () => null, setItem() {} },
     setInterval: () => 1,
     clearInterval() {},
+    matchMedia: () => ({ matches: desktop }),
   });
+  let desktop = true;
+  const hints: boolean[] = [];
   const callbacks = new Map<number, FrameRequestCallback>();
   let frameId = 0, now = performance.now(), pointCount = 0, blobCount = 0, pelletColor = -1;
   const gl = new Proxy({
@@ -59,7 +63,7 @@ test("renderer input excludes links and controls, stops on release, and disarms 
     getContext: () => gl, clientWidth: 1000, clientHeight: 800,
     getBoundingClientRect: () => ({ left: 0, top: 0, width: 1000, height: 800 }),
   };
-  const controller = initBlob(canvas as unknown as HTMLCanvasElement, { count: 1 });
+  const controller = initBlob(canvas as unknown as HTMLCanvasElement, { count: 1, onPewHintChange: (visible) => hints.push(visible) });
   dispose = () => controller.destroy();
   function tick(seconds = .01) {
     pointCount = 0;
@@ -82,6 +86,37 @@ test("renderer input excludes links and controls, stops on release, and disarms 
   }
   function activate() { typePeW(); assert.equal(attributes.has("data-pew-mode"), true); }
   function reset() { dispatch("keydown", { key: "Escape" }); tick(); assert.equal(pointCount, 0); }
+
+  // Only successful desktop mouse hits count, and the fifth reveals the hint once.
+  const burst = t.mock.method(BlobSimulation.prototype, "burstAt", (point: Point) => point[0] === 0 ? [0] : []);
+  const hit = (fields: Record<string, unknown> = {}) => dispatch("pointerdown", { clientX: 500, clientY: 400, ...fields });
+  for (let i = 0; i < 5; i++) {
+    dispatch("pointerdown"); // Empty space.
+    hit({ target: blocked("button") });
+    hit({ pointerType: "touch" });
+    hit({ button: 2 });
+    desktop = false; hit(); desktop = true;
+  }
+  for (let i = 0; i < 4; i++) hit();
+  assert.deepEqual(hints, []);
+  controller.setPaused(true);
+  controller.setPaused(false);
+  hit(); hit();
+  assert.deepEqual(hints, [true]);
+  controller.setHome(false);
+  assert.deepEqual(hints, [true, false]);
+  for (let i = 0; i < 5; i++) hit();
+  controller.setHome(true);
+  for (let i = 0; i < 4; i++) hit();
+  assert.deepEqual(hints, [true, false]);
+  hit();
+  assert.deepEqual(hints, [true, false, true]);
+  typePeW();
+  assert.deepEqual(hints, [true, false, true, false]);
+  dispatch("keydown", { key: "Escape" });
+  for (let i = 0; i < 5; i++) hit();
+  assert.deepEqual(hints, [true, false, true, false], "discovered mode stays dismissed after Escape");
+  burst.mock.restore();
 
   // Keyboard shortcuts, autorepeat, IME, and typing into fields cannot arm it.
   for (const fields of [{ ctrlKey: true }, { metaKey: true }, { altKey: true }, { repeat: true }, { isComposing: true }, { target: blocked("input") }]) {

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import type { BlobController } from "@/lib/blob";
+import styles from "./blob-canvas.module.css";
 
 const THEME_STORAGE_KEY = "imjosh.in:theme";
 
@@ -12,6 +13,7 @@ export function BlobCanvas() {
   const isHome = pathname === "/";
   const home = useRef(isHome);
   const engine = useRef<BlobController | null>(null);
+  const [showPewHint, setShowPewHint] = useState(false);
 
   useEffect(() => {
     home.current = isHome;
@@ -55,7 +57,7 @@ export function BlobCanvas() {
       try {
         const { initBlob } = await import("@/lib/blob.js");
         if (disposed || current !== generation) return;
-        engine.current = initBlob(canvas!, { count: 7, pull: .24, home: home.current });
+        engine.current = initBlob(canvas!, { count: 7, pull: .24, home: home.current, onPewHintChange: setShowPewHint });
       } catch {
         // The typography and navigation remain complete without WebGL.
       }
@@ -83,5 +85,10 @@ export function BlobCanvas() {
     };
   }, []);
 
-  return <canvas ref={ref} aria-hidden="true" data-dimmed={!isHome} className="blob-canvas pointer-events-none fixed inset-0 z-0 block h-dvh w-full motion-reduce:hidden" />;
+  return <>
+    <canvas ref={ref} aria-hidden="true" data-dimmed={!isHome} className="blob-canvas pointer-events-none fixed inset-0 z-0 block h-dvh w-full motion-reduce:hidden" />
+    {isHome && showPewHint && <div className={`${styles.hint} pointer-events-none fixed inset-x-0 bottom-1 z-20 text-center lg:bottom-3`} role="status">
+      <span className="inline-block rounded-full border border-line bg-panel px-3 py-1 text-xs text-muted backdrop-blur-sm">type &quot;pew&quot;</span>
+    </div>}
+  </>;
 }

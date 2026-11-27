@@ -104,6 +104,7 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
   const complexity = () => Math.max(1, Math.ceil(simulation.particles.length / 16));
   let resolutionComplexity = complexity();
   let home = o.home ?? true, interactive = false, paused = false;
+  let blobClicks = 0, hintVisible = false, hintDismissed = false;
   let speed = home ? 1 : INNER_PAGE_SPEED, dark = isDark() ? 1 : 0;
   let raf = 0, lastFrame = performance.now(), dead = false;
   let viewWidth = 0, viewHeight = 0, resizeAfter = Infinity;
@@ -134,6 +135,11 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
   };
   const blockedTarget = target => target?.closest?.('a,button,input,select,textarea,details,[contenteditable]:not([contenteditable="false"])');
   const syncCursor = () => document.documentElement.toggleAttribute('data-pew-mode', pew.active);
+  const setPewHint = visible => {
+    if (hintVisible === visible) return;
+    hintVisible = visible;
+    o.onPewHintChange?.(visible);
+  };
   const pm = e => {
     const point = toWorld(e);
     simulation.setPointer(point);
@@ -148,7 +154,10 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
       return;
     }
     // Hit-test the visible surface and kick only its connected group.
-    simulation.burstAt(toWorld(e));
+    const hit = simulation.burstAt(toWorld(e)).length > 0;
+    if (hit && !hintDismissed && o.onPewHintChange && e.pointerType === 'mouse'
+      && window.matchMedia('(min-width: 768px)').matches
+      && ++blobClicks === 5) setPewHint(true);
   };
   const leave = () => { simulation.setPointer(null); pew.stop(); };
   const up = e => { pew.stop(); if (e.pointerType !== 'mouse') leave(); };
@@ -156,11 +165,13 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
     if (e.repeat || e.isComposing || e.altKey || e.ctrlKey || e.metaKey
       || e.target?.closest?.('input,select,textarea,[contenteditable]:not([contenteditable="false"])')) return;
     pew.type(e.key);
+    if (pew.active) { hintDismissed = true; setPewHint(false); }
     syncCursor();
   };
   function setHome(value) {
     home = value;
     const enabled = home && !paused && !dead;
+    if (!home || dead) { blobClicks = 0; setPewHint(false); }
     pew.setHome(enabled);
     syncCursor();
     if (interactive === enabled) return;

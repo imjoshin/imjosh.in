@@ -1,0 +1,22 @@
+.hint { display: none; }
+
+@media (min-width: 768px) {
+  .hint { display: block; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hint > span { animation: hint-wiggle .65s ease-in-out both; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint { display: none; }
+}
+
+@keyframes hint-wiggle {
+  0% { opacity: 0; transform: translateY(3px) rotate(0); }
+  30% { opacity: 1; transform: rotate(-3deg); }
+  65% { transform: rotate(3deg); }
+  100% { transform: rotate(0); }
+}
+
+@media print { .hint { display: none; } }

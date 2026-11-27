@@ -9,4 +9,5 @@ export function initBlob(canvas: HTMLCanvasElement, options?: {
   scale?: number;
   pull?: number;
   home?: boolean;
+  onPewHintChange?: (visible: boolean) => void;
 }): BlobController;
