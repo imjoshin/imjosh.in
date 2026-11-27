@@ -85,11 +85,21 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
   const stats = current?.stats;
   const provider = spotify?.ranges.short_term;
   const featured = provider?.tracks[0] || stats?.topTracks[0];
+  const featuredArtist = featured?.artists[0]?.trim().toLowerCase();
+  const artistPhoto = safeImage([
+    ...Object.values(spotify?.ranges || {}).flatMap(range => range.artists),
+    ...(stats?.topArtists || []),
+  ].find(artist => artist.name.trim().toLowerCase() === featuredArtist && safeImage(artist.image))?.image || null);
   const rankings = stats ? tab === "artists" ? stats.topArtists : tab === "albums" ? stats.topAlbums : stats.topTracks : [];
   return <MusicHoverProvider file={manifest?.files.entities} api={api} resetKey={`${period}:${tab}`}>
     <div className="flex flex-col justify-between gap-7 sm:flex-row sm:items-end"><div><p className="music-label mb-5">My music, through time</p><h1 className="page-title">On <em>repeat.</em></h1><p className="mt-6 max-w-[42ch] text-[18px] leading-relaxed text-muted">The songs that stick around. A listening history, one obsession at a time.</p></div><a className="pill w-fit" href="https://open.spotify.com/user/1271912429" target="_blank" rel="noopener noreferrer">Find me on Spotify<span className="sr-only"> (opens in a new tab)</span></a></div>
 
     <section className="music-feature panel relative grid min-h-[340px] overflow-hidden rounded-[28px] md:grid-cols-[1.05fr_1fr]" aria-label="Featured music">
+      <div className="music-feature-backdrop" aria-hidden="true">
+        <MusicSwap identity={artistPhoto || "empty"} className="h-full w-full">
+          {artistPhoto && <img src={artistPhoto} alt="" width="640" height="640" onError={event => { event.currentTarget.style.visibility = "hidden"; }} />}
+        </MusicSwap>
+      </div>
       <div className="relative z-10 flex flex-col items-start justify-center p-7 sm:p-10 lg:p-12"><MusicSwap identity={featured?.key || "empty"} className="w-full"><p className="music-label">{provider ? "Lately, on repeat" : featured ? "A familiar favorite" : "Every era has a soundtrack"}</p><h2 className="mt-5 max-w-[13ch] font-display text-[clamp(42px,5vw,70px)] leading-[.95] tracking-[-.025em]">{featured ? <MusicLink entity={{ kind: "track", name: featured.name, artists: featured.artists, url: featured.url, image: featured.image }}>{featured.name}</MusicLink> : <>Good music.<br /><em className="text-accent">Long memory.</em></>}</h2><p className="mt-4 text-[18px] text-muted">{featured ? <MusicArtists names={featured.artists} /> : "Bringing the listening history together."}</p>{featured && <a className="mt-7 border-b border-ink pb-1 text-[14px] hover:text-accent" href={spotifyEntityUrl({ kind: "track", name: featured.name, artists: featured.artists, url: featured.url })} target="_blank" rel="noopener noreferrer">Listen on Spotify<span className="sr-only"> (opens in a new tab)</span></a>}<p className="mt-6 text-[13px] text-muted">{provider ? "From Spotify’s top tracks in the last four weeks." : "A collection across Spotify, Google Play Music, and YouTube Music."}</p></MusicSwap></div>
       <div className="music-record-scene" aria-hidden="true"><div className="music-record"><div className="music-record-label"><MusicSwap identity={featured?.key || "empty"} className="h-full w-full">{featured && safeImage(featured.image) ? <img src={safeImage(featured.image)} alt="" width="220" height="220" /> : <span>j<span className="italic">j.</span></span>}</MusicSwap></div></div></div>
     </section>
