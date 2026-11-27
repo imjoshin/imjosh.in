@@ -93,6 +93,18 @@ test("Codex generation requires strictly more than 25 cumulative listens, even f
   assert.equal(catalog.artists.eligible.source, null);
 });
 
+test("one-genre artists are queued even with Spotify tags, with an expansion-only mode", () => {
+  const one = candidate("One"), missing = candidate("Missing"), many = candidate("Many");
+  const catalog: ArtistGenreCatalog = { version: 1, artists: { one: entry("One", ["synthpop"], "spotify"), missing: entry("Missing", [], null), many: entry("Many", ["pop", "rock"]) } };
+  const spotify = { one: { genres: ["synthpop"], provider: "spotify", artistId: null, fetchedAt: now.toISOString() } };
+  const options = { artists: [], retryUnknown: false, limit: Infinity };
+  assert.deepEqual(pendingGenreArtists(catalog, [one, missing, many], spotify, options).map(a => a.name), ["Missing", "One"]);
+  const queue = pendingGenreArtists(catalog, [one, missing, many], spotify, { ...options, expandSingles: true });
+  assert.deepEqual(queue.map(a => a.name), ["One"]);
+  assert.deepEqual(queue[0].existingGenres, ["synthpop"]);
+  assert.deepEqual(pendingGenreArtists(catalog, [{ ...one, plays: 25 }], spotify, { ...options, expandSingles: true }), []);
+});
+
 test("Codex responses must identify the artist and contain 2-5 distinct raw genres or an explained unknown", () => {
   const artist = candidate("Artist"), valid = { artist: "Artist", genres: ["Synthpop", "pop", "SYNTHPOP"], note: "Broad classification.", sources: [] };
   assert.deepEqual(parseGenreClassification(valid, artist).genres, ["synthpop", "pop"]);
@@ -103,6 +115,10 @@ test("Codex responses must identify the artist and contain 2-5 distinct raw genr
   assert.throws(() => parseGenreClassification({ ...valid, note: "x".repeat(1501) }, artist), /note must be a string of at most 1500/);
   assert.throws(() => parseGenreClassification({ ...valid, sources: ["spotify:artist:id"] }, artist), /HTTP\(S\) URLs/);
   for (const genres of [["pop"], ["POP", "pop"]]) assert.throws(() => parseGenreClassification({ ...valid, genres }, artist), /2-5 distinct genres/);
+  const expansion = { ...artist, existingGenres: ["synthpop"] };
+  assert.deepEqual(parseGenreClassification({ ...valid, genres: ["pop"] }, expansion).genres, ["pop"]);
+  assert.throws(() => parseGenreClassification({ ...valid, genres: ["pop", "rock", "folk"] }, expansion), /at most 2/);
+  assert.match(genrePrompt(expansion), /1-2 additional/);
   for (const change of [{ artist: "Someone Else" }, { genres: Array(6).fill("pop") }, { genres: [""] }, { genres: [], note: "" }, { sources: ["invented-url"] }]) assert.throws(() => parseGenreClassification({ ...valid, ...change }, artist), /Invalid|explain/);
   const prompt = genrePrompt(artist);
   assert.ok(prompt.includes("spotify-id")); assert.ok(prompt.includes("Song"));
@@ -137,10 +153,44 @@ test("raw Codex genres pass through shared rules before checkpointing, and inter
     }, path);
     assert.deepEqual(visited, ["b", "c"]);
     assert.deepEqual(JSON.parse(await readFile(path, "utf8")).artists.c.genres, ["christian"]);
+    await generateArtistGenres(store, options, async artist => {
+      assert.equal(artist.key, "c"); assert.deepEqual(artist.existingGenres, ["christian"]);
+      return { artist: artist.name, genres: ["pop"], note: "Additional style", sources: [] };
+    }, path);
     await generateArtistGenres(store, options, async () => { throw new Error("should not repeat"); }, path);
     await writeFile(`${path}.lock`, "active");
     await assert.rejects(generateArtistGenres(store, options, undefined, path), /Another genre run/);
     assert.equal(await readFile(`${path}.lock`, "utf8"), "active");
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});
+
+test("expansion preserves original genre and provenance, appends at most two normalized additions, and checkpoints no-op results", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "imjosh-genre-expansion-")), path = join(dir, "artist_genres.json");
+  try {
+    const a = entry("A", ["christian"], "spotify"), b = entry("B", ["synthpop"], "spotify");
+    const catalog: ArtistGenreCatalog = { version: 1, artists: { a, b } };
+    await writeFile(path, JSON.stringify(catalog));
+    const store = memory(), options = parseGenreOptions(["--no-pull", "--expand-singles", "--limit", "all"]);
+    const spotify = { a: { genres: ["christian"], provider: "spotify", artistId: null, fetchedAt: now.toISOString() }, b: { genres: ["synthpop"], provider: "spotify", artistId: null, fetchedAt: now.toISOString() } };
+    await writeJson(store, "catalog/genres.json", spotify);
+    await saveListens(store, ["A", "B"].flatMap(name => Array.from({ length: 26 }, (_, i) => event(name, `${name}-${i}`))));
+    const result = await generateArtistGenres(store, options, async artist => ({ artist: artist.name, genres: artist.key === "a" ? ["christian hip hop", "lo-fi worship"] : ["synth-pop", "synth pop"], note: "Suggested additional styles", sources: [] }), path);
+    assert.deepEqual(result.artists.a.genres, ["christian", "hip hop", "lo-fi"]);
+    assert.equal(result.artists.a.source, "spotify"); assert.equal(result.artists.a.updatedAt, a.updatedAt);
+    assert.deepEqual(result.artists.a.genreExpansion?.originalGenres, ["christian"]);
+    assert.deepEqual(result.artists.a.genreExpansion?.addedGenres, ["hip hop", "lo-fi"]);
+    assert.equal(result.artists.a.genreExpansion?.model, "gpt-6.1-terra");
+    assert.equal(result.artists.a.genreExpansion?.reasoningEffort, "medium");
+    assert.deepEqual(result.artists.b.genres, ["synthpop"]);
+    assert.deepEqual(result.artists.b.genreExpansion?.addedGenres, []);
+    assert.match(result.artists.b.genreExpansion!.note, /No distinct additions/);
+    const { candidates } = await discoverGenreArtists(store, now);
+    seedArtistGenres(result, candidates, { ...spotify, a: { ...spotify.a, genres: ["gospel"] } });
+    assert.deepEqual(result.artists.a.genres, ["christian", "hip hop", "lo-fi"]);
+    assert.deepEqual(pendingGenreArtists(result, candidates, spotify, options), []);
+    assert.deepEqual(pendingGenreArtists(result, candidates, spotify, { ...options, retryUnknown: true }).map(a => a.name), ["B"]);
+    await generateArtistGenres(store, options, async () => { throw new Error("should not repeat"); }, path);
+    assert.throws(() => parseArtistGenreCatalog({ version: 1, artists: { a: { ...a, genreExpansion: { ...result.artists.a.genreExpansion, addedGenres: ["one", "two", "three"] } } } }), /Invalid artist genre expansion/);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
 

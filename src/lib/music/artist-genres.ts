@@ -1,3 +1,14 @@
+export interface ArtistGenreExpansion {
+  source: "codex";
+  originalGenres: string[];
+  addedGenres: string[];
+  updatedAt: string;
+  note: string;
+  sources: string[];
+  model: string;
+  reasoningEffort: string;
+}
+
 export interface ArtistGenreEntry {
   name: string;
   spotifyArtistId: string | null;
@@ -9,6 +20,7 @@ export interface ArtistGenreEntry {
   sources?: string[];
   model?: string;
   reasoningEffort?: string;
+  genreExpansion?: ArtistGenreExpansion;
 }
 
 export interface ArtistGenreCatalog {
@@ -42,6 +54,8 @@ export function parseArtistGenreCatalog(value: unknown): ArtistGenreCatalog {
   if (!catalog || catalog.version !== 1 || !catalog.artists || typeof catalog.artists !== "object" || Array.isArray(catalog.artists)) throw new Error("Invalid artist genre catalog");
   for (const [key, entry] of Object.entries(catalog.artists)) {
     if (!entry || typeof entry.name !== "string" || !key || artistGenreKey(entry.name) !== key || !Array.isArray(entry.genres) || entry.genres.some(g => typeof g !== "string" || !g.trim()) || ![null, "spotify", "codex", "manual"].includes(entry.source) || !(entry.spotifyArtistId === null || typeof entry.spotifyArtistId === "string") || !(entry.updatedAt === null || typeof entry.updatedAt === "string")) throw new Error(`Invalid artist genre entry: ${key}`);
+    const expansion = entry.genreExpansion;
+    if (expansion && (expansion.source !== "codex" || !Array.isArray(expansion.originalGenres) || expansion.originalGenres.length !== 1 || !Array.isArray(expansion.addedGenres) || expansion.addedGenres.length > 2 || [...expansion.originalGenres, ...expansion.addedGenres].some(g => typeof g !== "string" || !g.trim()) || typeof expansion.updatedAt !== "string" || typeof expansion.note !== "string" || !Array.isArray(expansion.sources) || expansion.sources.some(url => typeof url !== "string") || typeof expansion.model !== "string" || typeof expansion.reasoningEffort !== "string")) throw new Error(`Invalid artist genre expansion: ${key}`);
   }
   return catalog;
 }

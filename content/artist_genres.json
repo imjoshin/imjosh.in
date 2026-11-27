@@ -24,10 +24,29 @@
       "name": "A Really Really Cool Band",
       "spotifyArtistId": "7c3DqqaI2MFO1q2GAEuFF6",
       "genres": [
-        "midwest emo"
+        "midwest emo",
+        "indie rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "midwest emo"
+        ],
+        "addedGenres": [
+          "indie rock"
+        ],
+        "updatedAt": "2026-11-27T03:27:07.493Z",
+        "note": "The band describes multiple recordings as indie rock. Its releases span several styles, so a second distinct genre is less certain.",
+        "sources": [
+          "https://www.youtube.com/watch?v=vyuEyXAhoho",
+          "https://www.youtube.com/watch?v=Z5ZIvKuuUjA",
+          "https://www.slugmag.com/music/interviews/music-interviews/a-really-really-cool-band/"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "a silent film": {
       "name": "A Silent Film",
@@ -185,10 +204,30 @@
       "name": "AlmightyArceus",
       "spotifyArtistId": "1pYfLGXAVd7pEvLlbKJV0S",
       "genres": [
-        "lo-fi"
+        "lo-fi",
+        "chillwave",
+        "chillstep"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "lo-fi"
+        ],
+        "addedGenres": [
+          "chillwave",
+          "chillstep"
+        ],
+        "updatedAt": "2026-11-27T03:24:04.819Z",
+        "note": "The artist labels multiple albums chillwave and describes their Pokémon remixes as chillstep-inspired.",
+        "sources": [
+          "https://music.apple.com/us/artist/almightyarceus/1455008007",
+          "https://www.musicmetricsvault.com/artists/almightyarceus/1pYfLGXAVd7pEvLlbKJV0S"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "almost monday": {
       "name": "almost monday",
@@ -300,10 +339,30 @@
       "name": "Anthem Lights",
       "spotifyArtistId": "7kwEvDE8e7EBGKh5bLczqQ",
       "genres": [
-        "hymns"
+        "hymns",
+        "christian",
+        "pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "hymns"
+        ],
+        "addedGenres": [
+          "christian",
+          "pop"
+        ],
+        "updatedAt": "2026-11-27T03:24:26.933Z",
+        "note": "Anthem Lights is a Christian pop vocal group whose recordings include original songs, pop covers, and hymns.",
+        "sources": [
+          "https://www.allmusic.com/artist/anthem-lights-mn0002580402",
+          "https://www.liberty.edu/journal/article/shaped-by-music/"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "antoine bradford": {
       "name": "Antoine Bradford",
@@ -443,10 +502,27 @@
       "name": "Avicii",
       "spotifyArtistId": "1vCWHaC5f2uS3yhpwWbIA6",
       "genres": [
-        "edm"
+        "edm",
+        "progressive house",
+        "folktronica"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "edm"
+        ],
+        "addedGenres": [
+          "progressive house",
+          "folktronica"
+        ],
+        "updatedAt": "2026-11-27T03:21:15.043Z",
+        "note": "Avicii was known for melodic progressive house and for blending electronic dance music with folk influences.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "awolnation": {
       "name": "AWOLNATION",
@@ -496,10 +572,30 @@
       "name": "Bag Raiders",
       "spotifyArtistId": "6fXEqmGQEt6ONuqVmwrN46",
       "genres": [
-        "alternative dance"
+        "alternative dance",
+        "house",
+        "synth pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "alternative dance"
+        ],
+        "addedGenres": [
+          "house",
+          "synth pop"
+        ],
+        "updatedAt": "2026-11-27T03:25:22.070Z",
+        "note": "Bag Raiders blend house rhythms with melodic synth pop across their recordings.",
+        "sources": [
+          "https://www.allmusic.com/artist/mn0001011315",
+          "https://ra.co/news/12509"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "balu brigada": {
       "name": "Balu Brigada",
@@ -1062,10 +1158,31 @@
       "name": "Chill With Lofi",
       "spotifyArtistId": "7CHCHpUzDDPRElNiZYmcbI",
       "genres": [
-        "lo-fi"
+        "lo-fi",
+        "downtempo",
+        "electronic"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "lo-fi"
+        ],
+        "addedGenres": [
+          "downtempo",
+          "electronic"
+        ],
+        "updatedAt": "2026-11-27T03:26:27.276Z",
+        "note": "The artist's catalog consists largely of lo-fi covers; sources also identify the music as downtempo and electronic.",
+        "sources": [
+          "https://www.viberate.com/artist/chill-with-lofi/",
+          "https://network.landr.com/users/chillwithlofi",
+          "https://music.apple.com/us/album/pumped-up-kicks-single/1565859406"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "chris renzema": {
       "name": "Chris Renzema",
@@ -1110,10 +1227,30 @@
       "name": "CHVRCHES",
       "spotifyArtistId": "3CjlHNtplJyTf9npxaPl5w",
       "genres": [
-        "synthpop"
+        "synthpop",
+        "indie pop",
+        "indietronica"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "synthpop"
+        ],
+        "addedGenres": [
+          "indie pop",
+          "indietronica"
+        ],
+        "updatedAt": "2026-11-27T03:25:59.469Z",
+        "note": "The Scottish trio combines indie pop songwriting with electronic production.",
+        "sources": [
+          "https://musicbrainz.org/artist/6a93afbb-257f-4166-b389-9f2a1e5c5df8",
+          "https://www.allmusic.com/artist/chvrches-mn0003052164/biography"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "citizens": {
       "name": "Citizens",
@@ -1484,10 +1621,28 @@
       "name": "Dayglow",
       "spotifyArtistId": "6eJa3zG1QZLRB3xgRuyxbm",
       "genres": [
-        "indie rock"
+        "indie rock",
+        "indie pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "indie rock"
+        ],
+        "addedGenres": [
+          "indie pop"
+        ],
+        "updatedAt": "2026-11-27T03:21:30.987Z",
+        "note": "Dayglow is Sloan Struble's indie pop project; his recordings combine pop melodies with guitar-driven arrangements.",
+        "sources": [
+          "https://www.allmusic.com/artist/dayglow-mn0003894175",
+          "https://atwoodmagazine.com/dayglow-sloan-struble-album-interview-music-feature-2024/"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "dc talk": {
       "name": "DC Talk",
@@ -1699,7 +1854,22 @@
         "lo-fi"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "lo-fi"
+        ],
+        "addedGenres": [],
+        "updatedAt": "2026-11-27T03:25:49.868Z",
+        "note": "The catalog centers on lo-fi covers. Chillhop is also used to describe releases, but overlaps too closely with the existing classification to suggest as a distinct addition.",
+        "sources": [
+          "https://volt.fm/artist/1065738/easy-chill",
+          "https://music.apple.com/pl/artist/easy-chill/1526805694"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "ecclesia": {
       "name": "Ecclesia",
@@ -1719,10 +1889,27 @@
       "name": "Ed Sheeran",
       "spotifyArtistId": "6eUKZXaKkcviH0Ku9w2n3V",
       "genres": [
-        "soft pop"
+        "soft pop",
+        "folk pop",
+        "pop rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "soft pop"
+        ],
+        "addedGenres": [
+          "folk pop",
+          "pop rock"
+        ],
+        "updatedAt": "2026-11-27T03:23:32.203Z",
+        "note": "His recordings combine pop songwriting with acoustic folk influences and, on some releases, rock arrangements.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "edward sharpe & the magnetic zeros": {
       "name": "Edward Sharpe & The Magnetic Zeros",
@@ -1833,10 +2020,31 @@
       "name": "firekid",
       "spotifyArtistId": "61XyQHQKfzbzgTmtbiVOR3",
       "genres": [
-        "folk pop"
+        "folk pop",
+        "bluegrass",
+        "electropop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "folk pop"
+        ],
+        "addedGenres": [
+          "bluegrass",
+          "electropop"
+        ],
+        "updatedAt": "2026-11-27T03:28:04.785Z",
+        "note": "Firekid blends bluegrass melodies and traditions with electronic pop production; both are prominent influences in a genre-crossing catalog.",
+        "sources": [
+          "https://www.bmi.com/spotlight/indie_spotlight_firekid",
+          "https://acousticguitar.com/acoustic-guitar-sessions-presents-firekid-aka-dillon-hodges/",
+          "https://theboot.com/firekid-backwoods/"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "fitz and the tantrums": {
       "name": "Fitz and The Tantrums",
@@ -2167,10 +2375,30 @@
       "name": "GROUPLOVE",
       "spotifyArtistId": "3kVUvbeRdcrqQ3oHk5hPdx",
       "genres": [
-        "indie"
+        "indie",
+        "alternative rock",
+        "indie pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "indie"
+        ],
+        "addedGenres": [
+          "alternative rock",
+          "indie pop"
+        ],
+        "updatedAt": "2026-11-27T03:25:30.177Z",
+        "note": "Grouplove combines alternative rock with melodic indie pop across its recordings.",
+        "sources": [
+          "https://musicbrainz.org/artist/d8e41375-bd8d-4e39-9da7-f0c171e97086",
+          "https://www.allmusic.com/artist/mn0002538809"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "gungor": {
       "name": "Gungor",
@@ -2445,10 +2673,25 @@
       "name": "Idina Menzel",
       "spotifyArtistId": "73Np75Wv2tju61Eo9Zw4IR",
       "genres": [
-        "musicals"
+        "musicals",
+        "pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "musicals"
+        ],
+        "addedGenres": [
+          "pop"
+        ],
+        "updatedAt": "2026-11-27T03:22:34.966Z",
+        "note": "Her solo recordings include pop alongside her musical theatre work.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "illenium": {
       "name": "ILLENIUM",
@@ -2536,10 +2779,27 @@
       "name": "Jack's Mannequin",
       "spotifyArtistId": "42aeGx2I3uXINpGqC8L0LD",
       "genres": [
-        "pop punk"
+        "pop punk",
+        "alternative rock",
+        "piano rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "pop punk"
+        ],
+        "addedGenres": [
+          "alternative rock",
+          "piano rock"
+        ],
+        "updatedAt": "2026-11-27T03:26:31.819Z",
+        "note": "The band's recordings combine alternative rock with a prominent piano-driven sound.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "jacob collier": {
       "name": "Jacob Collier",
@@ -3084,10 +3344,27 @@
       "name": "Kygo",
       "spotifyArtistId": "23fqKkggKUBHNkbKtXEls4",
       "genres": [
-        "tropical house"
+        "tropical house",
+        "dance pop",
+        "edm"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "tropical house"
+        ],
+        "addedGenres": [
+          "dance pop",
+          "edm"
+        ],
+        "updatedAt": "2026-11-27T03:27:37.963Z",
+        "note": "Kygo's recordings combine electronic dance music with pop songwriting.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "laity": {
       "name": "Laity",
@@ -3163,10 +3440,27 @@
       "name": "Lauren Daigle",
       "spotifyArtistId": "40LHVA5BTQp9RxHOQ9JPYj",
       "genres": [
-        "christian"
+        "christian",
+        "pop",
+        "soul"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "christian"
+        ],
+        "addedGenres": [
+          "pop",
+          "soul"
+        ],
+        "updatedAt": "2026-11-27T03:23:37.346Z",
+        "note": "Her recordings combine pop songwriting with prominent soul influences.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "lawrence": {
       "name": "Lawrence",
@@ -3294,10 +3588,30 @@
       "name": "Lofi Lia",
       "spotifyArtistId": "4dR6GXV8DO4FOwHZyu8MEq",
       "genres": [
-        "lo-fi"
+        "lo-fi",
+        "hip hop",
+        "jazz"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "lo-fi"
+        ],
+        "addedGenres": [
+          "hip hop",
+          "jazz"
+        ],
+        "updatedAt": "2026-11-27T03:23:17.008Z",
+        "note": "Lofi Lia describes her music as jazz remixes of game and anime music; releases are also classified as hip-hop.",
+        "sources": [
+          "https://linktr.ee/lofiliamusic",
+          "https://www.qobuz.com/us-en/album/season-four-video-game-anime-lofi-music-lofi-lia/k4nv1wvhybeib"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "lostboycrow": {
       "name": "Lostboycrow",
@@ -3351,10 +3665,27 @@
       "name": "Lukas Graham",
       "spotifyArtistId": "25u4wHJWxCA9vO0CzxAbK7",
       "genres": [
-        "dansk pop"
+        "dansk pop",
+        "soul",
+        "r&b"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "dansk pop"
+        ],
+        "addedGenres": [
+          "soul",
+          "r&b"
+        ],
+        "updatedAt": "2026-11-27T03:21:40.942Z",
+        "note": "The band's pop recordings draw prominently on soul and R&B.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "luke cyrus": {
       "name": "Luke Cyrus",
@@ -3451,10 +3782,30 @@
       "name": "MAGIC GIANT",
       "spotifyArtistId": "7eaa5bidliPI0djFYv166f",
       "genres": [
-        "folk pop"
+        "folk pop",
+        "indie folk",
+        "alternative rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "folk pop"
+        ],
+        "addedGenres": [
+          "indie folk",
+          "alternative rock"
+        ],
+        "updatedAt": "2026-11-27T03:23:06.994Z",
+        "note": "The band's recorded music blends indie folk with alternative rock.",
+        "sources": [
+          "https://www.allmusic.com/artist/magic-giant-mn0003384781",
+          "https://www.bandslate.com/band/magic-giant"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "magic man": {
       "name": "Magic Man",
@@ -3530,28 +3881,85 @@
       "name": "Marshmello",
       "spotifyArtistId": "64KEffDW9EtZ1y2vBYgq8T",
       "genres": [
-        "edm"
+        "edm",
+        "future bass",
+        "electropop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "edm"
+        ],
+        "addedGenres": [
+          "future bass",
+          "electropop"
+        ],
+        "updatedAt": "2026-11-27T03:24:18.206Z",
+        "note": "Marshmello's recordings commonly combine future bass production with pop songwriting.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "martin and rose music": {
       "name": "Martin and Rose Music",
       "spotifyArtistId": "61VbOFPL7RIKt0Q1KOykSU",
       "genres": [
-        "children's music"
+        "children's music",
+        "folk",
+        "americana"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "children's music"
+        ],
+        "addedGenres": [
+          "folk",
+          "americana"
+        ],
+        "updatedAt": "2026-11-27T03:20:32.132Z",
+        "note": "Their family music includes folk songwriting and Americana influences, supported by coverage of Dear Heart and their American History for Kids releases.",
+        "sources": [
+          "https://skopemag.com/2022/08/22/martin-and-rose-music-new-album-dear-heart",
+          "https://syntaxcreative.com/music/martin-and-rose-music-american-history-for-kids-volume-2/"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "martin solveig": {
       "name": "Martin Solveig",
       "spotifyArtistId": "1bj5GrcLom5gZFF5t949Xl",
       "genres": [
-        "french house"
+        "french house",
+        "electro house",
+        "dance pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "french house"
+        ],
+        "addedGenres": [
+          "electro house",
+          "dance pop"
+        ],
+        "updatedAt": "2026-11-27T03:28:39.765Z",
+        "note": "Solveig's recordings combine electro house with dance-pop songwriting.",
+        "sources": [
+          "https://www.allmusic.com/artist/martin-solveig-mn0000418582",
+          "https://arktide.com/artist/martin-solveig"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "mat kearney": {
       "name": "Mat Kearney",
@@ -3671,10 +4079,27 @@
       "name": "MGMT",
       "spotifyArtistId": "0SwO7SWeDHJijQ3XNS7xEE",
       "genres": [
-        "indie"
+        "indie",
+        "psychedelic pop",
+        "synthpop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "indie"
+        ],
+        "addedGenres": [
+          "psychedelic pop",
+          "synthpop"
+        ],
+        "updatedAt": "2026-11-27T03:21:35.410Z",
+        "note": "MGMT's recordings blend psychedelic pop with prominent synthpop influences.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "michael bublé": {
       "name": "Michael Bublé",
@@ -3714,10 +4139,28 @@
       "name": "Mikel",
       "spotifyArtistId": "5MboRLcEpLbsshOx64OdA6",
       "genres": [
-        "lo-fi"
+        "lo-fi",
+        "hip hop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "lo-fi"
+        ],
+        "addedGenres": [
+          "hip hop"
+        ],
+        "updatedAt": "2026-11-27T03:24:13.222Z",
+        "note": "Mikel is a hip-hop producer known for beat-driven arrangements of video game music.",
+        "sources": [
+          "https://www.vgmwax.com/artists/mikel",
+          "https://mikeljakobi.bandcamp.com/album/zelda-chill-iii"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "miki fiki": {
       "name": "Miki Fiki",
@@ -3800,10 +4243,30 @@
       "name": "Morningsiders",
       "spotifyArtistId": "5hPR4Atp3QY2ztiAcz1inl",
       "genres": [
-        "folk pop"
+        "folk pop",
+        "indie folk",
+        "americana"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "folk pop"
+        ],
+        "addedGenres": [
+          "indie folk",
+          "americana"
+        ],
+        "updatedAt": "2026-11-27T03:22:46.116Z",
+        "note": "The band is widely described as indie folk, with Americana roots in its earlier recordings.",
+        "sources": [
+          "https://www.allmusic.com/artist/morningsiders-mn0003425973",
+          "https://nettwerk.com/news/nyc-folk-collective-morningsiders-share-new-ep-sell-out-city-winery"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "motherfolk": {
       "name": "Motherfolk",
@@ -3828,10 +4291,30 @@
       "name": "Mr Little Jeans",
       "spotifyArtistId": "0B2SlMW40Hs9mijOi1cDyf",
       "genres": [
-        "chillwave"
+        "chillwave",
+        "indie pop",
+        "synthpop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "chillwave"
+        ],
+        "addedGenres": [
+          "indie pop",
+          "synthpop"
+        ],
+        "updatedAt": "2026-11-27T03:27:55.415Z",
+        "note": "Mr Little Jeans is Monica Birkenes, whose recordings combine indie pop songwriting with synth-driven production.",
+        "sources": [
+          "https://newuniversity.org/2016/11/29/a-little-chat-with-mr-little-jeans/",
+          "https://www.huckmag.com/article/mr-little-jeans"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "ms. rachel": {
       "name": "Ms. Rachel",
@@ -3840,7 +4323,22 @@
         "children's music"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "children's music"
+        ],
+        "addedGenres": [],
+        "updatedAt": "2026-11-27T03:19:58.176Z",
+        "note": "Her recordings are primarily children's music, and the sources do not establish another distinct genre as representative of her overall work.",
+        "sources": [
+          "https://music.apple.com/us/album/im-so-happy/6792048044",
+          "https://wtop.com/social-media/2026/08/youtube-sensation-ms-rachel-announces-debut-album-im-so-happy/"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "much more": {
       "name": "MUCH MORE",
@@ -3871,10 +4369,31 @@
       "name": "nanobii",
       "spotifyArtistId": "7mUsBZ6g6BbAu2MBU8Nsu3",
       "genres": [
-        "happy hardcore"
+        "happy hardcore",
+        "hands up",
+        "chiptune"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "happy hardcore"
+        ],
+        "addedGenres": [
+          "hands up",
+          "chiptune"
+        ],
+        "updatedAt": "2026-11-27T03:21:22.984Z",
+        "note": "His catalog includes hands up dance music and chiptune alongside happy hardcore.",
+        "sources": [
+          "https://nanobii.bandcamp.com/track/psycho",
+          "https://monstercat.fandom.com/wiki/Nanobii",
+          "https://www.albumoftheyear.org/artist/122063-nanobii/"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "natasha bedingfield": {
       "name": "Natasha Bedingfield",
@@ -3943,10 +4462,30 @@
       "name": "Never Shout Never",
       "spotifyArtistId": "5pUmXBIQtqpvdV1HAy2xYC",
       "genres": [
-        "emo"
+        "emo",
+        "indie rock",
+        "pop rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "emo"
+        ],
+        "addedGenres": [
+          "indie rock",
+          "pop rock"
+        ],
+        "updatedAt": "2026-11-27T03:20:13.761Z",
+        "note": "The project blends indie rock and pop rock with its established emo sound.",
+        "sources": [
+          "https://www.allmusic.com/artist/never-shout-never-mn0001019495/biography",
+          "https://en.wikipedia.org/wiki/Never_Shout_Never"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "new politics": {
       "name": "New Politics",
@@ -4013,10 +4552,30 @@
       "name": "Nichole Nordeman",
       "spotifyArtistId": "0KSjxPoT71Dq8qcgfWTdHh",
       "genres": [
-        "christian"
+        "christian",
+        "pop",
+        "singer-songwriter"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "christian"
+        ],
+        "addedGenres": [
+          "pop",
+          "singer-songwriter"
+        ],
+        "updatedAt": "2026-11-27T03:28:19.598Z",
+        "note": "Her recordings combine pop arrangements with an introspective singer-songwriter style.",
+        "sources": [
+          "https://www.allmusic.com/artist/nichole-nordeman-mn0000396144",
+          "https://www.allmusic.com/album/this-mystery-mw0000063553/awards"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "nicky youre": {
       "name": "Nicky Youre",
@@ -4057,46 +4616,138 @@
       "name": "North Point Worship",
       "spotifyArtistId": "1IGGfstLsypGtdI55tT3Z1",
       "genres": [
-        "christian"
+        "christian",
+        "pop",
+        "alternative rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "christian"
+        ],
+        "addedGenres": [
+          "pop",
+          "alternative rock"
+        ],
+        "updatedAt": "2026-11-27T03:26:09.343Z",
+        "note": "The group's catalog is rooted in contemporary worship, with pop and alternative rock styles also documented.",
+        "sources": [
+          "https://www.ccmmagazine.com/release/north-point-worship-live-from-decatur-city/",
+          "https://en.wikipedia.org/wiki/North_Point_Worship"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "of monsters and men": {
       "name": "Of Monsters and Men",
       "spotifyArtistId": "4dwdTW1Lfiq0cM8nBAqIIz",
       "genres": [
-        "folk pop"
+        "folk pop",
+        "indie rock",
+        "indie pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "folk pop"
+        ],
+        "addedGenres": [
+          "indie rock",
+          "indie pop"
+        ],
+        "updatedAt": "2026-11-27T03:21:53.891Z",
+        "note": "The Icelandic band's recorded music spans indie rock and indie pop alongside folk pop.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "oh honey": {
       "name": "Oh Honey",
       "spotifyArtistId": "3yQxGz288i3AqOxq7LYHUU",
       "genres": [
-        "folk pop"
+        "folk pop",
+        "indie pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "folk pop"
+        ],
+        "addedGenres": [
+          "indie pop"
+        ],
+        "updatedAt": "2026-11-27T03:26:19.083Z",
+        "note": "The Brooklyn duo is widely described as indie pop alongside its folk-pop sound.",
+        "sources": [
+          "https://www.allmusic.com/artist/oh-honey-mn0003241913",
+          "https://www.atlantamusicguide.com/qa-with-oh-honey-playing-chastain-park-amphitheatre-on-718/"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "okkervil river": {
       "name": "Okkervil River",
       "spotifyArtistId": "5E7zSu46SqTmgKqsc0tFkY",
       "genres": [
-        "indie folk"
+        "indie folk",
+        "indie rock",
+        "alternative country"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "indie folk"
+        ],
+        "addedGenres": [
+          "indie rock",
+          "alternative country"
+        ],
+        "updatedAt": "2026-11-27T03:28:23.909Z",
+        "note": "The band's catalog combines indie rock with alternative country influences.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "olivia dean": {
       "name": "Olivia Dean",
       "spotifyArtistId": "00x1fYSGhdqScXBRpSj3DW",
       "genres": [
-        "pop soul"
+        "pop soul",
+        "neo soul",
+        "r&b"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "pop soul"
+        ],
+        "addedGenres": [
+          "neo soul",
+          "r&b"
+        ],
+        "updatedAt": "2026-11-27T03:22:59.656Z",
+        "note": "Her recordings blend neo soul and contemporary R&B with her established pop soul sound.",
+        "sources": [
+          "https://pitchfork.com/reviews/albums/olivia-dean-the-art-of-loving/",
+          "https://www.allmusic.com/artist/olivia-dean-mn0003812041"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "olivia foa'i": {
       "name": "Olivia Foa'i",
@@ -4132,10 +4783,27 @@
       "name": "OneRepublic",
       "spotifyArtistId": "5Pwc4xIPtQLFEnJriah9YJ",
       "genres": [
-        "soft pop"
+        "soft pop",
+        "pop rock",
+        "alternative rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "soft pop"
+        ],
+        "addedGenres": [
+          "pop rock",
+          "alternative rock"
+        ],
+        "updatedAt": "2026-11-27T03:22:51.085Z",
+        "note": "OneRepublic's catalog blends pop rock with alternative rock influences.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "oso oso": {
       "name": "Oso Oso",
@@ -4184,10 +4852,27 @@
       "name": "Panic! At The Disco",
       "spotifyArtistId": "20JZFwl6HVl6yg8a4H3ZqK",
       "genres": [
-        "emo"
+        "emo",
+        "pop rock",
+        "pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "emo"
+        ],
+        "addedGenres": [
+          "pop rock",
+          "pop"
+        ],
+        "updatedAt": "2026-11-27T03:20:36.805Z",
+        "note": "The band's recorded music spans theatrical pop rock and increasingly pop-oriented releases.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "parachute": {
       "name": "Parachute",
@@ -4230,10 +4915,27 @@
       "name": "Passenger",
       "spotifyArtistId": "0gadJ2b9A4SKsB1RFkBb66",
       "genres": [
-        "folk pop"
+        "folk pop",
+        "indie folk",
+        "folk rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "folk pop"
+        ],
+        "addedGenres": [
+          "indie folk",
+          "folk rock"
+        ],
+        "updatedAt": "2026-11-27T03:26:45.283Z",
+        "note": "Passenger's recordings draw on indie folk and folk rock alongside folk pop.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "passion": {
       "name": "Passion",
@@ -4249,10 +4951,27 @@
       "name": "Passion Pit",
       "spotifyArtistId": "7gjAu1qr5C2grXeQFFOGeh",
       "genres": [
-        "indie"
+        "indie",
+        "synthpop",
+        "electropop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "indie"
+        ],
+        "addedGenres": [
+          "synthpop",
+          "electropop"
+        ],
+        "updatedAt": "2026-11-27T03:24:35.676Z",
+        "note": "Passion Pit is known for synthesizer-driven pop with electronic production.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "pat barrett": {
       "name": "Pat Barrett",
@@ -4261,7 +4980,22 @@
         "christian"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "christian"
+        ],
+        "addedGenres": [],
+        "updatedAt": "2026-11-27T03:28:54.391Z",
+        "note": "Barrett is primarily a contemporary worship artist. The sources do not confidently establish a distinct additional genre for his solo recordings.",
+        "sources": [
+          "https://www.worshiptogether.com/worship-leaders/pat-barrett/",
+          "https://www.allmusic.com/artist/pat-barrett-mn0002514534"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "patrick stump": {
       "name": "Patrick Stump",
@@ -4312,28 +5046,86 @@
       "name": "Phil Wickham",
       "spotifyArtistId": "5d1JhBfyb58upMXCZOdbQu",
       "genres": [
-        "christian"
+        "christian",
+        "pop rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "christian"
+        ],
+        "addedGenres": [
+          "pop rock"
+        ],
+        "updatedAt": "2026-11-27T03:24:52.320Z",
+        "note": "His worship recordings commonly use pop-rock arrangements.",
+        "sources": [
+          "https://www.allmusic.com/artist/phil-wickham-mn0000340006"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "phillip phillips": {
       "name": "Phillip Phillips",
       "spotifyArtistId": "6p5JxpTc7USNnBnLzctyd4",
       "genres": [
-        "folk pop"
+        "folk pop",
+        "pop rock",
+        "folk rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "folk pop"
+        ],
+        "addedGenres": [
+          "pop rock",
+          "folk rock"
+        ],
+        "updatedAt": "2026-11-27T03:23:26.126Z",
+        "note": "His recordings combine pop rock with acoustic, folk-influenced rock.",
+        "sources": [
+          "https://musicbrainz.org/artist/838483d3-a803-4194-9754-ad634fba8553",
+          "https://www.songkick.com/artists/4239206-phillip-phillips",
+          "https://www.allmusic.com/artist/phillip-phillips-mn0002944976/biography"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "phoenix": {
       "name": "Phoenix",
       "spotifyArtistId": "1xU878Z1QtBldR7ru9owdU",
       "genres": [
-        "indie"
+        "indie",
+        "synth-pop",
+        "pop rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "indie"
+        ],
+        "addedGenres": [
+          "synth-pop",
+          "pop rock"
+        ],
+        "updatedAt": "2026-11-27T03:22:12.708Z",
+        "note": "The French band blends melodic pop rock with prominent synth-pop elements across its recordings.",
+        "sources": [
+          "https://www.allmusic.com/artist/phoenix-mn0000277572",
+          "https://en.wikipedia.org/wiki/Phoenix_%28French_band%29"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "polite fiction": {
       "name": "Polite Fiction",
@@ -4761,10 +5553,28 @@
       "name": "Sean Curran",
       "spotifyArtistId": "4OWmbcuUeVoBCmgMEASW3c",
       "genres": [
-        "christian"
+        "christian",
+        "pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "christian"
+        ],
+        "addedGenres": [
+          "pop"
+        ],
+        "updatedAt": "2026-11-27T03:23:49.706Z",
+        "note": "Curran's worship music incorporates pop, particularly on Basic Faith.",
+        "sources": [
+          "https://open.spotify.com/artist/4OWmbcuUeVoBCmgMEASW3c",
+          "https://release.air1.com/music/blog/music-news/album-spotlight-sean-curran-gets-back-to-the-heart-of-worship-on-basic-faith-8787"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "shama mrema": {
       "name": "Shama Mrema",
@@ -4808,10 +5618,30 @@
       "name": "Sir Woman",
       "spotifyArtistId": "3H03S3ZtyYLdzsk6EYndUL",
       "genres": [
-        "pop soul"
+        "pop soul",
+        "funk",
+        "r&b"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "pop soul"
+        ],
+        "addedGenres": [
+          "funk",
+          "r&b"
+        ],
+        "updatedAt": "2026-11-27T03:28:12.153Z",
+        "note": "Kelsey Wilson's Sir Woman project blends funk and R&B with its pop-soul sound.",
+        "sources": [
+          "https://www.sirwoman.com/about",
+          "https://www.cbsnews.com/video/saturday-sessions-sir-woman-performs-making-love/"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "sky sailing": {
       "name": "Sky Sailing",
@@ -4854,10 +5684,28 @@
       "name": "Slugs and Bugs",
       "spotifyArtistId": "5OqR2VGSqk60tMFN8eINMN",
       "genres": [
-        "children's music"
+        "children's music",
+        "christian"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "children's music"
+        ],
+        "addedGenres": [
+          "christian"
+        ],
+        "updatedAt": "2026-11-27T03:20:24.407Z",
+        "note": "The project combines family music with Christian themes and Scripture songs.",
+        "sources": [
+          "https://slugsandbugs.com/pages/about-us",
+          "https://slugsandbugs.com/pages/new-music"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "smallpools": {
       "name": "Smallpools",
@@ -4934,28 +5782,87 @@
       "name": "Stephen Day",
       "spotifyArtistId": "4cnFw4bkIWVGKUBsr93OS5",
       "genres": [
-        "pop soul"
+        "pop soul",
+        "singer-songwriter",
+        "soft rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "pop soul"
+        ],
+        "addedGenres": [
+          "singer-songwriter",
+          "soft rock"
+        ],
+        "updatedAt": "2026-11-27T03:22:30.012Z",
+        "note": "Day's catalog combines singer-songwriter storytelling with pop, soul, and soft rock influences.",
+        "sources": [
+          "https://www.allmusic.com/artist/stephen-day-mn0001213495",
+          "https://www.opry.com/artists/stephen-day"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "stessie": {
       "name": "Stessie",
       "spotifyArtistId": "2RssKQtZRWjMjZT0Eu9a2Q",
       "genres": [
-        "future bass"
+        "future bass",
+        "future house"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "future bass"
+        ],
+        "addedGenres": [
+          "future house"
+        ],
+        "updatedAt": "2026-11-27T03:21:49.732Z",
+        "note": "Stessie's official site describes their music as electronic dance music, and artist and release listings also identify future house. The artist experiments across styles, so a more specific second addition is uncertain.",
+        "sources": [
+          "https://stessiemusic.com/",
+          "https://spinnradio.com/artist/stessie",
+          "https://stessie.bandcamp.com/track/atmosphere"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "still woozy": {
       "name": "Still Woozy",
       "spotifyArtistId": "4iMO20EPodreIaEl8qW66y",
       "genres": [
-        "bedroom pop"
+        "bedroom pop",
+        "indie pop",
+        "psychedelic pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "bedroom pop"
+        ],
+        "addedGenres": [
+          "indie pop",
+          "psychedelic pop"
+        ],
+        "updatedAt": "2026-11-27T03:28:31.627Z",
+        "note": "His recordings blend indie pop with psychedelic elements.",
+        "sources": [
+          "https://www.allmusic.com/artist/still-woozy-mn0003891199/biography",
+          "https://www.newwavemagazine.com/single-post/keeping-up-with-still-woozy"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "strings & heart": {
       "name": "Strings & Heart",
@@ -5038,10 +5945,30 @@
       "name": "Super Whatevr",
       "spotifyArtistId": "2kbAovdYb7krLSGdOrBMRu",
       "genres": [
-        "midwest emo"
+        "midwest emo",
+        "alternative rock",
+        "indie rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "midwest emo"
+        ],
+        "addedGenres": [
+          "alternative rock",
+          "indie rock"
+        ],
+        "updatedAt": "2026-11-27T03:27:16.758Z",
+        "note": "Super Whatevr's catalog combines emo-punk with alternative and indie rock.",
+        "sources": [
+          "https://www.allmusic.com/artist/super-whatevr-mn0003689613",
+          "https://www.bandslate.com/band/super-whatevr"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "sure sure": {
       "name": "Sure Sure",
@@ -5106,10 +6033,30 @@
       "name": "Tarkio",
       "spotifyArtistId": "2Ze5e5TePrBNdEg94bTvWv",
       "genres": [
-        "alt country"
+        "alt country",
+        "indie rock",
+        "indie folk"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "alt country"
+        ],
+        "addedGenres": [
+          "indie rock",
+          "indie folk"
+        ],
+        "updatedAt": "2026-11-27T03:27:25.371Z",
+        "note": "Tarkio blended indie rock and folk with its alternative country sound.",
+        "sources": [
+          "https://pitchfork.com/reviews/albums/8312-omnibus/",
+          "https://www.allmusic.com/artist/tarkio-mn0001502554"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "tauren wells": {
       "name": "Tauren Wells",
@@ -5209,10 +6156,27 @@
       "name": "The Beach Boys",
       "spotifyArtistId": "3oDbviiivRWhXwIE8hxkVV",
       "genres": [
-        "baroque pop"
+        "baroque pop",
+        "surf rock",
+        "sunshine pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "baroque pop"
+        ],
+        "addedGenres": [
+          "surf rock",
+          "sunshine pop"
+        ],
+        "updatedAt": "2026-11-27T03:24:31.146Z",
+        "note": "Surf rock and sunshine pop represent the band's recorded music alongside its baroque pop work.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "the beta band": {
       "name": "The Beta Band",
@@ -5383,10 +6347,30 @@
       "name": "The Dip",
       "spotifyArtistId": "2qFOYqFxPaIwEnffVhJhEn",
       "genres": [
-        "retro soul"
+        "retro soul",
+        "rhythm and blues",
+        "funk"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "retro soul"
+        ],
+        "addedGenres": [
+          "rhythm and blues",
+          "funk"
+        ],
+        "updatedAt": "2026-11-27T03:27:33.533Z",
+        "note": "The Seattle band blends rhythm and blues with funk influences across its recordings.",
+        "sources": [
+          "https://www.dualtonestore.com/collections/the-dip",
+          "https://www.allmusic.com/artist/the-dip-mn0003565313"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "the figs": {
       "name": "The Figs",
@@ -5403,10 +6387,30 @@
       "name": "The Format",
       "spotifyArtistId": "3ZJC8cLts8Q8s8JbNJKsLf",
       "genres": [
-        "emo"
+        "emo",
+        "indie pop",
+        "indie rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "emo"
+        ],
+        "addedGenres": [
+          "indie pop",
+          "indie rock"
+        ],
+        "updatedAt": "2026-11-27T03:21:02.974Z",
+        "note": "The Format's recordings combine melodic indie pop with indie rock.",
+        "sources": [
+          "https://www.allmusic.com/album/dog-problems-mw0000729094",
+          "https://www.allmusic.com/album/r662016"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "the ghost club": {
       "name": "The Ghost Club",
@@ -5497,19 +6501,56 @@
       "name": "The Hush Sound",
       "spotifyArtistId": "1RCoE2Dq19lePKhPzt9vM5",
       "genres": [
-        "baroque pop"
+        "baroque pop",
+        "indie pop",
+        "indie rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "baroque pop"
+        ],
+        "addedGenres": [
+          "indie pop",
+          "indie rock"
+        ],
+        "updatedAt": "2026-11-27T03:22:22.216Z",
+        "note": "The band blends melodic indie pop with indie rock across its recordings.",
+        "sources": [
+          "https://www.allmusic.com/artist/the-hush-sound-mn0000244107",
+          "https://www.allmusic.com/album/so-sudden-mw0000170805"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "the jackson 5": {
       "name": "The Jackson 5",
       "spotifyArtistId": "2iE18Oxc8YSumAU232n4rW",
       "genres": [
-        "motown"
+        "motown",
+        "soul",
+        "pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "motown"
+        ],
+        "addedGenres": [
+          "soul",
+          "pop"
+        ],
+        "updatedAt": "2026-11-27T03:23:54.093Z",
+        "note": "The Jackson 5 combined soul vocals with mainstream pop across their recordings.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "the lighthouse and the whaler": {
       "name": "The Lighthouse And The Whaler",
@@ -5747,10 +6788,30 @@
       "name": "The Strike",
       "spotifyArtistId": "6VB4TqEl0yfaF88LYHH4wj",
       "genres": [
-        "synthwave"
+        "synthwave",
+        "indie pop",
+        "funk rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "synthwave"
+        ],
+        "addedGenres": [
+          "indie pop",
+          "funk rock"
+        ],
+        "updatedAt": "2026-11-27T03:25:04.395Z",
+        "note": "The band's recordings combine indie pop songwriting with funk and rock influences.",
+        "sources": [
+          "https://music.apple.com/us/album/faint-of-heart/1628697165",
+          "https://latterdaysaintmusicians.com/artists/the-strike"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "the strokes": {
       "name": "The Strokes",
@@ -5786,19 +6847,59 @@
       "name": "The War On Drugs",
       "spotifyArtistId": "6g0mn3tzAds6aVeUYRsryU",
       "genres": [
-        "indie rock"
+        "indie rock",
+        "heartland rock",
+        "neo-psychedelia"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "indie rock"
+        ],
+        "addedGenres": [
+          "heartland rock",
+          "neo-psychedelia"
+        ],
+        "updatedAt": "2026-11-27T03:27:46.231Z",
+        "note": "The band's recordings blend heartland rock songwriting with psychedelic textures.",
+        "sources": [
+          "https://guitar.com/artists/the-war-on-drugs/",
+          "https://www.allmusic.com/album/a-deeper-understanding-mw0003062304"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "the wombats": {
       "name": "The Wombats",
       "spotifyArtistId": "0Ya43ZKWHTKkAbkoJJkwIB",
       "genres": [
-        "indie"
+        "indie",
+        "indie rock",
+        "indie pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "indie"
+        ],
+        "addedGenres": [
+          "indie rock",
+          "indie pop"
+        ],
+        "updatedAt": "2026-11-27T03:25:14.250Z",
+        "note": "The Liverpool band combines guitar-driven indie rock with melodic pop songwriting.",
+        "sources": [
+          "https://www.allmusic.com/artist/mn0000574428",
+          "https://musicbrainz.org/artist/e105c272-b5d7-4135-82ef-d60bded54345"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "the wonderlands": {
       "name": "The Wonderlands",
@@ -5849,7 +6950,21 @@
         "children's music"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "children's music"
+        ],
+        "addedGenres": [],
+        "updatedAt": "2026-11-27T03:20:44.952Z",
+        "note": "The matching album is classified as children's music; the available evidence does not establish a distinct additional genre.",
+        "sources": [
+          "https://music.apple.com/us/album/tiny-tunes-time/1858635360"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "tobymac": {
       "name": "TobyMac",
@@ -5889,10 +7004,27 @@
       "name": "Train",
       "spotifyArtistId": "3FUY2gzHeIiaesXtOAdB7A",
       "genres": [
-        "soft pop"
+        "soft pop",
+        "pop rock",
+        "alternative rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "soft pop"
+        ],
+        "addedGenres": [
+          "pop rock",
+          "alternative rock"
+        ],
+        "updatedAt": "2026-11-27T03:24:56.633Z",
+        "note": "Train is best known for melodic pop rock, with alternative rock prominent in its earlier recordings.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "transviolet": {
       "name": "Transviolet",
@@ -5966,16 +7098,48 @@
         "children's music"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "children's music"
+        ],
+        "addedGenres": [],
+        "updatedAt": "2026-11-27T03:20:05.845Z",
+        "note": "Twenty Trucks is identified by the Truck Tunes recordings. The sources support children's music but do not establish a distinct additional genre for the artist overall.",
+        "sources": [
+          "https://music.apple.com/us/artist/twenty-trucks/1519408611",
+          "https://www.20trucks.com/trucktunes"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "two door cinema club": {
       "name": "Two Door Cinema Club",
       "spotifyArtistId": "536BYVgOnRky0xjsPT96zl",
       "genres": [
-        "indie"
+        "indie",
+        "dance rock",
+        "synth-pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "indie"
+        ],
+        "addedGenres": [
+          "dance rock",
+          "synth-pop"
+        ],
+        "updatedAt": "2026-11-27T03:21:10.345Z",
+        "note": "Their recordings combine dance-oriented rock with prominent synth-pop influences.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "twrp": {
       "name": "TWRP",
@@ -6031,19 +7195,54 @@
       "name": "Vance Joy",
       "spotifyArtistId": "10exVja0key0uqUkk6LJRT",
       "genres": [
-        "folk pop"
+        "folk pop",
+        "indie folk",
+        "indie pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "folk pop"
+        ],
+        "addedGenres": [
+          "indie folk",
+          "indie pop"
+        ],
+        "updatedAt": "2026-11-27T03:22:04.320Z",
+        "note": "His recorded music combines indie folk songwriting with indie pop arrangements.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "veggietales": {
       "name": "VeggieTales",
       "spotifyArtistId": "4QKx7KohkWZAOkO4sI3GRx",
       "genres": [
-        "children's music"
+        "children's music",
+        "christian"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "children's music"
+        ],
+        "addedGenres": [
+          "christian"
+        ],
+        "updatedAt": "2026-11-27T03:19:49.815Z",
+        "note": "VeggieTales has an extensive catalog of Christian songs and worship recordings for children.",
+        "sources": [
+          "https://www.allmusic.com/album/veggietales-worship-songs-mw0000354287",
+          "https://arktide.com/artist/veggietales"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "vertical worship": {
       "name": "Vertical Worship",
@@ -6141,19 +7340,56 @@
       "name": "Wallows",
       "spotifyArtistId": "0NIPkIjTV8mB795yEIiPYL",
       "genres": [
-        "indie"
+        "indie",
+        "alternative rock",
+        "indie pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "indie"
+        ],
+        "addedGenres": [
+          "alternative rock",
+          "indie pop"
+        ],
+        "updatedAt": "2026-11-27T03:20:54.109Z",
+        "note": "Wallows blend alternative rock with melodic indie pop across their recordings.",
+        "sources": [
+          "https://www.grammy.com/news/wallows-model-new-album-tour-interview/",
+          "https://www.allmusic.com/artist/wallows-mn0003719550"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "weezer": {
       "name": "Weezer",
       "spotifyArtistId": "3jOstUTkEu2JkjvRdBA5Gu",
       "genres": [
-        "alternative rock"
+        "alternative rock",
+        "power pop",
+        "pop rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "alternative rock"
+        ],
+        "addedGenres": [
+          "power pop",
+          "pop rock"
+        ],
+        "updatedAt": "2026-11-27T03:21:58.816Z",
+        "note": "Weezer is known for melodic guitar-driven rock with strong power pop and pop rock influences. One example recording appears to be by another artist.",
+        "sources": [],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "westover": {
       "name": "Westover",
@@ -6192,10 +7428,29 @@
       "name": "Wheeland Brothers",
       "spotifyArtistId": "5mabMBNdrC8AIPmjpiqvEq",
       "genres": [
-        "reggae rock"
+        "reggae rock",
+        "surf rock",
+        "acoustic pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-26T20:22:51.894Z"
+      "updatedAt": "2026-11-26T20:22:51.894Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "reggae rock"
+        ],
+        "addedGenres": [
+          "surf rock",
+          "acoustic pop"
+        ],
+        "updatedAt": "2026-11-27T03:24:44.697Z",
+        "note": "The band's official biography describes its sound as a blend of surf rock, reggae, hip hop and acoustic pop.",
+        "sources": [
+          "https://wheelandbrothers.com/band/"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "wheels on the bus": {
       "name": "Wheels on the Bus",
@@ -6211,10 +7466,30 @@
       "name": "WILD",
       "spotifyArtistId": "0jcaMhfyinUx3Pj8w4nmWZ",
       "genres": [
-        "folk pop"
+        "folk pop",
+        "indie folk",
+        "indie pop"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "folk pop"
+        ],
+        "addedGenres": [
+          "indie folk",
+          "indie pop"
+        ],
+        "updatedAt": "2026-11-27T03:26:40.247Z",
+        "note": "The Los Angeles trio blends indie folk with indie pop alongside its established folk pop sound.",
+        "sources": [
+          "https://www.allmusic.com/artist/wild-mn0000211226",
+          "https://atwoodmagazine.com/gbwi-wild-goin-back-music-album-premiere/"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "wild party": {
       "name": "Wild Party",
@@ -6297,10 +7572,31 @@
       "name": "Young Rising Sons",
       "spotifyArtistId": "6ZUjdwG0NvY6MT7vvmluhV",
       "genres": [
-        "folk pop"
+        "folk pop",
+        "indie pop",
+        "alternative rock"
       ],
       "source": "spotify",
-      "updatedAt": "2026-11-27T00:00:07.602Z"
+      "updatedAt": "2026-11-27T00:00:07.602Z",
+      "genreExpansion": {
+        "source": "codex",
+        "originalGenres": [
+          "folk pop"
+        ],
+        "addedGenres": [
+          "indie pop",
+          "alternative rock"
+        ],
+        "updatedAt": "2026-11-27T03:25:39.140Z",
+        "note": "Their recordings blend melodic indie pop with guitar-driven alternative rock.",
+        "sources": [
+          "https://www.allmusic.com/artist/young-rising-sons-mn0003281951",
+          "https://www.squareonemagazine.co.uk/content/a-conversation-withyoung-rising-sons",
+          "https://atwoodmagazine.com/yrsx-young-rising-sons-still-point-in-a-turning-world-music-review-album-feature/"
+        ],
+        "model": "gpt-6.1-terra",
+        "reasoningEffort": "medium"
+      }
     },
     "young the giant": {
       "name": "Young the Giant",
