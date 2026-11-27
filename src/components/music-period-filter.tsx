@@ -1,0 +1,32 @@
+"use client";
+
+import { useRef, useState } from "react";
+
+const presets = [["all", "All time"], ["30d", "Last 30 days"], ["365d", "Last year"]] as const;
+
+export function MusicPeriodFilter({ period, periods, onChange }: { period: string; periods: string[]; onChange: (period: string, replace?: boolean) => void }) {
+  const years = periods.filter(value => /^\d{4}$/.test(value)).sort((a, b) => Number(a) - Number(b));
+  const [rememberedYear, setRememberedYear] = useState(years.at(-1));
+  const scrubbing = useRef(false);
+  const active = years.includes(period);
+  const year = active ? period : years.includes(rememberedYear || "") ? rememberedYear! : years.at(-1);
+  const index = year ? years.indexOf(year) : 0;
+
+  function selectYear(position: number) {
+    const next = years[position];
+    if (!next) return;
+    setRememberedYear(next);
+    onChange(next, scrubbing.current);
+    if (next !== period) scrubbing.current = true;
+  }
+  function finishScrubbing() { scrubbing.current = false; }
+
+  return <>
+    <div className="music-period-presets" role="group" aria-label="Listening history presets">{presets.map(([value, label]) => <button key={value} type="button" aria-pressed={period === value} onClick={() => { setRememberedYear(year); finishScrubbing(); onChange(value); }}>{label}</button>)}</div>
+    {year && <div className="music-year-filter" data-active={active}>
+      <div className="flex items-baseline justify-between gap-3 text-[13px] text-muted"><label htmlFor="music-history-year">Year</label><output htmlFor="music-history-year" className="music-year-value tabular-nums">{year}</output></div>
+      <input id="music-history-year" className="music-year-slider" type="range" min={0} max={Math.max(0, years.length - 1)} step={1} value={index} aria-label="Listening history year" aria-valuetext={year} onPointerDown={() => selectYear(index)} onChange={event => selectYear(Number(event.currentTarget.value))} onPointerUp={finishScrubbing} onPointerCancel={finishScrubbing} onKeyDown={event => { if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "PageUp", "PageDown"].includes(event.key) && !active) selectYear(index); }} onKeyUp={finishScrubbing} onBlur={finishScrubbing} />
+      <div aria-hidden="true" className="flex justify-between text-[12px] tabular-nums text-muted"><span>{years[0]}</span><span>{years.length > 1 ? years.at(-1) : ""}</span></div>
+    </div>}
+  </>;
+}

@@ -8,6 +8,7 @@ import { ListeningChart, WeekdayChart } from "./music-history-charts";
 import { MusicNumber, useMusicListMotion } from "./music-motion";
 import { MusicArtists, MusicHoverProvider, MusicLink } from "./music-entity-link";
 import { MusicNowPlaying } from "./music-now-playing";
+import { MusicPeriodFilter } from "./music-period-filter";
 import { useMusicCollection } from "./use-music-collection";
 import { spotifyEntityUrl } from "@/lib/music/entity-links";
 
@@ -61,11 +62,11 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
     return () => removeEventListener("popstate", applyLocation);
   }, []);
   useEffect(() => { if (manifest && !manifest.periods.includes(period)) setPeriod("30d"); }, [manifest, period]);
-  function filter(nextPeriod: string) {
+  function filter(nextPeriod: string, replace = false) {
     if (nextPeriod === period) return;
     setPeriod(nextPeriod);
     const query = new URLSearchParams(location.search); query.delete("platform"); query.set("period", nextPeriod);
-    history.pushState(history.state, "", `${location.pathname}?${query}${location.hash}`);
+    history[replace ? "replaceState" : "pushState"](history.state, "", `${location.pathname}?${query}${location.hash}`);
   }
   // Keep the saved view while fetching instead of flashing zero counts between periods.
   const current = data;
@@ -83,8 +84,8 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
 
     {provider && <section aria-labelledby="music-lately-title"><div className="mb-5"><p className="music-label">The current rotation</p><h2 id="music-lately-title" className="mt-2 font-display text-[42px] leading-none">Heavy <em className="text-accent">rotation.</em></h2></div><Rotation items={provider.tracks} /><p className="mt-4 text-[13px] text-muted">Spotify’s affinity rankings.</p></section>}
 
-    <section aria-labelledby="music-history-title" className="music-history flex flex-wrap items-start justify-between gap-x-5 gap-y-6"><div><p className="music-label">The bigger picture</p><h2 id="music-history-title" className="mt-2 font-display text-[42px] leading-none">Listening <em className="text-accent">history.</em></h2></div><div className="music-history-filters grid" role="group" aria-label="Filter listening history" style={headerHeight === null ? undefined : { "--music-header-offset": `${headerHeight}px` } as CSSProperties}><label className="music-select-label">Period<select value={period} onChange={e => filter(e.target.value)} className="music-select">{(manifest?.periods || ["30d", "365d", "all"]).map(p => <option key={p} value={p}>{periodLabels[p] || p}</option>)}</select></label></div>
-      <div className="flex w-full min-w-0 flex-col gap-6"><div aria-live="polite" className="text-[13px] text-muted">{loading ? "Loading listening history…" : error ? "The latest update is unavailable. Showing the saved collection." : stats?.plays ? (periodLabels[current?.period || period] || period) : "Historical imports are being collected. The archive will grow as new plays arrive."}</div>
+    <section aria-labelledby="music-history-title" className="music-history flex min-w-0 flex-col gap-6"><div><p className="music-label">The bigger picture</p><h2 id="music-history-title" className="mt-2 font-display text-[42px] leading-none">Listening <em className="text-accent">history.</em></h2></div><div className="music-history-filters" role="group" aria-label="Filter listening history" style={headerHeight === null ? undefined : { "--music-header-offset": `${headerHeight}px` } as CSSProperties}><MusicPeriodFilter period={period} periods={manifest?.periods || ["all", "30d", "365d"]} onChange={filter} /></div>
+      <div className="flex w-full min-w-0 flex-col gap-6"><div aria-live="polite" className={error || !loading && !stats?.plays ? "text-[13px] text-muted" : "sr-only"}>{loading ? "Loading listening history…" : error ? "The latest update is unavailable. Showing the saved collection." : stats?.plays ? `Showing listening history for ${periodLabels[current?.period || period] || period}.` : "Historical imports are being collected. The archive will grow as new plays arrive."}</div>
       {stats?.firstListen && stats.lastListen && <p className="text-[13px] text-muted">Available records: {dateLabel(stats.firstListen)} through {dateLabel(stats.lastListen)}.</p>}
       <div aria-busy={loading} className="flex flex-col gap-5">
         <div className="music-stat-grid">{[["Recorded plays", stats?.plays || 0], ["Different artists", stats?.artists || 0], ["Different tracks", stats?.tracks || 0], ["Measured hours", Math.round((stats?.msPlayed || 0) / 3600000)]].map(([label, value]) => <div key={label} className="panel rounded-[20px] p-5 sm:p-6"><p className="music-label">{label}</p><p className="mt-3 font-display text-[clamp(44px,5vw,64px)] leading-none tabular-nums">{label === "Measured hours" && !stats?.durationKnown ? <span className="text-muted">Pending</span> : <MusicNumber value={Number(value)} />}</p></div>)}</div>

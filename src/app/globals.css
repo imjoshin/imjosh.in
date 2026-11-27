@@ -148,7 +148,6 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-album-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 24px 18px; }
 .music-album { min-width: 0; }
 .music-album-rank { position: absolute; bottom: 8px; left: 8px; border-radius: 999px; padding: 3px 9px; background: #0c0b12bb; color: #edebf5; font-size: 12px; backdrop-filter: blur(8px); }
-.music-select-label { display: flex; flex-direction: column; gap: 7px; color: var(--mute); font-size: 12px; }
 .music-number { display: inline-flex; align-items: baseline; font-variant-numeric: tabular-nums; white-space: nowrap; vertical-align: baseline; }
 .music-number-place { display: inline-flex; align-items: baseline; }
 .music-number-digit { display: inline-block; width: 1ch; height: 1em; overflow: clip; vertical-align: baseline; }
@@ -180,10 +179,27 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
   .music-now-playing-region { left: 0; right: 0; bottom: max(16px, env(safe-area-inset-bottom, 0px), var(--music-viewport-bottom, 0px)); width: 100%; }
   .music-now-playing { border-radius: 20px; padding: 18px 48px 18px max(18px, env(safe-area-inset-left)); }
 }
-.music-select { appearance: none; color: var(--ink); border: 1px solid var(--line); border-radius: 12px; min-height: 44px; background: var(--panel); padding: 10px 34px 10px 14px; font: 14px "Bricolage Grotesque Variable", sans-serif; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23858098' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 13px center; }
-.music-history-filters { --music-header-offset: 88px; position: sticky; top: calc(var(--music-header-offset) + 12px); z-index: 15; width: min(100%, 176px); margin-block: -13px; border: 1px solid var(--line); border-radius: 20px; padding: 12px; background: var(--panel); backdrop-filter: blur(18px); }
-.music-history-filters .music-select-label { min-width: 0; }
-.music-history-filters .music-select { min-width: 0; width: 100%; }
+.music-history-filters { --music-header-offset: 88px; position: sticky; top: calc(var(--music-header-offset) + 12px); z-index: 15; display: flex; align-items: center; gap: 28px; width: 100%; border: 1px solid var(--line); border-radius: 24px; padding: 16px 22px; background: var(--panel); backdrop-filter: blur(18px); }
+.music-period-presets { display: flex; flex: none; gap: 6px; }
+.music-period-presets button { min-height: 44px; border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; color: var(--mute); font-size: 14px; white-space: nowrap; transition: color .2s, background-color .2s, border-color .2s; }
+.music-period-presets button:hover { color: var(--ink); border-color: var(--mute); }
+.music-period-presets button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+.music-year-filter { --music-year-thumb: #ffffff60; flex: 1; min-width: 0; border-left: 1px solid var(--line); padding-left: 28px; }
+.music-year-filter[data-active="true"] { --music-year-thumb: #fff; }
+.music-year-value { transition: color .2s; }
+.music-year-filter[data-active="true"] .music-year-value { color: var(--ink); }
+.music-year-slider { appearance: none; display: block; width: 100%; height: 28px; margin: 0; background: transparent; touch-action: pan-y; }
+.music-year-slider::-webkit-slider-runnable-track { height: 3px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 24%, transparent); }
+.music-year-slider::-moz-range-track { height: 3px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 24%, transparent); }
+.music-year-slider::-webkit-slider-thumb { appearance: none; height: 18px; width: 18px; margin-top: -7.5px; border: 1px solid color-mix(in srgb, var(--ink) 25%, transparent); border-radius: 50%; background: var(--music-year-thumb); box-shadow: 0 2px 8px #0002; transition: background-color .2s, box-shadow .2s; }
+.music-year-slider::-moz-range-thumb { height: 18px; width: 18px; border: 1px solid color-mix(in srgb, var(--ink) 25%, transparent); border-radius: 50%; background: var(--music-year-thumb); box-shadow: 0 2px 8px #0002; transition: background-color .2s, box-shadow .2s; }
+.music-year-slider:focus-visible { outline-offset: 2px; border-radius: 6px; }
+@media (max-width: 767px) {
+  .music-history-filters { flex-direction: column; align-items: stretch; gap: 16px; padding: 16px; }
+  .music-period-presets { gap: 5px; }
+  .music-period-presets button { flex: 1; padding-inline: 10px; }
+  .music-year-filter { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; padding-top: 12px; }
+}
 @media print { .music-history-filters { position: static; } }
 .music-stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .music-day-bar { min-height: 2px; border-radius: 5px 5px 0 0; background: linear-gradient(to top, color-mix(in srgb, var(--acc) 35%, transparent), var(--acc)); }

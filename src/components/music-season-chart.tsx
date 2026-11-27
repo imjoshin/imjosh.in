@@ -149,7 +149,7 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
       <div><p className="music-label">Every season has its favorites</p><h2 id={id + "-heading"} className="mt-2 font-display text-[clamp(36px,4vw,48px)] leading-none">The changing <em className="text-accent">soundtrack.</em></h2></div>
       <div className="music-tabs" role="group" aria-label="Seasonal chart metric">{metrics.map(value => <button key={value} aria-pressed={metric === value} onClick={() => { setMetric(value); setSongs(null); setPinned(null); setHovered(null); setInspection(null); }} className="capitalize">{value}</button>)}</div>
     </div>
-    <p className="mt-4 max-w-[80ch] text-[14px] leading-relaxed text-muted">The top five from each season, across the whole collection. Only seasonal totals with more than 10 plays appear.</p>
+    <p className="mt-4 max-w-[80ch] text-[14px] leading-relaxed text-muted">The top five from each season, across the whole collection. Only seasonal totals with more than 10 plays appear. Songs may have multiple genres based on their artists.</p>
     <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-[13px] text-muted"><span>{loading ? "Updating seasonal history…" : error ? "Seasonal history is unavailable. Try reloading." : number(series.length) + " lines · Plays per season"}</span></div>
     <div hidden={!seasons.length}>
       <div className="music-season-layout mt-5" data-expanded={!!songs || undefined}>
