@@ -1,19 +1,13 @@
-.heading, .intro, .social {
+.copy, .heading {
   transform-origin: bottom left;
   transition: scale .6s cubic-bezier(.22, 1, .36, 1);
 }
 
-.social { transform-origin: bottom right; }
-
-/* Scale the existing text boxes so every line keeps its original wrapping. */
-:global(html[data-pew-mode]) .heading { scale: .5; }
-:global(html[data-pew-mode]) .intro,
-:global(html[data-pew-mode]) .social { scale: .8; }
-
-@media (max-width: 639px) {
-  .social { transform-origin: bottom left; }
-}
+/* Scale spacing with the copy, preserving line breaks and the bottom-left anchor.
+   The extra heading scale keeps its total size at .8 * .625 = .5. */
+:global(html[data-pew-mode]) .copy { scale: .8; }
+:global(html[data-pew-mode]) .heading { scale: .625; }
 
 @media (prefers-reduced-motion: reduce) {
-  .heading, .intro, .social { transition: none; }
+  .copy, .heading { transition: none; }
 }
