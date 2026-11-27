@@ -32,13 +32,18 @@ test("committed genres win, Spotify fills missing labels, and unknowns stay unkn
   assert.throws(() => parseArtistGenreCatalog({ version: 1, artists: { bad: { ...entry("Different", []), genres: "pop" } } }), /Invalid artist/);
 });
 
-test("genre rules remove Christmas labels and split christian/worship qualifiers without duplicates", () => {
-  assert.deepEqual(normalizeArtistGenres(["Christmas", "christmas jazz", "christian alternative rock", "christian", "pop worship", "worship", "CHRISTIAN WORSHIP", "indie pop"]), ["christian", "alternative rock", "worship", "pop", "indie pop"]);
-  assert.deepEqual(normalizeArtistGenres(["country christian", "christian hip hop", "praise & worship", "christian & worship"]), ["christian", "country", "hip hop", "worship", "praise"]);
+test("genre rules remove Christmas labels, separate christian styles, and fold worship/ccm into christian", () => {
+  assert.deepEqual(normalizeArtistGenres(["Christmas", "christmas jazz", "christian alternative rock", "christian", "pop worship", "worship", "CHRISTIAN WORSHIP", "indie pop"]), ["christian", "alternative rock", "pop", "indie pop"]);
+  assert.deepEqual(normalizeArtistGenres(["country christian", "christian hip hop", "praise & worship", "christian & worship"]), ["christian", "country", "hip hop", "praise"]);
+  assert.deepEqual(normalizeArtistGenres(["lo-fi worship"]), ["lo-fi", "christian"]);
+  assert.deepEqual(normalizeArtistGenres(["worship"]), ["christian"]);
+  assert.deepEqual(normalizeArtistGenres(["ccm"]), ["christian"]);
+  assert.deepEqual(normalizeArtistGenres(["CCM", "worship", "christian", "lo-fi worship", "ccm pop"]), ["christian", "lo-fi", "pop"]);
   const once = normalizeArtistGenres(["Christian Rock", "christian", "worship pop"]);
   assert.deepEqual(normalizeArtistGenres(once), once);
   const catalog: ArtistGenreCatalog = { version: 1, artists: { artist: entry("Artist", ["christmas"]) } };
   assert.deepEqual(resolveArtistGenres({ artist: { genres: ["christian rock"] } }, catalog).artist.genres, ["christian", "rock"]);
+  assert.deepEqual(resolveArtistGenres({ artist: { genres: ["ccm", "pop worship"] } }, catalog).artist.genres, ["christian", "pop"]);
 });
 
 test("discovery seeds Spotify metadata and preserves generated and manually unresolved entries", async () => {

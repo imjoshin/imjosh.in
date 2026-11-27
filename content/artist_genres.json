@@ -84,7 +84,6 @@
       "name": "All Sons & Daughters",
       "spotifyArtistId": "44LPOpECjnIlnwH91wo2ir",
       "genres": [
-        "worship",
         "christian",
         "folk",
         "pop"
@@ -185,8 +184,7 @@
         "lo-fi",
         "jazz",
         "folk",
-        "alternative rock",
-        "worship"
+        "alternative rock"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -197,7 +195,6 @@
       "genres": [
         "christian",
         "pop",
-        "ccm",
         "alternative rock",
         "edm"
       ],
@@ -246,7 +243,6 @@
       "spotifyArtistId": "0g1QOskZ9opQELS5ijE6XV",
       "genres": [
         "hymns",
-        "worship",
         "christian",
         "folk",
         "alternative rock"
@@ -341,8 +337,7 @@
         "christian",
         "rock",
         "alternative rock",
-        "folk",
-        "worship"
+        "folk"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-26T20:22:51.894Z"
@@ -358,10 +353,8 @@
       "name": "Bethel Music",
       "spotifyArtistId": "26T4yOaOoFJvUvxR87Y9HO",
       "genres": [
-        "worship",
         "christian",
-        "pop",
-        "ccm"
+        "pop"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-26T20:22:51.894Z"
@@ -473,9 +466,7 @@
       "spotifyArtistId": "0W7wIkmxoGQbnZYn2z2sLj",
       "genres": [
         "christian",
-        "ccm",
         "pop",
-        "worship",
         "rock"
       ],
       "source": "spotify",
@@ -488,7 +479,6 @@
         "christian",
         "pop",
         "edm",
-        "ccm",
         "alternative rock"
       ],
       "source": "spotify",
@@ -639,7 +629,6 @@
       "genres": [
         "christian",
         "folk",
-        "worship",
         "alternative rock"
       ],
       "source": "spotify",
@@ -650,8 +639,6 @@
       "spotifyArtistId": "6pRi6EIPXz4QJEOEsBaA0m",
       "genres": [
         "christian",
-        "worship",
-        "ccm",
         "pop",
         "country"
       ],
@@ -681,7 +668,6 @@
         "christian",
         "alternative rock",
         "folk",
-        "worship",
         "rock",
         "hymns"
       ],
@@ -702,9 +688,8 @@
       "name": "CityAlight",
       "spotifyArtistId": "4UNta2jPQJ844nyw1bsyPg",
       "genres": [
-        "worship",
-        "hymns",
-        "christian"
+        "christian",
+        "hymns"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -727,7 +712,6 @@
       "name": "Cody Carnes",
       "spotifyArtistId": "7apN8bBgl19E0Ona9pvPq0",
       "genres": [
-        "worship",
         "christian",
         "pop"
       ],
@@ -762,8 +746,7 @@
         "christian",
         "alternative rock",
         "edm",
-        "pop",
-        "worship"
+        "pop"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-26T20:22:51.894Z"
@@ -774,8 +757,6 @@
       "genres": [
         "christian",
         "pop",
-        "ccm",
-        "worship",
         "rock"
       ],
       "source": "spotify",
@@ -909,7 +890,6 @@
       "genres": [
         "christian",
         "rock",
-        "ccm",
         "alternative rock",
         "pop"
       ],
@@ -1065,7 +1045,6 @@
       "name": "ELEVATION RHYTHM",
       "spotifyArtistId": "0qZ8aSF0iMCQI99AAXikF8",
       "genres": [
-        "worship",
         "christian",
         "pop"
       ],
@@ -1076,9 +1055,7 @@
       "name": "Elevation Worship",
       "spotifyArtistId": "3YCKuqpv9nCsIhJ2v8SMix",
       "genres": [
-        "worship",
         "christian",
-        "ccm",
         "gospel",
         "pop"
       ],
@@ -1154,9 +1131,7 @@
       "spotifyArtistId": "3sDbKMebVH2VYcRSl7u1VC",
       "genres": [
         "christian",
-        "ccm",
-        "pop",
-        "worship"
+        "pop"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -1175,7 +1150,6 @@
         "christian",
         "pop",
         "hip hop",
-        "worship",
         "lo-fi",
         "r&b"
       ],
@@ -1329,7 +1303,6 @@
         "pop",
         "edm",
         "hip hop",
-        "ccm",
         "alternative rock"
       ],
       "source": "spotify",
@@ -1350,9 +1323,7 @@
       "genres": [
         "christian",
         "folk",
-        "alternative rock",
-        "worship",
-        "ccm"
+        "alternative rock"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-26T20:22:51.894Z"
@@ -1408,9 +1379,7 @@
       "name": "Hillsong UNITED",
       "spotifyArtistId": "74cb3MG0x0BOnYNW1uXYnM",
       "genres": [
-        "worship",
         "christian",
-        "ccm",
         "pop",
         "gospel"
       ],
@@ -1421,10 +1390,8 @@
       "name": "Hillsong Worship",
       "spotifyArtistId": "3SgHzT552wy2W8pNLaLk24",
       "genres": [
-        "worship",
         "christian",
         "pop",
-        "ccm",
         "gospel"
       ],
       "source": "spotify",
@@ -1434,7 +1401,6 @@
       "name": "Hillsong Young & Free",
       "spotifyArtistId": "7m4gF38CPATtHrk5HS42WZ",
       "genres": [
-        "worship",
         "christian",
         "pop",
         "edm"
@@ -1488,8 +1454,7 @@
         "christian",
         "hip hop",
         "r&b",
-        "pop",
-        "worship"
+        "pop"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -1524,8 +1489,6 @@
       "spotifyArtistId": "0XJ5RIvhlOL0harjI9jZvX",
       "genres": [
         "christian",
-        "worship",
-        "ccm",
         "folk"
       ],
       "source": "spotify",
@@ -1579,7 +1542,6 @@
         "christian",
         "lo-fi",
         "alternative rock",
-        "worship",
         "jazz",
         "r&b",
         "folk"
@@ -1651,7 +1613,6 @@
         "christian",
         "folk",
         "pop",
-        "worship",
         "alternative rock"
       ],
       "source": "spotify",
@@ -1712,8 +1673,7 @@
       "genres": [
         "christian",
         "folk",
-        "alternative rock",
-        "worship"
+        "alternative rock"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -1725,8 +1685,7 @@
         "christian",
         "folk",
         "lo-fi",
-        "alternative rock",
-        "worship"
+        "alternative rock"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -1762,8 +1721,6 @@
       "genres": [
         "christian",
         "pop",
-        "ccm",
-        "worship",
         "edm"
       ],
       "source": "spotify",
@@ -1789,8 +1746,6 @@
       "genres": [
         "christian",
         "pop",
-        "ccm",
-        "worship",
         "folk"
       ],
       "source": "spotify",
@@ -1813,8 +1768,7 @@
       "genres": [
         "christian",
         "pop",
-        "edm",
-        "ccm"
+        "edm"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-26T20:22:51.894Z"
@@ -1825,7 +1779,6 @@
       "genres": [
         "christian",
         "folk",
-        "worship",
         "pop",
         "country"
       ],
@@ -1850,8 +1803,7 @@
         "christian",
         "alternative rock",
         "folk",
-        "pop",
-        "worship"
+        "pop"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -1932,7 +1884,6 @@
       "genres": [
         "christian",
         "alternative rock",
-        "worship",
         "folk",
         "hymns"
       ],
@@ -2021,9 +1972,7 @@
       "name": "Lauren Daigle",
       "spotifyArtistId": "40LHVA5BTQp9RxHOQ9JPYj",
       "genres": [
-        "christian",
-        "worship",
-        "ccm"
+        "christian"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -2042,9 +1991,7 @@
       "name": "Leeland",
       "spotifyArtistId": "6j1fmLreVuAay7k6Gudfa2",
       "genres": [
-        "worship",
         "christian",
-        "ccm",
         "pop"
       ],
       "source": "spotify",
@@ -2069,8 +2016,6 @@
       "spotifyArtistId": "1aoy0R8uP3x33eqKZOLpN1",
       "genres": [
         "christian",
-        "ccm",
-        "worship",
         "rock",
         "pop"
       ],
@@ -2225,7 +2170,6 @@
         "jazz",
         "lo-fi",
         "r&b",
-        "worship",
         "alternative rock"
       ],
       "source": "spotify",
@@ -2276,9 +2220,8 @@
       "name": "Maverick City Music",
       "spotifyArtistId": "58r1rB5t3VF5X6yXGPequV",
       "genres": [
-        "worship",
-        "gospel",
-        "christian"
+        "christian",
+        "gospel"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -2492,9 +2435,7 @@
         "christian",
         "alternative rock",
         "folk",
-        "ccm",
-        "rock",
-        "worship"
+        "rock"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -2544,9 +2485,7 @@
       "spotifyArtistId": "1SZMaiNHfdUuU0qZKZ6y62",
       "genres": [
         "christian",
-        "ccm",
         "rock",
-        "worship",
         "alternative rock",
         "pop"
       ],
@@ -2574,7 +2513,6 @@
       "name": "Nichole Nordeman",
       "spotifyArtistId": "0KSjxPoT71Dq8qcgfWTdHh",
       "genres": [
-        "ccm",
         "christian"
       ],
       "source": "spotify",
@@ -2598,9 +2536,7 @@
       "name": "North Point Worship",
       "spotifyArtistId": "1IGGfstLsypGtdI55tT3Z1",
       "genres": [
-        "worship",
-        "christian",
-        "ccm"
+        "christian"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-26T20:22:51.894Z"
@@ -2744,9 +2680,7 @@
       "name": "Passion",
       "spotifyArtistId": "6piIAIurGAryW5h1rqQC16",
       "genres": [
-        "worship",
         "christian",
-        "ccm",
         "pop"
       ],
       "source": "spotify",
@@ -2765,9 +2699,7 @@
       "name": "Pat Barrett",
       "spotifyArtistId": "0289SkqAn0iOohwm0pIHv3",
       "genres": [
-        "worship",
-        "christian",
-        "ccm"
+        "christian"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -2801,9 +2733,7 @@
       "name": "Phil Wickham",
       "spotifyArtistId": "5d1JhBfyb58upMXCZOdbQu",
       "genres": [
-        "worship",
-        "christian",
-        "ccm"
+        "christian"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -2907,9 +2837,7 @@
       "genres": [
         "christian",
         "folk",
-        "worship",
-        "pop",
-        "ccm"
+        "pop"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -2939,8 +2867,7 @@
         "christian",
         "folk",
         "alternative rock",
-        "lo-fi",
-        "worship"
+        "lo-fi"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-26T20:22:51.894Z"
@@ -2958,7 +2885,6 @@
       "genres": [
         "christian",
         "pop",
-        "ccm",
         "edm"
       ],
       "source": "spotify",
@@ -3069,7 +2995,6 @@
       "name": "Sean Curran",
       "spotifyArtistId": "4OWmbcuUeVoBCmgMEASW3c",
       "genres": [
-        "worship",
         "christian"
       ],
       "source": "spotify",
@@ -3089,10 +3014,8 @@
       "name": "Shane & Shane",
       "spotifyArtistId": "2LFbgsbEhfilNpQYW7mied",
       "genres": [
-        "worship",
-        "hymns",
         "christian",
-        "ccm"
+        "hymns"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -3213,8 +3136,7 @@
         "christian",
         "pop",
         "folk",
-        "alternative rock",
-        "worship"
+        "alternative rock"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -3289,8 +3211,7 @@
       "genres": [
         "christian",
         "rock",
-        "alternative rock",
-        "ccm"
+        "alternative rock"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -3309,9 +3230,7 @@
       "spotifyArtistId": "3SKza3YPBri1k43LB1Tqy4",
       "genres": [
         "christian",
-        "worship",
-        "pop",
-        "ccm"
+        "pop"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-26T20:22:51.894Z"
@@ -3556,7 +3475,6 @@
         "christian",
         "folk",
         "alternative rock",
-        "worship",
         "hymns"
       ],
       "source": "spotify",
@@ -3688,9 +3606,8 @@
       "name": "The Worship Initiative",
       "spotifyArtistId": "1bMkQIx4MpNHLxoylvipdQ",
       "genres": [
-        "worship",
-        "hymns",
-        "christian"
+        "christian",
+        "hymns"
       ],
       "source": "spotify",
       "updatedAt": "2026-11-27T00:00:07.602Z"
@@ -3717,10 +3634,8 @@
       "genres": [
         "christian",
         "pop",
-        "ccm",
         "rock",
         "hip hop",
-        "worship",
         "edm",
         "alternative rock"
       ],
@@ -3840,7 +3755,6 @@
       "genres": [
         "christian",
         "edm",
-        "worship",
         "alternative rock",
         "pop"
       ],
@@ -3879,9 +3793,7 @@
       "name": "Vertical Worship",
       "spotifyArtistId": "6N6Sk9XOoHsadAGYR44C2o",
       "genres": [
-        "worship",
         "christian",
-        "ccm",
         "pop"
       ],
       "source": "spotify",

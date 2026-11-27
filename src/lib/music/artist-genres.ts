@@ -24,9 +24,14 @@ export function normalizeArtistGenres(input: readonly string[]): string[] {
     const genre = artistGenreKey(label);
     if (!genre || /\bchristmas\b/.test(genre)) continue;
     const qualifiers: string[] = [];
-    let style = genre.replace(/\b(christian|worship)\b/g, word => { qualifiers.push(word); return " "; });
-    if (qualifiers.length) style = style.replace(/\s+/g, " ").replace(/^(?:and\b|[\s&,+/-])+|(?:\band|[\s&,+/-])+$/g, "").trim();
-    for (const value of [...qualifiers, style]) if (value) genres.add(value);
+    let christianAlias = false;
+    let style = genre.replace(/\b(christian|worship|ccm)\b/g, word => {
+      if (word === "christian") qualifiers.push(word);
+      else christianAlias = true;
+      return " ";
+    });
+    if (qualifiers.length || christianAlias) style = style.replace(/\s+/g, " ").replace(/^(?:and\b|[\s&,+/-])+|(?:\band|[\s&,+/-])+$/g, "").trim();
+    for (const value of [...qualifiers, style, ...(christianAlias ? ["christian"] : [])]) if (value) genres.add(value);
   }
   return [...genres];
 }
