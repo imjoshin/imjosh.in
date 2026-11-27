@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { MusicSongsDataset, SeasonalMetric } from "@/lib/music/types";
+import type { MusicChartGranularity, MusicSongsDataset, SeasonalMetric } from "@/lib/music/types";
 import { MusicArtists, MusicLink } from "./music-entity-link";
 
 const number = (value: number) => new Intl.NumberFormat("en-US").format(value);
-export interface SongSelection { metric: SeasonalMetric; key: string; name: string; artists: string[]; season: string | null }
+export interface SongSelection { metric: SeasonalMetric; key: string; name: string; artists: string[]; season: string | null; granularity?: MusicChartGranularity }
 
 export function MusicSeasonSongs({ selection, file, api, seasonLabel, close }: { selection: SongSelection; file?: string; api: boolean; seasonLabel?: string; close: () => void }) {
   const [loaded, setLoaded] = useState<{ file: string; data: MusicSongsDataset } | null>(null);
@@ -52,7 +52,7 @@ export function MusicSeasonSongs({ selection, file, api, seasonLabel, close }: {
     return () => cancelAnimationFrame(frame);
   }, [selection.metric, selection.key, selection.season]);
   const data = loaded?.data.metric === selection.metric && loaded.data.key === selection.key ? loaded.data : null;
-  const songs = (data?.tracks || []).map(track => ({ ...track, count: selection.season ? track.seasons[selection.season] || 0 : track.plays, entity: data!.entities[track.key] })).filter(track => track.count > 0 && track.entity).sort((a, b) => b.count - a.count || a.entity.name.localeCompare(b.entity.name) || a.key.localeCompare(b.key));
+  const songs = (data?.tracks || []).map(track => ({ ...track, count: selection.season ? (selection.granularity === "year" ? track.years?.[selection.season] : track.seasons[selection.season]) || 0 : track.plays, entity: data!.entities[track.key] })).filter(track => track.count > 0 && track.entity).sort((a, b) => b.count - a.count || a.entity.name.localeCompare(b.entity.name) || a.key.localeCompare(b.key));
   const updating = !!file && loaded?.file !== file && !failed;
   return <aside ref={panel} className="music-season-songs" role="region" aria-label={`${selection.name} songs`} onKeyDown={event => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); close(); } }}>
     <div className="music-season-songs-inner">

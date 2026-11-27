@@ -99,6 +99,34 @@ test("publication supplies direct links and lazy genre, artist, and album song d
   }
 });
 
+test("annual-only soundtrack entries publish song files, direct links, and year-specific counts", async () => {
+  const memory = (): MusicStore => {
+    const values = new Map<string, Uint8Array>();
+    return { async get(key) { return values.get(key) || null; }, async set(key, value) { values.set(key, value); }, async list(prefix) { return [...values.keys()].filter(key => key.startsWith(prefix)); } };
+  };
+  const privateStore = memory(), publicStore = memory();
+  await saveListens(privateStore, ["2025-03-15T12:00:00Z", "2025-06-15T12:00:00Z"].flatMap((date, season) => Array.from({ length: 6 }, (_, i) => {
+    const row = event(`${season}-${i}`, date); row.track.genres = ["indie"]; return row;
+  })));
+  const artistId = "aaaaaaaaaaaaaaaaaaaaaa";
+  await writeJson(privateStore, "catalog/spotify-tracks.json.gz", { track: { name: "Song", artists: [{ id: artistId, name: "Artist" }] } });
+  await publishMusic(privateStore, publicStore, now);
+  const manifest = (await readJson<MusicManifest>(publicStore, "manifest.json"))!;
+  const data = (await readJson<MusicSeasonalDataset>(publicStore, manifest.files["all/seasons"]))!;
+  const entities = (await readJson<MusicEntityDataset>(publicStore, manifest.files.entities))!;
+  for (const metric of ["genres", "artists", "albums"] as const) {
+    assert.equal(data.metrics[metric].series.length, 0);
+    const line = data.annual!.metrics[metric].series[0];
+    assert.deepEqual(line.plays, [12]);
+    const songs = (await readJson<MusicSongsDataset>(publicStore, data.songFiles![metric]![line.key]))!;
+    assert.equal(songs.tracks[0].plays, 12);
+    assert.deepEqual(songs.tracks[0].years, { "2025": 12 });
+    assert.deepEqual(songs.tracks[0].seasons, { "2025-spring": 6, "2025-summer": 6 });
+  }
+  assert.equal(data.annual!.metrics.artists.series[0].url, `https://open.spotify.com/artist/${artistId}`);
+  assert.ok(entities.entities[musicEntityKey("artist", "Artist")]);
+});
+
 test("public hover downloads cover displayed music while totals retain history outside the rankings", async () => {
   const memory = (): MusicStore => {
     const values = new Map<string, Uint8Array>();

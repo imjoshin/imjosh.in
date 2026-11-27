@@ -83,3 +83,57 @@ test("artist and album song lists preserve quiet seasons, guest credits, and pla
   assert.equal(songs["all/seasons"].albums[albumKey].length, 3);
   assert.equal(JSON.stringify(rows), before);
 });
+
+test("year totals include quiet seasons and rank their own top five without changing seasonal results", () => {
+  const rows = [
+    ...plays(6, "Steady", "2025-03-15T12:00:00Z"), ...plays(6, "Steady", "2025-06-15T12:00:00Z"),
+    ...Array.from({ length: 6 }, (_, i) => plays(11, `Leader ${i}`, "2025-09-15T12:00:00Z")).flat(),
+    ...plays(10, "Below cutoff", "2025-09-15T12:00:00Z"),
+  ];
+  const before = JSON.stringify(rows);
+  const data = aggregateSeasons(rows, now)["all/seasons"];
+  assert.deepEqual(data.annual!.years, [{ key: "2025", label: "2025" }]);
+  for (const metric of ["genres", "artists", "albums"] as const) {
+    assert.equal(data.metrics[metric].series.some(line => line.name.toLowerCase() === "steady"), false);
+    assert.deepEqual(data.annual!.metrics[metric].series.map(line => line.name.toLowerCase()).sort(), ["leader 0", "leader 1", "leader 2", "leader 3", "steady"]);
+    assert.deepEqual(data.annual!.metrics[metric].series.find(line => line.name.toLowerCase() === "steady")!.plays, [12]);
+  }
+  const songs = aggregateSeasonSongs(rows, { "all/seasons": data }, now)["all/seasons"].artists.steady;
+  assert.equal(songs[0].plays, 12);
+  assert.deepEqual(songs[0].years, { "2025": 12 });
+  assert.deepEqual(songs[0].seasons, { "2025-spring": 6, "2025-summer": 6 });
+  assert.equal(JSON.stringify(rows), before);
+});
+
+test("calendar years use Eastern time independently of winter labels, retaining empty years and platform totals", () => {
+  const rows = [
+    ...plays(11, "Boundary", "2024-12-15T12:00:00Z"),
+    ...plays(1, "Boundary", "2025-01-01T04:59:59Z"),
+    ...plays(11, "Boundary", "2025-01-01T05:00:00Z"),
+    ...plays(11, "Boundary", "2026-11-15T12:00:00Z").map(row => ({ ...row, platform: "google-play-music" as const })),
+  ];
+  const data = aggregateSeasons(rows, now);
+  assert.deepEqual(data["all/seasons"].annual!.years.map(year => year.key), ["2024", "2025", "2026"]);
+  assert.deepEqual(data["all/seasons"].annual!.metrics.artists.series[0].plays, [12, 11, 11]);
+  assert.equal(data["all/seasons"].metrics.artists.series[0].plays[0], 23);
+  assert.deepEqual(data["spotify/seasons"].annual!.metrics.artists.series[0].plays, [12, 11]);
+  const gap = aggregateSeasons(rows.filter(row => Date.parse(row.playedAt) !== Date.parse("2025-01-01T05:00:00Z")), now)["all/seasons"];
+  assert.deepEqual(gap.annual!.metrics.artists.series[0].plays, [12, 0, 11]);
+  const songs = aggregateSeasonSongs(rows, data, now)["all/seasons"].artists.boundary[0];
+  assert.deepEqual(songs.years, { "2024": 12, "2025": 11, "2026": 11 });
+});
+
+test("annual charts and song counts apply the same public exclusions as seasonal charts", () => {
+  const rows = [
+    ...plays(11, "Approved", "2025-03-15T12:00:00Z"),
+    ...plays(11, "Kids", "2025-03-15T12:00:00Z", "kids music"),
+    ...plays(11, "Private", "2025-03-15T12:00:00Z").map(row => ({ ...row, privateSession: true })),
+    ...plays(11, "Future", "2030-03-15T12:00:00Z"),
+    ...plays(11, "Disney", "2025-03-15T12:00:00Z"),
+  ];
+  const data = aggregateSeasons(rows, now);
+  assert.deepEqual(data["all/seasons"].annual!.metrics.artists.series.map(line => line.name), ["Approved"]);
+  const publicData = JSON.stringify([data, aggregateSeasonSongs(rows, data, now)]);
+  for (const excluded of ["Kids", "Private", "Future", "Disney", "PRIVATE-ORIGINAL"]) assert.equal(publicData.includes(excluded), false);
+  assert.deepEqual(aggregateSeasons([], now)["all/seasons"].annual!.years, []);
+});

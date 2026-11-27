@@ -110,13 +110,14 @@ export interface MusicManifest {
 }
 
 export type SeasonalMetric = "genres" | "artists" | "albums";
+export type MusicChartGranularity = "year" | "season";
 export interface MusicSeason { key: string; label: string }
 export interface SeasonalSeries {
   key: string;
   name: string;
   artists: string[];
   url?: string | null;
-  /** Recorded plays for every season, including seasons outside this series' top five. */
+  /** Recorded plays for every period, including periods outside this series' top five. */
   plays: number[];
 }
 export interface SeasonalMetricData {
@@ -131,6 +132,8 @@ export interface MusicSeasonalDataset {
   platform: MusicPlatform | "all";
   seasons: MusicSeason[];
   metrics: Record<SeasonalMetric, SeasonalMetricData>;
+  /** Calendar-year totals ranked independently of the seasonal cutoff. Absent in older summaries. */
+  annual?: { years: MusicSeason[]; metrics: Record<SeasonalMetric, SeasonalMetricData> };
   minimumPlays?: number;
   songFiles?: Partial<Record<SeasonalMetric, Record<string, string>>>;
   /** Kept for clients opened before artist and album song lists were added. */
@@ -141,6 +144,7 @@ export interface MusicSongCounts {
   key: string;
   plays: number;
   seasons: Record<string, number>;
+  years?: Record<string, number>;
 }
 
 export interface MusicSongsDataset {

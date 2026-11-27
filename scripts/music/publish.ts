@@ -1,5 +1,5 @@
 import { aggregateMusic } from "../../src/lib/music/aggregate.ts";
-import { aggregateSeasonSongs, aggregateSeasons } from "../../src/lib/music/seasons.ts";
+import { aggregateSeasonSongs, aggregateSeasons, soundtrackSeries } from "../../src/lib/music/seasons.ts";
 import { digest, musicTrack } from "../../src/lib/music/normalize.ts";
 import { allListens, readJson, writeJson, type MusicStore } from "./store.ts";
 import type { GenreIndex } from "./spotify.ts";
@@ -103,7 +103,7 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     dataset.songFiles = { genres: {}, artists: {}, albums: {} };
     dataset.genreFiles = dataset.songFiles.genres;
     for (const metric of ["genres", "artists", "albums"] as const) {
-      for (const line of dataset.metrics[metric].series) {
+      for (const line of soundtrackSeries(dataset, metric)) {
         const tracks = songGroups[key][metric][line.key] || [];
         const details: Record<string, MusicEntity> = {};
         for (const track of tracks) {
@@ -120,7 +120,7 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
       }
     }
   }
-  for (const dataset of Object.values(seasonal)) for (const metric of ["artists", "albums"] as const) for (const line of dataset.metrics[metric].series) line.url = entities.entities[musicEntityKey(metric === "artists" ? "artist" : "album", line.name, line.artists)]?.url || null;
+  for (const dataset of Object.values(seasonal)) for (const metric of ["artists", "albums"] as const) for (const line of [...dataset.metrics[metric].series, ...(dataset.annual?.metrics[metric].series || [])]) line.url = entities.entities[musicEntityKey(metric === "artists" ? "artist" : "album", line.name, line.artists)]?.url || null;
   for (const [key, value] of Object.entries({ ...result.datasets, ...seasonal })) {
     await immutable(key, value);
   }
@@ -141,10 +141,10 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     }
   }
   for (const dataset of Object.values(seasonal)) for (const metric of ["artists", "albums"] as const) {
-    for (const line of dataset.metrics[metric].series) include({ kind: metric === "artists" ? "artist" : "album", ...line });
+    for (const line of soundtrackSeries(dataset, metric)) include({ kind: metric === "artists" ? "artist" : "album", ...line });
   }
   await immutable("entities", { ...entities, entities: Object.fromEntries(Object.entries(entities.entities).filter(([key]) => visible.has(key))) });
-  manifest.notes.push("Tracks with known kids genres and identified Disney music are excluded from all summaries. Unclassified genres remain unknown.", "Seasonal charts retain the union of each season's top five with at least 11 plays. Lower-volume seasonal entries are omitted from the graph. Genre, artist, and album song files retain all approved matching plays, including low-volume seasons. Winter spans December through February and uses the January year.");
+  manifest.notes.push("Tracks with known kids genres and identified Disney music are excluded from all summaries. Unclassified genres remain unknown.", "Soundtrack charts rank calendar years and seasons independently, retaining the union of each period's top five with at least 11 plays. Lower-volume entries are omitted from the graph. Genre, artist, and album song files retain all approved matching plays, including low-volume periods. Winter spans December through February and uses the January year.");
   await writeJson(publicStore, "manifest.json", manifest);
   return { listens: verifiedRows.length, datasets: Object.keys(manifest.files).length, manifest };
 }
