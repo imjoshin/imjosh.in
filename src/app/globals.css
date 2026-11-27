@@ -229,7 +229,6 @@ html[data-pew-mode]:has(.home-page) :is(a, summary, .theme-toggle) { cursor: poi
   .music-last-tracks-viewport { --recent-gap: 14px; --recent-width: 42%; mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent); }
 }
 .music-album { min-width: 0; }
-.music-album-rank { position: absolute; bottom: 8px; left: 8px; border-radius: 999px; padding: 3px 9px; background: #0c0b12bb; color: #edebf5; font-size: 12px; backdrop-filter: blur(8px); }
 .music-number { display: inline-flex; align-items: baseline; font-variant-numeric: tabular-nums; white-space: nowrap; vertical-align: baseline; }
 .music-number-place { display: inline-flex; align-items: baseline; }
 .music-number-digit { display: inline-block; width: 1ch; height: 1em; overflow: clip; vertical-align: baseline; }
