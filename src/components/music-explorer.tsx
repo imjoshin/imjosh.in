@@ -49,6 +49,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
   const { manifest, data, spotify, soundtrack, playback, error, loading, api } = useMusicCollection({ manifest: initialManifest, data: initialData, spotify: initialSpotify, soundtrack: initialSoundtrack, playback: null }, period);
   const [headerHeight, setHeaderHeight] = useState<number | null>(null);
   const historyHeading = useRef<HTMLDivElement>(null);
+  const historyFilters = useRef<HTMLDivElement>(null);
   const [filtersStuck, setFiltersStuck] = useState(false);
   useEffect(() => {
     const header = document.querySelector<HTMLElement>(".site-header");
@@ -60,12 +61,19 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
   }, []);
   useEffect(() => {
     const heading = historyHeading.current;
-    if (!heading || headerHeight === null) return;
-    const stickyTop = headerHeight + 12;
-    // The bar follows the heading with a 24px gap. Watch that fixed origin, not the moving sticky box.
-    const observer = new IntersectionObserver(([entry]) => setFiltersStuck(entry.boundingClientRect.bottom + 24 <= stickyTop), { rootMargin: `${24 - stickyTop}px 0px 0px 0px`, threshold: 0 });
-    observer.observe(heading);
-    return () => observer.disconnect();
+    const filters = historyFilters.current;
+    if (!heading || !filters || headerHeight === null) return;
+    let observer: IntersectionObserver;
+    const observeSticky = () => {
+      observer?.disconnect();
+      const stickyTop = parseFloat(getComputedStyle(filters).top);
+      // The bar follows the heading with a 24px gap. Watch that fixed origin, not the moving sticky box.
+      observer = new IntersectionObserver(([entry]) => setFiltersStuck(entry.boundingClientRect.bottom + 24 <= stickyTop), { rootMargin: `${24 - stickyTop}px 0px 0px 0px`, threshold: 0 });
+      observer.observe(heading);
+    };
+    observeSticky();
+    addEventListener("resize", observeSticky);
+    return () => { observer.disconnect(); removeEventListener("resize", observeSticky); };
   }, [headerHeight]);
   useEffect(() => {
     const applyLocation = () => {
@@ -104,7 +112,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
 
     {provider && <section aria-labelledby="music-lately-title"><div className="mb-5"><p className="music-label">The current rotation</p><h2 id="music-lately-title" className="mt-2 font-display text-[42px] leading-none">Heavy <em className="text-accent">rotation.</em></h2></div><Rotation items={provider.tracks} /><p className="mt-4 text-[13px] text-muted">Spotify’s affinity rankings.</p></section>}
 
-    <section aria-labelledby="music-history-title" className="music-history flex min-w-0 flex-col gap-6"><div ref={historyHeading}><p className="music-label">The bigger picture</p><h2 id="music-history-title" className="mt-2 font-display text-[42px] leading-none">Listening <em className="text-accent">history.</em></h2></div><div className="music-history-filters" data-stuck={filtersStuck || undefined} role="group" aria-label="Filter listening history" style={headerHeight === null ? undefined : { "--music-header-offset": `${headerHeight}px` } as CSSProperties}><MusicPeriodFilter period={period} periods={manifest?.periods || ["all", "30d", "365d"]} onChange={filter} /></div>
+    <section aria-labelledby="music-history-title" className="music-history flex min-w-0 flex-col gap-6"><div ref={historyHeading}><p className="music-label">The bigger picture</p><h2 id="music-history-title" className="mt-2 font-display text-[42px] leading-none">Listening <em className="text-accent">history.</em></h2></div><div ref={historyFilters} className="music-history-filters" data-stuck={filtersStuck || undefined} role="group" aria-label="Filter listening history" style={headerHeight === null ? undefined : { "--music-header-offset": `${headerHeight}px` } as CSSProperties}><MusicPeriodFilter period={period} periods={manifest?.periods || ["all", "30d", "365d"]} onChange={filter} /></div>
       <div className="flex w-full min-w-0 flex-col gap-6"><div aria-live="polite" className={error || !loading && !stats?.plays ? "text-[13px] text-muted" : "sr-only"}>{loading ? "Loading listening history…" : error ? "The latest update is unavailable. Showing the saved collection." : stats?.plays ? `Showing listening history for ${periodLabels[current?.period || period] || period}.` : "Historical imports are being collected. The archive will grow as new plays arrive."}</div>
       <div aria-busy={loading} className="flex flex-col gap-5">
         <div className="music-stat-grid">{[["Recorded plays", stats?.plays || 0], ["Different artists", stats?.artists || 0], ["Different tracks", stats?.tracks || 0], ["Measured hours", Math.round((stats?.msPlayed || 0) / 3600000)]].map(([label, value]) => <div key={label} className="panel rounded-[20px] p-5 sm:p-6"><p className="music-label">{label}</p><p className="mt-3 font-display text-[clamp(44px,5vw,64px)] leading-none tabular-nums">{label === "Measured hours" && !stats?.durationKnown ? <span className="text-muted">Pending</span> : <MusicNumber value={Number(value)} />}</p></div>)}</div>
