@@ -92,7 +92,7 @@ body {
 
 ::selection { background: var(--acc); color: var(--bg); }
 a, button { -webkit-tap-highlight-color: transparent; }
-a { transition: color .2s, background-color .2s; }
+a, .theme-toggle { transition: color .2s, background-color .2s; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--acc); outline-offset: 5px; }
 input[type="range"] { accent-color: var(--acc); cursor: ew-resize; }
@@ -104,12 +104,12 @@ body:has(.home-page) * {
   pointer-events: none;
 }
 
-/* Keep links and the mobile navigation toggle reachable over the blobs. */
-body:has(.home-page) :is(a, summary) { pointer-events: auto; }
+/* Keep navigation controls reachable over the blobs. */
+body:has(.home-page) :is(a, summary, .theme-toggle) { pointer-events: auto; }
 
 html[data-pew-mode]:has(.home-page),
 html[data-pew-mode]:has(.home-page) body * { cursor: crosshair; }
-html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
+html[data-pew-mode]:has(.home-page) :is(a, summary, .theme-toggle) { cursor: pointer; }
 
 .pill {
   display: inline-flex;
@@ -413,6 +413,14 @@ input.music-year-slider { appearance: none; display: block; width: 100%; height:
   transition: transform .2s ease;
 }
 .desktop-nav-link:is(:hover, :focus-visible, [aria-current="page"])::after { transform: scaleX(1); }
+
+.theme-toggle-light { display: none; }
+:root[data-theme="dark"] .theme-toggle-light { display: inline; }
+:root[data-theme="dark"] .theme-toggle-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle-light { display: inline; }
+  :root:not([data-theme="light"]) .theme-toggle-dark { display: none; }
+}
 
 .mobile-menu-toggle { list-style: none; }
 .mobile-menu-toggle::-webkit-details-marker { display: none; }

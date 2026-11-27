@@ -40,6 +40,16 @@ function NavigationLinks({ pathname, mobile = false }: { pathname: string; mobil
         </svg>
         <span className="sr-only"> (opens in a new tab)</span>
       </a>
+      <button type="button" className={`${className} theme-toggle`} onClick={() => {
+        const current = document.documentElement.dataset.theme;
+        const dark = current ? current === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = dark ? "light" : "dark";
+        try { localStorage.setItem("imjosh.in:theme", theme); } catch { /* Switching still works when storage is unavailable. */ }
+        document.documentElement.dataset.theme = theme;
+      }}>
+        <span className="theme-toggle-light">Light mode</span>
+        <span className="theme-toggle-dark">Dark mode</span>
+      </button>
     </>
   );
 }
@@ -98,7 +108,7 @@ export function SiteHeader() {
         <NavigationLinks pathname={pathname} />
       </nav>
       <details ref={menu} className="group md:hidden">
-        <summary className="mobile-menu-toggle flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-ink bg-panel backdrop-blur-[10px] transition-colors hover:bg-ink hover:text-background" aria-controls="mobile-navigation">
+        <summary className="mobile-menu-toggle flex h-11 w-11 cursor-pointer items-center justify-center text-muted transition-colors hover:text-ink" aria-controls="mobile-navigation">
           <span className="sr-only">Menu</span>
           <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
             <path className="group-open:hidden" d="M4 6h16M4 12h16M4 18h16" />

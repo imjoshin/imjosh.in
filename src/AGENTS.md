@@ -10,4 +10,4 @@ Preserve immutable root identities and volumes. An isolated root or its fragment
 
 Use the order-independent exponential surface union and its analytic normals. Blend widths are properties of individual blobs; do not vary them with spatially blended radii or burst states, which creates creases in surface normals. Keep the conservative march distance and connection gap consistent with that field. Click impulses reach nearly full velocity in about 55 ms while preserving position and velocity at the instant of the click.
 
-All pages must remain readable with reduced motion and without WebGL. Do not add a theme switch; follow the OS unless `localStorage["imjosh.in:theme"]` explicitly overrides it with `light` or `dark` for testing. Keep print-specific résumé behavior in the global print stylesheet.
+All pages must remain readable with reduced motion and without WebGL. Follow the OS theme by default, with a navigation theme switcher styled like the other navigation items. Persist explicit `light` or `dark` choices in `localStorage["imjosh.in:theme"]`. Keep print-specific résumé behavior in the global print stylesheet.
