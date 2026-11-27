@@ -49,6 +49,7 @@ export function aggregateSoundtrack(input: Listen[], now = new Date(), timezone 
   for (const platform of ["all", ...new Set(listens.map(l => l.platform))] as const) {
     for (const period of periods) {
       const granularity = soundtrackGranularity(period);
+      const minimumPlays = period === "30d" ? 1 : MINIMUM_SOUNDTRACK_PLAYS;
       const rows = dated.filter(row => (platform === "all" || row.listen.platform === platform) && inPeriod(row.date, row.timestamp, period, now));
       let buckets: MusicBucket[] = [];
       if (rows.length) {
@@ -70,7 +71,7 @@ export function aggregateSoundtrack(input: Listen[], now = new Date(), timezone 
             series.plays[positions.get(bucketKey(date, granularity))!]++; all.set(key, series);
           }
         }
-        for (const series of all.values()) series.plays = series.plays.map(plays => plays >= MINIMUM_SOUNDTRACK_PLAYS ? plays : 0);
+        for (const series of all.values()) series.plays = series.plays.map(plays => plays >= minimumPlays ? plays : 0);
         const selected = new Set<string>();
         for (let index = 0; index < buckets.length; index++) {
           const leaders = [...all.values()].filter(s => s.plays[index] > 0).sort((a, b) => b.plays[index] - a.plays[index] || a.key.localeCompare(b.key)).slice(0, 5);
@@ -78,7 +79,7 @@ export function aggregateSoundtrack(input: Listen[], now = new Date(), timezone 
         }
         result[metric] = { series: [...all.values()].filter(s => selected.has(s.key)).sort((a, b) => a.key.localeCompare(b.key)), classifiedPlays, unclassifiedPlays: rows.length - classifiedPlays };
       }
-      datasets[`${platform}/soundtrack/${period}`] = { version: 1, generatedAt: now.toISOString(), timezone, platform, period, granularity, buckets, metrics: result, minimumPlays: MINIMUM_SOUNDTRACK_PLAYS };
+      datasets[`${platform}/soundtrack/${period}`] = { version: 1, generatedAt: now.toISOString(), timezone, platform, period, granularity, buckets, metrics: result, minimumPlays };
     }
   }
   return datasets;

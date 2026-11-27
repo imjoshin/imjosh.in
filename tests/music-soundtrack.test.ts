@@ -74,6 +74,34 @@ test("bucket cutoffs and top-five selection are independent at every granularity
   assert.equal(JSON.stringify(rows), before);
 });
 
+test("last 30 days includes single plays and quiet buckets while retaining daily top-five selection", () => {
+  const rows = [...plays(1, "Solo", "2026-11-20T12:00:00Z"), ...plays(10, "Quiet", "2026-11-20T12:00:00Z"), ...plays(1, "Solo", "2026-11-21T12:00:00Z")];
+  for (let i = 0; i < 6; i++) rows.push(...plays(1, `Leader ${i}`, "2026-11-21T12:00:00Z"));
+  const data = aggregateSoundtrack(rows, now);
+  for (const platform of ["all", "spotify"]) {
+    const daily = data[`${platform}/soundtrack/30d`];
+    assert.equal(daily.minimumPlays, 1);
+    const first = daily.buckets.findIndex(bucket => bucket.key === "2026-11-20");
+    const second = daily.buckets.findIndex(bucket => bucket.key === "2026-11-21");
+    for (const metric of ["genres", "artists", "albums"] as const) {
+      const series = daily.metrics[metric].series;
+      assert.deepEqual(series.map(line => line.name.toLowerCase()).sort(), ["leader 0", "leader 1", "leader 2", "leader 3", "leader 4", "quiet", "solo"]);
+      const solo = series.find(line => line.name.toLowerCase() === "solo")!;
+      assert.equal(solo.plays[first], 1);
+      assert.equal(solo.plays[second], 1);
+      assert.equal(series.find(line => line.name.toLowerCase() === "quiet")!.plays[first], 10);
+      for (const period of ["365d", "2026", "all"]) {
+        const other = data[`${platform}/soundtrack/${period}`];
+        assert.equal(other.minimumPlays, 11);
+        assert.deepEqual(other.metrics[metric].series, []);
+      }
+    }
+  }
+  const songs = aggregateSoundtrackSongs(rows, data, now);
+  assert.equal(songs["all/soundtrack/30d"].artists.solo[0].plays, 2);
+  assert.equal(songs["all/soundtrack/30d"].artists.quiet[0].plays, 10);
+});
+
 test("song drilldowns stay within the selected range and retain quiet buckets, guest credits, and platforms", () => {
   const credited = (count: number, title: string, date: string, artists = ["Artist"], albumArtists = ["Artist"]) => plays(count, title, date, "indie").map(row => ({ ...row, track: musicTrack(title, artists, { album: "Shared title", albumArtists, genres: ["indie", "INDIE", " indie "] }) }));
   const rows = [...credited(11, "Main", "2026-11-20T12:00:00Z"), ...credited(1, "Guest", "2026-11-21T12:00:00Z", ["Artist", "Guest", "ARTIST"]), ...credited(1, "Quiet", "2026-10-28T12:00:00Z"), ...credited(11, "Old", "2024-11-20T12:00:00Z"), ...credited(11, "Unrelated", "2026-11-20T12:00:00Z", ["Other"], ["Other"])];

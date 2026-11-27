@@ -67,7 +67,7 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
   useEffect(() => { setSelectedBucket(null); setSongs(null); setPinned(null); setHovered(null); setInspection(null); press.current = null; }, [data?.period]);
 
   const coordinates = { left: 56, right: plotWidth - 16, top: 24, bottom: 290 };
-  const minimum = data?.minimumPlays || 11;
+  const minimum = data?.minimumPlays ?? (period === "30d" ? 1 : 11);
   const buckets = data?.buckets || [];
   const periodName = granularity;
   const chartName = granularity === "day" ? "Daily" : granularity === "month" ? "Monthly" : "Yearly";
@@ -161,7 +161,7 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
       <div><p className="music-label">Every era has its favorites</p><h2 id={id + "-heading"} className="mt-2 font-display text-[clamp(36px,4vw,48px)] leading-none">The changing <em className="text-accent">soundtrack.</em></h2></div>
       <div className="music-tabs" role="group" aria-label="Soundtrack chart metric">{metrics.map(value => <button key={value} aria-pressed={metric === value} onClick={() => { setMetric(value); setSongs(null); setPinned(null); setHovered(null); setInspection(null); }} className="capitalize">{value}</button>)}</div>
     </div>
-    <p className="mt-4 max-w-[80ch] text-[14px] leading-relaxed text-muted">The top five from each {periodName}, in the selected date range. Only totals with more than 10 plays appear. Songs may have multiple genres based on their artists.</p>
+    <p className="mt-4 max-w-[80ch] text-[14px] leading-relaxed text-muted">The top five from each {periodName}, in the selected date range. {minimum > 1 ? `Only totals with more than ${minimum - 1} plays appear. ` : ""}Songs may have multiple genres based on their artists.</p>
     <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-[13px] text-muted"><span aria-live="polite">{loading ? "Updating soundtrack history…" : error ? "Soundtrack history is unavailable. Try reloading." : number(series.length) + " lines · Plays per " + periodName}</span></div>
     <div hidden={!buckets.length}>
       <div className="music-soundtrack-layout mt-5" data-expanded={!!songs || undefined}>
@@ -171,7 +171,7 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
             <p id={id + "-chart-help"} className="sr-only">Use Left and Right to explore {periodName}s, Up and Down to highlight lines, Enter to open songs for the selected line, and Escape to clear the selection.</p>
             <svg ref={svg} viewBox={"0 0 " + plotWidth + " 350"} preserveAspectRatio="none" className="music-soundtrack-svg" role="img" aria-labelledby={id + "-chart-title " + id + "-chart-description"} onPointerMove={interaction.onPointerMove} onPointerDown={interaction.onPointerDown} onPointerUp={interaction.onPointerUp} onPointerCancel={interaction.onPointerCancel}>
               <title id={id + "-chart-title"}>{chartName + " top " + metric + ", " + rangeLabel}</title>
-              <desc id={id + "-chart-description"}>{series.length + " series selected from each " + periodName + "'s top five with at least 11 plays. Lower-volume periods appear as gaps. Select a line or legend entry to view its songs."}</desc>
+              <desc id={id + "-chart-description"}>{series.length + " series selected from each " + periodName + "'s top five. " + (minimum > 1 ? "Only totals with at least " + minimum + " plays appear. Lower-volume periods appear as gaps. " : "") + "Select a line or legend entry to view its songs."}</desc>
               {Array.from({ length: Math.round(ceiling / step) + 1 }, (_, i) => i * step).map(value => <g key={value} pointerEvents="none"><line x1={coordinates.left} x2={coordinates.right} y1={y(value)} y2={y(value)} stroke="var(--line)" strokeDasharray="3 6" /><text x={coordinates.left - 8} y={y(value) + 4} textAnchor="end" fill="var(--mute)" fontSize="13">{number(value)}</text></g>)}
               {buckets.map((bucket, i) => <g key={bucket.key} pointerEvents="none">{(i === buckets.length - 1 || i % labelStride === 0 && (i === 0 || x(buckets.length - 1) - x(i) >= 90)) && <text x={x(i)} y="319" textAnchor={i === 0 && buckets.length > 1 ? "start" : i === buckets.length - 1 && buckets.length > 1 ? "end" : "middle"} fill="var(--mute)" fontSize="13">{granularity === "year" ? bucket.label : bucket.label.replace(/,? \d{4}$/, "")}<tspan x={x(i)} dy="17">{granularity === "year" ? "" : bucket.key.slice(0, 4)}</tspan></text>}</g>)}
               {inspection && <line x1={x(selectedIndex)} x2={x(selectedIndex)} y1={coordinates.top} y2={coordinates.bottom} stroke="var(--ink)" opacity=".25" pointerEvents="none" />}
