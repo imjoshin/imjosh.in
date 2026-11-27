@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import type { BlobController } from "@/lib/blob";
 import styles from "./blob-canvas.module.css";
+import { countEvent, trackEvent } from "@/lib/analytics";
 
 const THEME_STORAGE_KEY = "imjosh.in:theme";
 
@@ -57,7 +58,13 @@ export function BlobCanvas() {
       try {
         const { initBlob } = await import("@/lib/blob.js");
         if (disposed || current !== generation) return;
-        engine.current = initBlob(canvas!, { count: 7, pull: .24, home: home.current, onPewHintChange: setShowPewHint });
+        engine.current = initBlob(canvas!, { count: 7, pull: .24, home: home.current, onPewHintChange: setShowPewHint,
+          onInteraction: (event, params) => {
+            const context = { ...params, page_path: "/" };
+            if (event === "pew_shot" || event === "pew_hit" || event === "blob_burst") countEvent(event, context);
+            else trackEvent(event, context);
+          },
+        });
       } catch {
         // The typography and navigation remain complete without WebGL.
       }

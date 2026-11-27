@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { trackEvent } from "@/lib/analytics";
 import { itemName } from "@/lib/uses";
 import type { UsesItem } from "../../content/uses";
 
@@ -59,6 +60,7 @@ export function GearDetails({ item, children, heading = false, className = "" }:
 
   useEffect(() => {
     if (!open) return;
+    trackEvent("gear_details_view", { item_name: itemName(item) });
     function dismissOnScroll(event: Event) {
       if (event.target instanceof Node && panel.current?.contains(event.target)) return;
       panel.current?.hidePopover();

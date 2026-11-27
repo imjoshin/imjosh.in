@@ -13,7 +13,7 @@ export function initBlob(canvas, o = {}) {
   // Pack burst states four per vector to stay within mobile WebGL uniform limits.
   const capacity = Math.max(8, Math.min(MAX_BLOB_PARTICLES, Math.floor((gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS) - 6) / 5) * 4));
   const simulation = new BlobSimulation({ count: N, scale: S, pull: o.pull ?? .24, maxParticles: capacity });
-  const pew = new PewMode(simulation);
+  const pew = new PewMode(simulation, (event, affected) => o.onInteraction?.(event, { affected_blobs: affected }));
   const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
   const fs = `precision highp float;
 uniform vec2 uR;uniform float uAspect;uniform float uT;uniform float uDark;uniform float uN;uniform float uS;uniform vec4 uParticles[${capacity}];uniform vec4 uBursts[${capacity / 4}];
@@ -155,6 +155,7 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
   const pd = e => {
     if (blockedTarget(e.target)) { gravityGrab = false; simulation.setPointer(toWorld(e)); pew.stop(); return; }
     if (e.button === 2 && e.pointerType === 'mouse' && overCanvas(e)) {
+      if (!gravityGrab) o.onInteraction?.('blob_gravity_grab', { method: 'mouse' });
       gravityGrab = true;
       simulation.setPointer(toWorld(e), true);
       return;
@@ -165,7 +166,9 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
       return;
     }
     // Hit-test the visible surface and kick only its connected group.
-    const hit = simulation.burstAt(toWorld(e)).length > 0;
+    const affected = simulation.burstAt(toWorld(e)).length;
+    const hit = affected > 0;
+    if (hit) o.onInteraction?.('blob_burst', { method: e.pointerType || 'mouse', affected_blobs: affected });
     if (hit && !hintDismissed && o.onPewHintChange && e.pointerType === 'mouse'
       && window.matchMedia('(min-width: 768px)').matches
       && ++blobClicks === 5) setPewHint(true);
@@ -182,7 +185,9 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
   const kd = e => {
     if (e.repeat || e.isComposing || e.altKey || e.ctrlKey || e.metaKey
       || e.target?.closest?.('input,select,textarea,[contenteditable]:not([contenteditable="false"])')) return;
+    const wasActive = pew.active;
     pew.type(e.key);
+    if (pew.active !== wasActive) o.onInteraction?.(pew.active ? 'pew_mode_enable' : 'pew_mode_disable', { method: 'keyboard' });
     if (pew.active) { hintDismissed = true; setPewHint(false); }
     syncCursor();
   };
@@ -190,6 +195,7 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
     home = value;
     const enabled = home && !paused && !dead;
     if (!home || dead) { blobClicks = 0; setPewHint(false); }
+    if (pew.active && !enabled) o.onInteraction?.('pew_mode_disable', { method: home ? 'pause' : 'navigation' });
     pew.setHome(enabled);
     syncCursor();
     if (interactive === enabled) return;

@@ -7,10 +7,11 @@ import { artistSeasonColor } from "@/lib/music/artist-history-colors";
 import { spotifyImage } from "@/lib/music/entity-links";
 import { musicPlaceholderStyle } from "@/lib/music/placeholder";
 import { MusicLink, useDismissMusicHover } from "./music-entity-link";
+import { analyticsContext, analyticsDataAttributes } from "@/lib/analytics-context";
 
 const groupLabels = { "all-time": "All time favorites", recent: "Recent interests", past: "A moment in time" };
 const number = new Intl.NumberFormat("en-US");
-interface Inspection { artist: MusicHistoryArtist; index: number; anchor: HTMLElement }
+interface Inspection { artist: MusicHistoryArtist; index: number; anchor: HTMLElement; method: "hover" | "keyboard" | "touch" | "click" }
 
 function ArtistHistoryYears({ buckets }: { buckets: MusicArtistHistoryDataset["buckets"] }) {
   const axis = useRef<HTMLDivElement | null>(null);
@@ -65,7 +66,7 @@ function ArtistHistoryTooltip({ active, data, id }: { active: Inspection; data: 
     window.visualViewport?.addEventListener("resize", place); window.visualViewport?.addEventListener("scroll", place);
     return () => { observer.disconnect(); removeEventListener("scroll", place, true); removeEventListener("resize", place); window.visualViewport?.removeEventListener("resize", place); window.visualViewport?.removeEventListener("scroll", place); };
   }, [active]);
-  return createPortal(<div ref={popup} id={id} role="tooltip" aria-live="polite" aria-atomic="true" className="music-artist-tooltip" data-ready={position.ready || undefined} style={{ left: position.left, top: position.top }}>
+  return createPortal(<div {...analyticsDataAttributes({ ...analyticsContext(active.anchor), item_type: "artist", item_name: active.artist.name, item_artists: active.artist.name, bucket: bucket.key, method: active.method })} data-analytics-inspect="chart" ref={popup} id={id} role="tooltip" aria-live="polite" aria-atomic="true" className="music-artist-tooltip" data-ready={position.ready || undefined} style={{ left: position.left, top: position.top }}>
     <div className="flex items-center gap-3">
       {image ? <img src={image} alt="" width="40" height="40" className="size-10 shrink-0 rounded-full object-cover" /> : <span className="music-cover size-10 shrink-0 rounded-full" style={musicPlaceholderStyle(active.artist.name)} aria-hidden="true">{active.artist.name.slice(0, 1)}</span>}
       <div className="min-w-0"><strong className="block truncate text-[14px] font-semibold leading-5">{active.artist.name}</strong><p className="mt-1 whitespace-nowrap text-[12px] leading-4 text-muted">{bucket.label}</p></div>
@@ -84,10 +85,10 @@ function ArtistHistoryContent({ data }: { data: MusicArtistHistoryDataset }) {
   const dismissed = useRef<HTMLElement | null>(null);
   const dismissArtist = useDismissMusicHover(), tooltipId = useId(), headingId = useId();
   const dismiss = useCallback(() => setActive(null), []);
-  const inspect = (artist: MusicHistoryArtist, index: number, anchor: HTMLElement) => {
+  const inspect = (artist: MusicHistoryArtist, index: number, anchor: HTMLElement, method: Inspection["method"]) => {
     if (dismissed.current === anchor) return;
     dismissArtist?.();
-    setActive(old => old?.artist === artist && old.index === index ? old : { artist, index, anchor });
+    setActive(old => old?.artist === artist && old.index === index && old.method === method ? old : { artist, index, anchor, method });
   };
   useEffect(() => { dismiss(); }, [data, dismiss]);
   useEffect(() => {
@@ -103,7 +104,7 @@ function ArtistHistoryContent({ data }: { data: MusicArtistHistoryDataset }) {
     if (next === null) return;
     event.preventDefault(); dismissed.current = null;
     const anchor = event.currentTarget.querySelector<HTMLElement>(`[data-season-index="${next}"]`);
-    if (anchor) { anchor.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "instant" }); inspect(artist, next, anchor); }
+    if (anchor) { anchor.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "instant" }); inspect(artist, next, anchor, "keyboard"); }
   };
   const touchDown = (event: PointerEvent<HTMLDivElement>) => {
     pointerType.current = event.pointerType;
@@ -113,22 +114,22 @@ function ArtistHistoryContent({ data }: { data: MusicArtistHistoryDataset }) {
     const start = touch.current; touch.current = null;
     if (event.pointerType !== "touch" || start?.id !== event.pointerId || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 10) return;
     const anchor = (event.target as Element).closest<HTMLElement>("[data-season-index]");
-    if (anchor) { dismissed.current = null; event.currentTarget.focus({ preventScroll: true }); inspect(artist, Number(anchor.dataset.seasonIndex), anchor); }
+    if (anchor) { dismissed.current = null; event.currentTarget.focus({ preventScroll: true }); inspect(artist, Number(anchor.dataset.seasonIndex), anchor, "touch"); }
   };
 
-  return <section id="music-artist-history" className="music-artist-history panel min-w-0 overflow-hidden rounded-[26px] p-5 sm:p-7" aria-labelledby={headingId}>
+  return <section data-analytics-section="artist_history" data-analytics-chart="artist_history" data-analytics-metric="artists" data-analytics-period="all" id="music-artist-history" className="music-artist-history panel min-w-0 overflow-hidden rounded-[26px] p-5 sm:p-7" aria-labelledby={headingId}>
     <div className="mb-6"><p className="music-label">Some favorites last a season. Others last years.</p><h2 id={headingId} className="mt-3 font-display text-[clamp(38px,4vw,46px)] leading-none tracking-[-.025em]">The long <em className="text-accent">haul.</em></h2><p className="mt-3 max-w-[74ch] text-[14px] leading-relaxed text-muted">Seasonal favorites across the whole listening history. Brighter cells mean a bigger share of that season.</p></div>
     <div className="music-artist-scroll" role="region" aria-label="All-time seasonal artist heatmap" tabIndex={0} onScroll={event => event.currentTarget.style.setProperty("--artist-scroll-left", `${event.currentTarget.scrollLeft}px`)}>
       <div className="music-artist-grid" style={{ "--artist-season-count": data.buckets.length } as CSSProperties}>
         <div className="music-artist-grid-row music-artist-axis"><span>Artist</span><ArtistHistoryYears buckets={data.buckets} /></div>
-        {data.groups.filter(group => group.artists.length).map(group => <div key={group.key}>
+        {data.groups.filter(group => group.artists.length).map(group => <div key={group.key} data-analytics-item-group={group.key}>
           <h3 className="music-artist-group"><span>{groupLabels[group.key]}</span><span aria-hidden="true" /></h3>
-          {group.artists.map(artist => {
+          {group.artists.map((artist, artistIndex) => {
             const colors = artist.seasonPlays.map((plays, index) => artistSeasonColor(plays, data.buckets[index].plays));
-            return <div key={artist.key} className="music-artist-grid-row">
+            return <div key={artist.key} data-analytics-item-rank={artistIndex + 1} className="music-artist-grid-row">
               <span className="music-artist-name" onPointerEnter={dismiss} onFocus={dismiss}><MusicLink entity={{ kind: "artist", name: artist.name, url: artist.url }} className="block w-fit max-w-full truncate text-[14px] leading-[1.3]">{artist.name}</MusicLink></span>
               <div className="music-artist-cells" role="group" aria-label={`Explore ${artist.name} by season`} aria-describedby={active?.artist.key === artist.key ? tooltipId : undefined} tabIndex={0} onKeyDown={event => keyboard(event, artist)} onBlur={dismiss} onPointerDown={touchDown} onPointerMove={event => { const start = touch.current; if (start && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 10) touch.current = null; }} onPointerUp={event => touchUp(event, artist)} onPointerCancel={() => { touch.current = null; dismiss(); }}>
-                <div className="music-artist-cells-track">{data.buckets.map((bucket, index) => <span key={bucket.key} data-season-index={index} data-inspected={active?.artist.key === artist.key && active.index === index || undefined} className="music-artist-cell" style={{ "--heat-before": colors[index - 1] || "transparent", "--heat-current": colors[index], "--heat-after": colors[index + 1] || "transparent" } as CSSProperties} onPointerEnter={event => { if (event.pointerType !== "touch") { if (dismissed.current !== event.currentTarget) dismissed.current = null; inspect(artist, index, event.currentTarget); } }} onPointerLeave={event => { if (dismissed.current === event.currentTarget) dismissed.current = null; if (event.pointerType !== "touch") dismiss(); }} onClick={event => { if (pointerType.current !== "touch") { dismissed.current = null; event.currentTarget.closest<HTMLElement>(".music-artist-cells")?.focus({ preventScroll: true }); inspect(artist, index, event.currentTarget); } }} />)}</div>
+                <div className="music-artist-cells-track">{data.buckets.map((bucket, index) => <span key={bucket.key} data-season-index={index} data-inspected={active?.artist.key === artist.key && active.index === index || undefined} className="music-artist-cell" style={{ "--heat-before": colors[index - 1] || "transparent", "--heat-current": colors[index], "--heat-after": colors[index + 1] || "transparent" } as CSSProperties} onPointerEnter={event => { if (event.pointerType !== "touch") { if (dismissed.current !== event.currentTarget) dismissed.current = null; inspect(artist, index, event.currentTarget, "hover"); } }} onPointerLeave={event => { if (dismissed.current === event.currentTarget) dismissed.current = null; if (event.pointerType !== "touch") dismiss(); }} onClick={event => { if (pointerType.current !== "touch") { dismissed.current = null; event.currentTarget.closest<HTMLElement>(".music-artist-cells")?.focus({ preventScroll: true }); inspect(artist, index, event.currentTarget, "click"); } }} />)}</div>
               </div>
             </div>;
           })}

@@ -5,6 +5,7 @@ import { itemId, itemName, monthAt, monthIndex, readTimelineMonth, usesAt } from
 import { AnimatedDate } from "@/components/animated-date";
 import { AnimatedGearItems } from "@/components/animated-gear-items";
 import { GearDetails } from "@/components/gear-details";
+import { trackEvent } from "@/lib/analytics";
 import { GearCategoryIcon } from "@/components/gear-category-icon";
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -41,7 +42,10 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
       url.searchParams.delete("year");
       if (selected === currentMonth) url.searchParams.delete("month");
       else url.searchParams.set("month", selected);
-      if (url.href !== location.href) history.pushState(null, "", url);
+      if (url.href !== location.href) {
+        trackEvent("uses_period_change", { month: selected });
+        history.pushState(null, "", url);
+      }
     }
   }
 

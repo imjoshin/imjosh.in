@@ -3,6 +3,7 @@
 import { DirectionalLink as Link } from "@/components/navigation-motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 export const socialLinks = [
   ["GitHub", "https://github.com/imjoshin"],
@@ -16,7 +17,7 @@ export function SocialLinks({ footer = false }: { footer?: boolean }) {
   return (
     <ul className="flex flex-wrap gap-x-[18px] gap-y-3 text-[13px] font-medium tracking-[.06em] uppercase">
       {socialLinks.slice(0, footer ? 4 : undefined).map(([label, href]) => (
-        <li key={label}><a className="social-link" href={href}>{label}</a></li>
+        <li key={label}><a className="social-link" href={href} data-analytics-social={label.toLowerCase()}>{label}</a></li>
       ))}
     </ul>
   );
@@ -53,6 +54,7 @@ function ThemeToggle() {
     const theme = dark ? "light" : "dark";
     try { localStorage.setItem("imjosh.in:theme", theme); } catch { /* Switching still works when storage is unavailable. */ }
     document.documentElement.dataset.theme = theme;
+    trackEvent("theme_change", { theme });
   }
 
   return (
@@ -131,7 +133,7 @@ export function SiteHeader() {
         <NavigationLinks pathname={pathname} />
         <ThemeToggle />
       </nav>
-      <details ref={menu} className="group md:hidden">
+      <details ref={menu} className="group md:hidden" onToggle={event => { if (event.currentTarget.open) trackEvent("menu_open"); }}>
         <summary className="mobile-menu-toggle flex h-11 w-11 cursor-pointer items-center justify-center text-muted transition-colors hover:text-ink" aria-controls="mobile-navigation">
           <span className="sr-only">Menu</span>
           <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">

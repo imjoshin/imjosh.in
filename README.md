@@ -37,6 +37,8 @@ The prior Gatsby source is preserved locally in ignored `.legacy-gatsby/` and in
 
 ## Deploy to Netlify
 
+Google Analytics setup, event definitions, reporting, and verification are documented in [docs/analytics.md](docs/analytics.md).
+
 The existing Netlify project is **imjoshin**, ID `6a5688c4-8c76-4dd5-afb1-1157eb780c56`, serving [imjosh.in](https://imjosh.in). Its production Git branch is `main`.
 
 ```sh

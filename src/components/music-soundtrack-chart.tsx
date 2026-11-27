@@ -6,6 +6,7 @@ import { MusicChartTooltip } from "./music-chart-tooltip";
 import { chartPointAt, musicLinePath, nearestChartIndex, type MusicChartPoint } from "@/lib/music/chart-interaction";
 import { MusicNumber, useMusicLineMotion, useMusicPresence } from "./music-motion";
 import { isMusicCardTarget } from "./music-entity-link";
+import { trackEvent } from "@/lib/analytics";
 import { useMusicChartInteraction } from "./use-music-chart-interaction";
 import { MusicSoundtrackSongs, type SongSelection } from "./music-soundtrack-songs";
 
@@ -132,6 +133,7 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
   function openSongs(key: string, bucket: string | null, owner: HTMLElement | null) {
     const line = series.find(line => line.key === key);
     if (!line) return;
+    trackEvent("music_drilldown", { chart: "soundtrack", metric, period, item_name: line.name, bucket: bucket || "all" });
     trigger.current = owner;
     setSongs({ metric, key, name: line.name, artists: line.artists, bucket, period: data!.period }); setPinned(key); setHovered(null); setInspection(null);
   }
@@ -172,10 +174,10 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
     } else if (event.key === "Escape") { event.preventDefault(); closeSongs(); }
   }
 
-  return <section className="music-soundtrack-panel panel rounded-[28px] p-5 sm:p-8" aria-labelledby={id + "-heading"} aria-busy={loading}>
+  return <section data-analytics-section="soundtrack" data-analytics-chart="soundtrack" data-analytics-period={data?.period || period} data-analytics-metric={metric} className="music-soundtrack-panel panel rounded-[28px] p-5 sm:p-8" aria-labelledby={id + "-heading"} aria-busy={loading}>
     <div className="flex flex-wrap items-end justify-between gap-5">
       <div><p className="music-label">Every era has its favorites</p><h2 id={id + "-heading"} className="mt-2 font-display text-[clamp(36px,4vw,48px)] leading-none">The changing <em className="text-accent">soundtrack.</em></h2></div>
-      <div className="music-tabs" role="group" aria-label="Soundtrack chart metric">{metrics.map(value => <button key={value} aria-pressed={metric === value} onClick={() => { setMetric(value); setSongs(null); setPinned(null); setHovered(null); setInspection(null); }} className="capitalize">{value}</button>)}</div>
+      <div className="music-tabs" role="group" aria-label="Soundtrack chart metric">{metrics.map(value => <button key={value} aria-pressed={metric === value} onClick={() => { if (value !== metric) trackEvent("music_metric_change", { chart: "soundtrack", metric: value, period }); setMetric(value); setSongs(null); setPinned(null); setHovered(null); setInspection(null); }} className="capitalize">{value}</button>)}</div>
     </div>
     <p className="mt-4 max-w-[80ch] text-[14px] leading-relaxed text-muted">The top five from each {periodName}, in the selected date range. {minimum > 1 ? `Only totals with more than ${minimum - 1} plays appear. ` : ""}Songs may have multiple genres based on their artists.</p>
     <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-[13px] text-muted"><span aria-live="polite">{loading ? "Updating soundtrack history…" : error ? "Soundtrack history is unavailable. Try reloading." : number(series.length) + " lines · Plays per " + periodName}</span></div>
@@ -193,7 +195,7 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
               {inspection && <line x1={x(selectedIndex)} x2={x(selectedIndex)} y1={coordinates.top} y2={coordinates.bottom} stroke="var(--ink)" opacity=".25" pointerEvents="none" />}
               {plotted.map(({ item, phase }) => <SoundtrackLine key={item.key} item={item} phase={phase} selectedTime={buckets[selectedIndex] ? bucketTime(buckets[selectedIndex].key) : 0} highlighted={highlightKeys.includes(item.source.key)} dimmed={highlightKeys.length > 0 && !highlightKeys.includes(item.source.key)} frames={frames.current} />)}
             </svg>
-            {inspection && <MusicChartTooltip id={id + "-tooltip"} title={buckets[selectedIndex]?.label || ""} x={inspection.x} preferTop onCardClose={() => setInspection(null)} rows={tooltipSeries.map(line => ({
+            {inspection && <MusicChartTooltip analyticsBucket={buckets[selectedIndex]?.key} id={id + "-tooltip"} title={buckets[selectedIndex]?.label || ""} x={inspection.x} preferTop onCardClose={() => setInspection(null)} rows={tooltipSeries.map(line => ({
               key: line.key, label: line.name, entity: metric === "genres" ? undefined : { kind: metric === "artists" ? "artist" : "album", name: line.name, artists: line.artists, url: line.url },
               artists: line.artists, detail: line.artists.join(", "), value: line.plays[selectedIndex] || 0, color: color(series.indexOf(line)),
               onSelect: () => openSongs(line.key, buckets[selectedIndex].key, interaction.ref.current),
@@ -203,7 +205,7 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
         {songs && <MusicSoundtrackSongs selection={songs} file={data?.songFiles?.[songs.metric]?.[songs.key]} api={api} bucketLabel={buckets.find(bucket => bucket.key === songs.bucket)?.label} rangeLabel={rangeLabel} close={closeSongs} />}
       </div>
       <div className="mt-5 flex items-center justify-between gap-3 text-[13px] text-muted"><p>{"Select " + (metric === "artists" ? "an " : "a ") + metric.slice(0, -1) + " to explore its songs. Legend counts span all qualifying " + periodName + "s."}</p><button className={"shrink-0 text-accent underline underline-offset-4" + (pinned ? "" : " invisible")} disabled={!pinned} aria-hidden={!pinned || undefined} tabIndex={pinned ? 0 : -1} onClick={closeSongs}>Show all</button></div>
-      <div className="music-soundtrack-legend mt-3" role="group" aria-label={metric + " chart legend"}>{legend.map(line => { const index = series.indexOf(line); return <button key={line.key} type="button" className="music-soundtrack-chip" data-highlighted={pinned === line.key || undefined} aria-pressed={pinned === line.key} onClick={event => { if (songs?.metric === metric && songs.key === line.key && songs.bucket === null) closeSongs(); else openSongs(line.key, null, event.currentTarget); }} onPointerEnter={event => { if (event.pointerType !== "touch") setHovered(line.key); }} onPointerLeave={() => setHovered(null)} onFocus={event => { if (event.currentTarget.matches(":focus-visible")) setHovered(line.key); }} onBlur={() => setHovered(null)}>
+      <div className="music-soundtrack-legend mt-3" role="group" aria-label={metric + " chart legend"}>{legend.map(line => { const index = series.indexOf(line); return <button data-analytics-hover="music" data-analytics-item-type={metric.slice(0, -1)} data-analytics-item-name={line.name} data-analytics-item-artists={metric === "artists" ? line.name : line.artists.join(", ")} data-analytics-item-rank={index + 1} data-analytics-item-slot="legend" key={line.key} type="button" className="music-soundtrack-chip" data-highlighted={pinned === line.key || undefined} aria-pressed={pinned === line.key} onClick={event => { if (songs?.metric === metric && songs.key === line.key && songs.bucket === null) closeSongs(); else openSongs(line.key, null, event.currentTarget); }} onPointerEnter={event => { if (event.pointerType !== "touch") setHovered(line.key); }} onPointerLeave={() => setHovered(null)} onFocus={event => { if (event.currentTarget.matches(":focus-visible")) setHovered(line.key); }} onBlur={() => setHovered(null)}>
         <svg width="24" height="8" viewBox="0 0 24 8" aria-hidden="true" className="shrink-0"><line x1="0" x2="24" y1="4" y2="4" stroke={color(index)} strokeWidth="2.5" strokeDasharray={dash(index)} /></svg>
         <span className="min-w-0 truncate">{line.name}{line.artists.length > 0 && <span className="text-muted"> · {line.artists.join(", ")}</span>}</span>
         <span className="shrink-0 tabular-nums text-muted"><MusicNumber value={total(line)} /><span className="sr-only"> plays</span></span>

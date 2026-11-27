@@ -53,7 +53,7 @@ export function MusicSoundtrackSongs({ selection, file, api, bucketLabel, rangeL
   const data = loaded && loaded.file === file && loaded.data.metric === selection.metric && loaded.data.key === selection.key && loaded.data.period === selection.period ? loaded.data : null;
   const songs = (data?.tracks || []).map(track => ({ ...track, count: selection.bucket ? track.buckets[selection.bucket] || 0 : track.plays, entity: data!.entities[track.key] })).filter(track => track.count > 0 && track.entity).sort((a, b) => b.count - a.count || a.entity.name.localeCompare(b.entity.name) || a.key.localeCompare(b.key));
   const updating = !!file && loaded?.file !== file && !failed;
-  return <aside ref={panel} className="music-soundtrack-songs" role="region" aria-label={`${selection.name} songs`} onKeyDown={event => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); close(); } }}>
+  return <aside data-analytics-section="soundtrack_songs" data-analytics-period={selection.period} data-analytics-metric={selection.metric} data-analytics-bucket={selection.bucket || "all"} ref={panel} className="music-soundtrack-songs" role="region" aria-label={`${selection.name} songs`} onKeyDown={event => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); close(); } }}>
     <div className="music-soundtrack-songs-inner">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0"><p className="music-label">{selection.bucket ? bucketLabel : rangeLabel}</p><h3 ref={heading} tabIndex={-1} className="mt-2 break-words font-display text-[28px] leading-none">{selection.name}</h3>{selection.artists.length > 0 && <p className="mt-2 text-[12px] text-muted"><MusicArtists names={selection.artists} details={data?.entities} /></p>}</div>
@@ -63,7 +63,7 @@ export function MusicSoundtrackSongs({ selection, file, api, bucketLabel, rangeL
       <div ref={scroller} className="music-soundtrack-song-list mt-4" role="region" tabIndex={0} aria-label="Selected songs" aria-busy={updating}>
         {updating && <p role="status" className="pb-3 text-[13px] text-muted">{data ? "Updating songs…" : "Loading songs…"}</p>}
         {failed ? <p role="status" className="text-[13px] text-muted">Song details are unavailable. Close and select this entry to retry.</p> : !file ? <p className="text-[13px] text-muted">Song details are being updated.</p> : data && !songs.length ? <p className="text-[13px] text-muted">No recorded songs for this selection.</p> : null}
-        <ol>{songs.map(song => <li key={song.key} className="music-soundtrack-song">
+        <ol>{songs.map((song, index) => <li data-analytics-item-rank={index + 1} key={song.key} className="music-soundtrack-song">
           <span className="music-cover h-9 w-9 shrink-0 rounded-md" style={song.entity.image ? undefined : musicPlaceholderStyle(song.entity.name)} aria-hidden="true">{song.entity.image ? <img src={song.entity.image} width="36" height="36" alt="" loading="lazy" /> : <span className="text-[24px]">{song.entity.name.slice(0, 1)}</span>}</span>
           <div className="min-w-0 flex-1"><MusicLink entity={song.entity} details={song.entity} className="block w-fit max-w-full truncate text-[14px] font-medium">{song.entity.name}</MusicLink><p className="mt-1 truncate text-[12px] text-muted"><MusicArtists names={song.entity.artists || []} details={data?.entities} /></p></div>
           <span className="shrink-0 text-[13px] tabular-nums text-muted">{number(song.count)}<span className="sr-only"> plays</span></span>

@@ -4,6 +4,7 @@ import "@fontsource/instrument-serif/latin-400-italic.css";
 import "@fontsource-variable/bricolage-grotesque/opsz.css";
 import "./globals.css";
 import { BlobCanvas } from "@/components/blob-canvas";
+import { SiteAnalytics } from "@/components/site-analytics";
 import { SiteFooter, SiteHeader } from "@/components/site-shell";
 import socialImage from "../../public/social.png";
 
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="flex min-h-dvh flex-col">
+        <SiteAnalytics />
         <a className="skip-link fixed top-3 left-gutter z-50 -translate-y-24 rounded-full bg-ink px-5 py-3 text-background focus:translate-y-0" href="#main">Skip to content</a>
         <BlobCanvas />
         <SiteHeader />

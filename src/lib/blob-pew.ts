@@ -18,8 +18,9 @@ export class PewMode {
   private aim: Point = [0, 0];
   private untilShot = PELLET_INTERVAL;
   private simulation: BlobSimulation;
+  private onEvent?: (event: "pew_shot" | "pew_hit", affected?: number) => void;
 
-  constructor(simulation: BlobSimulation) { this.simulation = simulation; }
+  constructor(simulation: BlobSimulation, onEvent?: (event: "pew_shot" | "pew_hit", affected?: number) => void) { this.simulation = simulation; this.onEvent = onEvent; }
 
   setHome(home: boolean) {
     this.home = home;
@@ -62,6 +63,7 @@ export class PewMode {
     const length = Math.hypot(...direction);
     const velocity = direction.map((axis) => axis / length * PELLET_SPEED) as Vector;
     this.pellets.push({ position, velocity, age: 0 });
+    this.onEvent?.("pew_shot");
   }
 
   private advance(elapsed: number) {
@@ -69,7 +71,9 @@ export class PewMode {
       const pellet = this.pellets[i];
       const next = pellet.position.map((axis, j) => axis + pellet.velocity[j] * elapsed) as Vector;
       pellet.age += elapsed;
-      if (pellet.age >= PELLET_LIFETIME || this.simulation.burstAlong(pellet.position, next, PELLET_IMPACT_STRENGTH).length > 0) {
+      const affected = pellet.age >= PELLET_LIFETIME ? 0 : this.simulation.burstAlong(pellet.position, next, PELLET_IMPACT_STRENGTH).length;
+      if (affected) this.onEvent?.("pew_hit", affected);
+      if (pellet.age >= PELLET_LIFETIME || affected > 0) {
         this.pellets.splice(i, 1);
       } else {
         pellet.position = next;
