@@ -19,6 +19,7 @@
     "music:auth": "node --experimental-strip-types scripts/music.ts auth",
     "music:import": "node --experimental-strip-types scripts/music.ts import",
     "music:sync": "node --experimental-strip-types scripts/music.ts sync",
+    "music:genres": "node --experimental-strip-types scripts/music.ts genres",
     "music:aggregate": "node --experimental-strip-types scripts/music.ts aggregate",
     "music:pull": "node --experimental-strip-types scripts/music.ts pull",
     "music:push": "node --experimental-strip-types scripts/music.ts push",

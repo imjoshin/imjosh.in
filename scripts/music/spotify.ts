@@ -4,6 +4,8 @@ import type { SpotifyCredentials } from "./auth.ts";
 import { spotifyListen, clean } from "../../src/lib/music/normalize.ts";
 import { isKidsGenre } from "../../src/lib/music/genres.ts";
 import type { RankedMusic, SpotifySnapshot } from "../../src/lib/music/types.ts";
+import savedArtistGenres from "../../content/artist_genres.json" with { type: "json" };
+import { artistGenreKey, parseArtistGenreCatalog, resolveArtistGenres } from "../../src/lib/music/artist-genres.ts";
 
 type Row = Record<string, any>;
 export interface GenreEntry { genres: string[]; provider: string; fetchedAt: string; artistId: string | null }
@@ -119,8 +121,9 @@ export async function collectSpotify(store: MusicStore, full = false, genreBudge
   await writeJson(store, "catalog/genres.json", genreIndex);
   await writeJson(store, "catalog/spotify-tracks.json.gz", { ...(await readJson<Record<string, Row>>(store, "catalog/spotify-tracks.json.gz") || {}), ...Object.fromEntries(tracks) });
   if (snapshot) {
+    const effectiveGenres = resolveArtistGenres(genreIndex, parseArtistGenreCatalog(savedArtistGenres));
     const ranked = (item: Row, artist = false): RankedMusic => ({ key: item.id, name: clean(item.name), artists: artist ? [] : (item.artists || []).map((a: Row) => clean(a.name)), image: (artist ? item.images : item.album?.images)?.[0]?.url || null, url: item.external_urls?.spotify || null, plays: 0, msPlayed: 0 });
-    const isKids = (item: Row, artist = false) => (artist ? item.genres || genreIndex[clean(item.name).toLowerCase()]?.genres || [] : [...(item.genres || []), ...(item.album?.genres || []), ...(item.artists || []).flatMap((a: Row) => genreIndex[clean(a.name).toLowerCase()]?.genres || [])]).some(isKidsGenre);
+    const isKids = (item: Row, artist = false) => (artist ? effectiveGenres[artistGenreKey(clean(item.name))]?.genres || [] : [...(item.genres || []), ...(item.album?.genres || []), ...(item.artists || []).flatMap((a: Row) => effectiveGenres[artistGenreKey(clean(a.name))]?.genres || [])]).some(isKidsGenre);
     const publicPlaylists = [];
     for (const playlist of snapshot.playlists) {
       const raw = await readJson<{ items: Row[] }>(store, `snapshots/spotify/playlists/${playlist.id}.json.gz`);

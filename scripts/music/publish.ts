@@ -9,8 +9,10 @@ import { aggregateEntities, type MusicEntityMetadata } from "../../src/lib/music
 import type { MusicEntityRef } from "../../src/lib/music/types.ts";
 import { musicEntityKey } from "../../src/lib/music/entity-links.ts";
 import { publicSpotifyPlayback, type SpotifyPlaybackSource } from "../../src/lib/music/playback.ts";
+import savedArtistGenres from "../../content/artist_genres.json" with { type: "json" };
+import { artistGenreKey, normalizeArtistGenres, parseArtistGenreCatalog, resolveArtistGenres, type ArtistGenreCatalog } from "../../src/lib/music/artist-genres.ts";
 
-export async function publishMusic(privateStore: MusicStore, publicStore: MusicStore, now = new Date()) {
+export async function publishMusic(privateStore: MusicStore, publicStore: MusicStore, now = new Date(), artistGenreCatalog: ArtistGenreCatalog = parseArtistGenreCatalog(savedArtistGenres)) {
   const excluded = await readJson<Record<string, { reason: string; excludedAt: string }>>(privateStore, "catalog/excluded-imports.json") || {};
   // An explicitly rejected archive remains private, including its normalized events.
   const rows = (await allListens(privateStore)).filter(row => !excluded[row.rawRef.split("#")[0]]);
@@ -21,22 +23,24 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     if (track) listen.track = { ...listen.track, ...track, genres: [...new Set([...listen.track.genres, ...track.genres])] };
   }
   const verifiedRows = rows.filter(listen => !policy?.requireGoogleLibraryMatch || listen.platform !== "youtube-music" || !!(listen.track.platformId && google[listen.track.platformId]));
-  const genres = await readJson<GenreIndex>(privateStore, "catalog/genres.json") || {};
+  const spotifyGenres = await readJson<GenreIndex>(privateStore, "catalog/genres.json") || {};
+  const genres = resolveArtistGenres(spotifyGenres, artistGenreCatalog);
   const catalog = await readJson<Record<string, any>>(privateStore, "catalog/spotify-tracks.json.gz") || {};
   const metadata = new Map(Object.values(catalog).map(t => [musicTrack(t.name || "", (t.artists || []).map((a: any) => a.name)).key, t]));
   const genreByTrack = new Map<string, Set<string>>();
   const disneyTracks = new Set<string>();
   const catalogTrack = (t: any) => ({ title: t.name || "", artists: (t.artists || []).map((a: any) => a.name || ""), album: t.album?.name || null, labels: [t.label, t.album?.label, ...(t.album?.copyrights || []).map((c: any) => c.text)].filter(Boolean) });
   for (const [key, t] of metadata) if (isDisneyMusic(catalogTrack(t))) disneyTracks.add(key);
-  for (const [key, t] of metadata) genreByTrack.set(key, new Set([...(t.genres || []), ...(t.album?.genres || []), ...(t.artists || []).flatMap((a: any) => genres[a.name?.toLowerCase()]?.genres || [])]));
+  for (const [key, t] of metadata) genreByTrack.set(key, new Set([...(t.genres || []), ...(t.album?.genres || []), ...(t.artists || []).flatMap((a: any) => genres[artistGenreKey(a.name || "")]?.genres || [])]));
   for (const l of verifiedRows) {
     const t = metadata.get(l.track.key);
     if (t) { l.track.image ||= t.album?.images?.[0]?.url || null; l.track.isrc ||= t.external_ids?.isrc || null; l.track.album ||= t.album?.name || null; l.track.albumArtists = t.album?.artists?.map((a: any) => a.name).filter(Boolean) || l.track.albumArtists; l.track.labels = [...new Set([...(l.track.labels || []), ...catalogTrack(t).labels])]; }
     if (isDisneyMusic(l.track)) disneyTracks.add(l.track.key);
     const all = genreByTrack.get(l.track.key) || new Set<string>();
-    for (const genre of [...l.track.genres, ...(t?.genres || []), ...(t?.album?.genres || []), ...l.track.artists.flatMap(name => genres[name.toLowerCase()]?.genres || [])]) all.add(genre);
+    for (const genre of [...l.track.genres, ...(t?.genres || []), ...(t?.album?.genres || []), ...l.track.artists.flatMap(name => genres[artistGenreKey(name)]?.genres || [])]) all.add(genre);
     genreByTrack.set(l.track.key, all);
   }
+  for (const [key, values] of genreByTrack) genreByTrack.set(key, new Set(normalizeArtistGenres([...values])));
   for (const l of verifiedRows) l.track.genres = [...genreByTrack.get(l.track.key) || []];
   const result = aggregateMusic(verifiedRows, now);
   // Write immutable payloads first; switch one manifest last so readers never see a partial release.
@@ -60,17 +64,18 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     const albumCredits = t.album?.artists?.map((a: any) => a.name).filter(Boolean) || [];
     const albumArtists = albumCredits.length ? albumCredits : names;
     entityMetadata.push({ kind: "track", name: t.name || "", artists: names, url: t.external_urls?.spotify || (t.id ? `https://open.spotify.com/track/${t.id}` : null), image: t.album?.images?.[0]?.url, genres: [...genreByTrack.get(musicTrack(t.name || "", names).key) || []], album: t.album?.name, albumArtists });
-    if (t.album?.name) entityMetadata.push({ kind: "album", name: t.album.name, artists: albumArtists, url: t.album.external_urls?.spotify || (t.album.id ? `https://open.spotify.com/album/${t.album.id}` : null), image: t.album.images?.[0]?.url, genres: t.album.genres || [] });
-    for (const a of t.artists || []) if (a.name) entityMetadata.push({ kind: "artist", name: a.name, url: a.external_urls?.spotify || (a.id ? `https://open.spotify.com/artist/${a.id}` : null), genres: genres[a.name.toLowerCase()]?.genres || [] });
+    if (t.album?.name) entityMetadata.push({ kind: "album", name: t.album.name, artists: albumArtists, url: t.album.external_urls?.spotify || (t.album.id ? `https://open.spotify.com/album/${t.album.id}` : null), image: t.album.images?.[0]?.url, genres: normalizeArtistGenres(t.album.genres || []) });
+    for (const a of t.artists || []) if (a.name) entityMetadata.push({ kind: "artist", name: a.name, url: a.external_urls?.spotify || (a.id ? `https://open.spotify.com/artist/${a.id}` : null), genres: genres[artistGenreKey(a.name)]?.genres || [] });
   }
-  for (const [name, item] of Object.entries(genres)) if (item.artistId) entityMetadata.push({ kind: "artist", name, url: `https://open.spotify.com/artist/${item.artistId}`, genres: item.genres });
+  for (const [name, item] of Object.entries(spotifyGenres)) if (item.artistId) entityMetadata.push({ kind: "artist", name, url: `https://open.spotify.com/artist/${item.artistId}`, genres: genres[artistGenreKey(name)]?.genres || [] });
+  for (const [key, item] of Object.entries(artistGenreCatalog.artists)) if (item.spotifyArtistId) entityMetadata.push({ kind: "artist", name: item.name, url: `https://open.spotify.com/artist/${item.spotifyArtistId}`, genres: genres[key]?.genres || [] });
   if (spotify) {
-    const kids = (names: string[]) => names.flatMap(name => genres[name.toLowerCase()]?.genres || []).some(isKidsGenre);
+    const kids = (names: string[]) => names.flatMap(name => genres[artistGenreKey(name)]?.genres || []).some(isKidsGenre);
     for (const range of Object.values(spotify.ranges)) {
       range.tracks = range.tracks.filter(t => !kids(t.artists) && !isDisneyMusic({ title: t.name, artists: t.artists }) && !disneyTracks.has(musicTrack(t.name, t.artists).key) && ![...genreByTrack.get(musicTrack(t.name, t.artists).key) || []].some(isKidsGenre));
       range.artists = range.artists.filter(a => !kids([a.name]) && !isDisneyMusic({ artists: [a.name] }));
       favorites.push(...range.tracks.map(t => ({ kind: "track" as const, name: t.name, artists: t.artists, url: t.url, image: t.image })), ...range.artists.map(a => ({ kind: "artist" as const, name: a.name, url: a.url, image: a.image })));
-      entityMetadata.push(...range.artists.map(a => ({ kind: "artist" as const, name: a.name, url: a.url, image: a.image, genres: genres[a.name.toLowerCase()]?.genres || [] })));
+      entityMetadata.push(...range.artists.map(a => ({ kind: "artist" as const, name: a.name, url: a.url, image: a.image, genres: genres[artistGenreKey(a.name)]?.genres || [] })));
     }
     // Playlist originals remain private; publish listening and affinity rankings only.
     spotify.playlists = [];

@@ -57,6 +57,29 @@ npm run music:aggregate
 
 Full sync paginates supported top tracks/artists for every period, saved tracks/albums/shows/episodes/audiobooks, followed artists, playlists and contents, and artist genres. Unsupported endpoints are recorded. Rate limits are honored. The first genre collection can take time; production genre requests are bounded and checkpointed. Failed collections retain all completed raw pages and the last public summary.
 
+## Local artist genre catalog
+
+`content/artist_genres.json` is the committed primary source for artist genres, separate from Spotify's private `catalog/genres.json`. Publishing and scheduled collection use this file's nonempty, usable labels first and fall back to Spotify when the artist is absent or has no usable labels. This resolution applies to history, seasonal graphs, genre song lists, hover metadata, and kids filtering. Scheduled jobs only read this file; new classifications reach production with the next code deployment.
+
+All genres used in published JSON follow the same rules: omit labels containing the word `christmas`, and extract `christian` and `worship` from compound labels into separate, deduplicated tags. For example, `christian alternative rock` becomes `christian`, `alternative rock`; `pop worship` becomes `worship`, `pop`. Other style words and the order of first occurrence are preserved. These rules apply when updating the committed catalog and when resolving Spotify metadata, without rewriting private source records. Removing a Christmas label does not remove the listening event. Extra qualifier tags can bring a generated classification above five labels.
+
+The local utility uses your installed Codex CLI and saved login (`codex login status`), with no OpenAI API key or additional npm dependency. It first pulls current production Spotify catalogs and canonical listening partitions through the existing Netlify connection. It skips original ZIPs, raw responses, credentials, and unrelated production state. Local listening partitions are merged, preserving local-only events. It does not initiate a Spotify library sync or write to production.
+
+```powershell
+npm run music:genres -- --dry-run
+npm run music:genres
+npm run music:genres -- --limit all
+npm run music:genres -- --artist "Owl City" --artist "half•alive"
+```
+
+Discovery tracks only artists with **more than 25 cumulative recorded listens** (at least 26), registering their existing Spotify genres or an empty pending entry. Lower-count entries are pruned from this file and rediscovered on later runs if they become eligible; their original Spotify metadata stays in the private catalog. Counts span all available Spotify history after source deduplication, excluding private sessions, non-music, future records, and rejected imports. Eligible artists with no Spotify genres and no saved classification are sent to Codex, one at a time. Explicit `--artist` selections and retries do not bypass this threshold. Spotify genres remain usable at any listen count, independently of this file. The default limit is 25 eligible artists per run, prioritizing this year's recorded plays, then all-time plays. Codex receives only the artist's name, Spotify ID, and up to three example recording titles/albums to disambiguate identity, never listening counts, dates, source records, or credentials. Its ephemeral, read-only session runs in a temporary directory without user/project configuration or connected apps. It can use cached web search when uncertain.
+
+Each result is validated and atomically saved before the next request. Genres are ordered from most representative to least, with approximately five labels when supported. Equivalent hyphen/space spellings in generated labels follow the existing Spotify vocabulary, preserving order and avoiding duplicate chart lines. Codex classifications are explicitly labeled with provenance and a brief explanation; these are artist-level classifications, not song-level Spotify genres. Unknown artists retain an empty list and explanation rather than invented labels. Completed and uncertain entries are skipped on subsequent runs; `--retry-unknown` retries uncertain Codex entries. A failed request stops the run while preserving completed work. Ctrl+C stops the active request. Concurrent catalog writers are blocked by a temporary `.lock` file; remove a stale lock only after confirming the original process is no longer running.
+
+`--no-pull` works from existing local data. `--discover-only` registers artists without calling Codex. `--dry-run` shows the queue without editing the committed catalog or calling Codex (the private input pull still runs unless disabled). `--model` selects a Codex model, and `--codex-bin` or `CODEX_BIN` supplies the native executable if it is not on PATH. `--artist` can be repeated to target specific artists. No automatic Git commits or deployment occur. Successful generation refreshes only local summaries.
+
+Review the resulting diff, correct labels with `source: "manual"` when appropriate, then commit `content/artist_genres.json` alongside code as usual. Preserve its ordered labels, provenance, and unresolved entries. It must never contain listening events, counts, example recordings, or credentials.
+
 ## Historical exports
 
 Request Spotify Account Data, Extended Streaming History, and Technical Log Information in Account Privacy, then confirm the email. Lifetime history can take 30 days to prepare. Google Takeout should include music library/uploads, playlists, history, and relevant My Activity in JSON. The Play Music transfer confirmation establishes library migration, not complete dated-history retention. Verify actual export coverage before presenting historical claims.

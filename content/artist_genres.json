@@ -1,0 +1,4071 @@
+{
+  "version": 1,
+  "artists": {
+    "a great big world": {
+      "name": "A Great Big World",
+      "spotifyArtistId": "5xKp3UyavIBUsGy3DQdXeF",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "a really really cool band": {
+      "name": "A Really Really Cool Band",
+      "spotifyArtistId": "7c3DqqaI2MFO1q2GAEuFF6",
+      "genres": [
+        "midwest emo"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "a silent film": {
+      "name": "A Silent Film",
+      "spotifyArtistId": "7HO5HS3yeokRBGVC4nSKIb",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "a story told": {
+      "name": "A Story Told",
+      "spotifyArtistId": null,
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "aaron sprinkle": {
+      "name": "Aaron Sprinkle",
+      "spotifyArtistId": "3tTyMb425q0FBGdkPa6TGu",
+      "genres": [
+        "christian",
+        "alternative rock",
+        "folk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "aina the end": {
+      "name": "AiNA THE END",
+      "spotifyArtistId": "5k7KS34gxQbzdQaXWSOVKC",
+      "genres": [
+        "anime",
+        "j-pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "aj smith": {
+      "name": "AJ Smith",
+      "spotifyArtistId": "7FzUl96rK3TB1HVeVNw973",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "ajr": {
+      "name": "AJR",
+      "spotifyArtistId": "6s22t5Y3prQHyaHWUN1R1C",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "alan menken": {
+      "name": "Alan Menken",
+      "spotifyArtistId": "5sy77gt4bfsLcSQ8GIe4ZZ",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "alex clare": {
+      "name": "Alex Clare",
+      "spotifyArtistId": "5Tf4EH8tDvznnjULcFxkIl",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "all sons & daughters": {
+      "name": "All Sons & Daughters",
+      "spotifyArtistId": "44LPOpECjnIlnwH91wo2ir",
+      "genres": [
+        "worship",
+        "christian",
+        "folk",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "all time low": {
+      "name": "All Time Low",
+      "spotifyArtistId": "46gyXjRIvN1NL1eCB8GBxo",
+      "genres": [
+        "pop punk",
+        "emo",
+        "punk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "almightyarceus": {
+      "name": "AlmightyArceus",
+      "spotifyArtistId": "1pYfLGXAVd7pEvLlbKJV0S",
+      "genres": [
+        "lo-fi"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "almost monday": {
+      "name": "almost monday",
+      "spotifyArtistId": "42FzVuyJH8YbkhzWSR2n8E",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "alt-j": {
+      "name": "alt-J",
+      "spotifyArtistId": "3XHO7cRUPCLOr6jwp8vsx5",
+      "genres": [
+        "indie",
+        "indie rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "american authors": {
+      "name": "American Authors",
+      "spotifyArtistId": "0MlOPi3zIDMVrfA9R04Fe3",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "andrew goldstein": {
+      "name": "Andrew Goldstein",
+      "spotifyArtistId": "1amAFzJXIR7U3hgXf2ZhAw",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "andrew mcmahon in the wilderness": {
+      "name": "Andrew McMahon in the Wilderness",
+      "spotifyArtistId": "716ZwtZBmwROBXcFmCzfdM",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "andy grammer": {
+      "name": "Andy Grammer",
+      "spotifyArtistId": "2oX42qP5ineK3hrhBECLmj",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "andy mineo": {
+      "name": "Andy Mineo",
+      "spotifyArtistId": "1TMrnxBwZfmfRxsGzkNIHw",
+      "genres": [
+        "christian",
+        "hip hop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "anthem lights": {
+      "name": "Anthem Lights",
+      "spotifyArtistId": "7kwEvDE8e7EBGKh5bLczqQ",
+      "genres": [
+        "hymns"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "antoine bradford": {
+      "name": "Antoine Bradford",
+      "spotifyArtistId": "1FYE37rOHOrxO1lHAQUkCl",
+      "genres": [
+        "christian",
+        "r&b",
+        "lo-fi",
+        "jazz",
+        "folk",
+        "alternative rock",
+        "worship"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "apollo ltd": {
+      "name": "Apollo LTD",
+      "spotifyArtistId": "2H3EMYFS69dhMmrX9JTkZp",
+      "genres": [
+        "christian",
+        "pop",
+        "ccm",
+        "alternative rock",
+        "edm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "arctic monkeys": {
+      "name": "Arctic Monkeys",
+      "spotifyArtistId": "7Ln80lUS6He07XvHI8qqHH",
+      "genres": [
+        "indie",
+        "garage rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "area 11": {
+      "name": "Area 11",
+      "spotifyArtistId": null,
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "arlie": {
+      "name": "Arlie",
+      "spotifyArtistId": "6Bllzm0olEwqGwPujaLiuA",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "armin van buuren": {
+      "name": "Armin van Buuren",
+      "spotifyArtistId": "0SfsnGyD8FpIN4U4WCkBZ5",
+      "genres": [
+        "trance",
+        "progressive trance",
+        "progressive house",
+        "electronica",
+        "edm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "ascend the hill": {
+      "name": "Ascend The Hill",
+      "spotifyArtistId": "0g1QOskZ9opQELS5ijE6XV",
+      "genres": [
+        "hymns",
+        "worship",
+        "christian",
+        "folk",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "atlas genius": {
+      "name": "Atlas Genius",
+      "spotifyArtistId": "42vg2T0Xg9yPaAgogJzoQH",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "auli'i cravalho": {
+      "name": "Auli'i Cravalho",
+      "spotifyArtistId": "5mnS9jJdKQQcRSqFu5YPVe",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "avicii": {
+      "name": "Avicii",
+      "spotifyArtistId": "1vCWHaC5f2uS3yhpwWbIA6",
+      "genres": [
+        "edm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "awolnation": {
+      "name": "AWOLNATION",
+      "spotifyArtistId": "4njdEjTnLfcGImKZu1iSrz",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "bad sounds": {
+      "name": "Bad Sounds",
+      "spotifyArtistId": "0hSgRl2U8kSaJLE2Di325f",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "bad suns": {
+      "name": "Bad Suns",
+      "spotifyArtistId": "0YhUSm86okLWldQVwJkLlP",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "bag raiders": {
+      "name": "Bag Raiders",
+      "spotifyArtistId": "6fXEqmGQEt6ONuqVmwrN46",
+      "genres": [
+        "alternative dance"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "balu brigada": {
+      "name": "Balu Brigada",
+      "spotifyArtistId": "6O9vGMmTwzihULICPCsNf2",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "bastille": {
+      "name": "Bastille",
+      "spotifyArtistId": "7EQ0qTo7fWT7DPxmxtSYEc",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "beach chapel": {
+      "name": "Beach Chapel",
+      "spotifyArtistId": "0xDQejb43c7yJ5nfCA7jv5",
+      "genres": [
+        "christian",
+        "alternative rock",
+        "folk",
+        "lo-fi",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "bellarive": {
+      "name": "Bellarive",
+      "spotifyArtistId": "65NvBV0QogJroXpNLUTJyX",
+      "genres": [
+        "christian",
+        "rock",
+        "alternative rock",
+        "folk",
+        "worship"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "ben rector": {
+      "name": "Ben Rector",
+      "spotifyArtistId": "4AapPt7H6bGH4i7chTulpI",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "bethel music": {
+      "name": "Bethel Music",
+      "spotifyArtistId": "26T4yOaOoFJvUvxR87Y9HO",
+      "genres": [
+        "worship",
+        "christian",
+        "pop",
+        "ccm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "big bad voodoo daddy": {
+      "name": "Big Bad Voodoo Daddy",
+      "spotifyArtistId": "6ROyXB8NDG0fA78S46JdTB",
+      "genres": [
+        "swing music",
+        "big band",
+        "electro swing",
+        "rockabilly"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "big data": {
+      "name": "Big Data",
+      "spotifyArtistId": "4S1nvNHWiZLP4rzwmULmUa",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "bing crosby": {
+      "name": "Bing Crosby",
+      "spotifyArtistId": "6ZjFtWeHP9XN7FeKSUe80S",
+      "genres": [],
+      "source": null,
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "birds of bellwoods": {
+      "name": "Birds of Bellwoods",
+      "spotifyArtistId": "3ZtRAJvBArlocyjPbm4Lvr",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "black eyed peas": {
+      "name": "Black Eyed Peas",
+      "spotifyArtistId": "1yxSLGMDHlW21z4YXirZDS",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "black pontiac": {
+      "name": "Black Pontiac",
+      "spotifyArtistId": "7p24SkpCc94fUK8rPK3JHm",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "blake whiteley": {
+      "name": "Blake Whiteley",
+      "spotifyArtistId": null,
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "blanket approval": {
+      "name": "Blanket Approval",
+      "spotifyArtistId": "6QqLBe3xHwdKbWQ5Ctu400",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "bleachers": {
+      "name": "Bleachers",
+      "spotifyArtistId": "2eam0iDomRHGBypaDQLwWI",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "blink-182": {
+      "name": "blink-182",
+      "spotifyArtistId": "6FBDaR13swtiWwGhX1WQsP",
+      "genres": [
+        "pop punk",
+        "punk",
+        "skate punk",
+        "rock",
+        "emo"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "blue october": {
+      "name": "Blue October",
+      "spotifyArtistId": "1TJbmc7jTpw78GKCiMpvDh",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "blue swede": {
+      "name": "Blue Swede",
+      "spotifyArtistId": "0UpuH5U4nZ3UGGUJi0Zfbp",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "børns": {
+      "name": "BØRNS",
+      "spotifyArtistId": "1KP6TWI40m7p3QBTU6u2xo",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "brandon heath": {
+      "name": "Brandon Heath",
+      "spotifyArtistId": "0W7wIkmxoGQbnZYn2z2sLj",
+      "genres": [
+        "christian",
+        "ccm",
+        "pop",
+        "worship",
+        "rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "britt nicole": {
+      "name": "Britt Nicole",
+      "spotifyArtistId": "6BXionV4R0BunrFpSwIMUK",
+      "genres": [
+        "christian",
+        "pop",
+        "edm",
+        "ccm",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "bronze radio return": {
+      "name": "Bronze Radio Return",
+      "spotifyArtistId": "2ic4xySjQ39N7DJ0HZemeG",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "byrne": {
+      "name": "BYRNE",
+      "spotifyArtistId": "06a0KPufkYNdb0mZ9CcSho",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "caamp": {
+      "name": "Caamp",
+      "spotifyArtistId": "0wyMPXGfOuQzNR54ujR9Ix",
+      "genres": [
+        "indie folk",
+        "folk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "cage the elephant": {
+      "name": "Cage The Elephant",
+      "spotifyArtistId": "26T3LtbuGT1Fu9m0eRq5X3",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "camo columbo": {
+      "name": "Camo Columbo",
+      "spotifyArtistId": "4PEjxQciyHLViBRsOmbrYm",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "capital cities": {
+      "name": "Capital Cities",
+      "spotifyArtistId": "4gwpcMTbLWtBUlOijbVpuu",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "capital kings": {
+      "name": "Capital Kings",
+      "spotifyArtistId": "3lTIrl4h1Vov8fDaNqXUof",
+      "genres": [
+        "christian",
+        "edm",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "capital lights": {
+      "name": "Capital Lights",
+      "spotifyArtistId": "0xhIBddw7R69CWKsCt2gVt",
+      "genres": [
+        "christian",
+        "rock",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "capital soiree": {
+      "name": "Capital Soiree",
+      "spotifyArtistId": "1sd5vbMAYXlLoJNTQfY0HV",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "caravan palace": {
+      "name": "Caravan Palace",
+      "spotifyArtistId": "37J1PlAkhRK7yrZUtqaUpQ",
+      "genres": [
+        "electro swing",
+        "swing music",
+        "nu jazz"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "castlecomer": {
+      "name": "Castlecomer",
+      "spotifyArtistId": "7tnWJfXaJmFO6vv5WFN2K0",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "cereus bright": {
+      "name": "Cereus Bright",
+      "spotifyArtistId": "3zt4I5TLIb0Z9RigaiHe5G",
+      "genres": [
+        "indie folk",
+        "folk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "cg5": {
+      "name": "CG5",
+      "spotifyArtistId": "3YJDqtTSjydvUpTvU1fJ6O",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "chali 2na": {
+      "name": "Chali 2na",
+      "spotifyArtistId": "1ZJlXFkFDBsjSuYyjVcMkk",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "chaz cardigan": {
+      "name": "Chaz Cardigan",
+      "spotifyArtistId": "7DJUlhy4pX4sxaDfQcH0Ms",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "cheekface": {
+      "name": "Cheekface",
+      "spotifyArtistId": "32kCEAvtuFzIZA15zrhQDW",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "chill with lofi": {
+      "name": "Chill With Lofi",
+      "spotifyArtistId": "7CHCHpUzDDPRElNiZYmcbI",
+      "genres": [
+        "lo-fi"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "chris renzema": {
+      "name": "Chris Renzema",
+      "spotifyArtistId": "2hIvOHaLTl9XCyCbNPwYzT",
+      "genres": [
+        "christian",
+        "folk",
+        "worship",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "chris tomlin": {
+      "name": "Chris Tomlin",
+      "spotifyArtistId": "6pRi6EIPXz4QJEOEsBaA0m",
+      "genres": [
+        "christian",
+        "worship",
+        "ccm",
+        "pop",
+        "country"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "christophe beck": {
+      "name": "Christophe Beck",
+      "spotifyArtistId": null,
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "chvrches": {
+      "name": "CHVRCHES",
+      "spotifyArtistId": "3CjlHNtplJyTf9npxaPl5w",
+      "genres": [
+        "synthpop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "citizens": {
+      "name": "Citizens",
+      "spotifyArtistId": "3e7KVnSiZjsBkReSv0L6db",
+      "genres": [
+        "christian",
+        "alternative rock",
+        "folk",
+        "worship",
+        "rock",
+        "hymns"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "city of lions": {
+      "name": "City of Lions",
+      "spotifyArtistId": "3AXS3AKsrcXeH9qGWjp0Bp",
+      "genres": [
+        "christian",
+        "rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "cityalight": {
+      "name": "CityAlight",
+      "spotifyArtistId": "4UNta2jPQJ844nyw1bsyPg",
+      "genres": [
+        "worship",
+        "hymns",
+        "christian"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "cloud cult": {
+      "name": "Cloud Cult",
+      "spotifyArtistId": "6R1T5YklzC9OFugGt8RwOD",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "coastal club": {
+      "name": "Coastal Club",
+      "spotifyArtistId": "6Ssvxfw2kfG1jkfDJDGJoh",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "cody carnes": {
+      "name": "Cody Carnes",
+      "spotifyArtistId": "7apN8bBgl19E0Ona9pvPq0",
+      "genres": [
+        "worship",
+        "christian",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "coin": {
+      "name": "COIN",
+      "spotifyArtistId": "0ZxZlO7oWCSYMXhehpyMvE",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "coldplay": {
+      "name": "Coldplay",
+      "spotifyArtistId": "4gzpq5DPGxSnKTe4SA8HAU",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "colony house": {
+      "name": "Colony House",
+      "spotifyArtistId": "6R664N4cEza3eORSqKSgO4",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "colorvault": {
+      "name": "Colorvault",
+      "spotifyArtistId": "15r1ip4y85i0oDNt03C4Er",
+      "genres": [
+        "christian",
+        "alternative rock",
+        "edm",
+        "pop",
+        "worship"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "colton dixon": {
+      "name": "Colton Dixon",
+      "spotifyArtistId": "52oVYHQ99ORZzeig2YGo4R",
+      "genres": [
+        "christian",
+        "pop",
+        "ccm",
+        "worship",
+        "rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "confetti": {
+      "name": "Confetti",
+      "spotifyArtistId": "1oyUjl52ohRrCv3EL1UdpM",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "connor price": {
+      "name": "Connor Price",
+      "spotifyArtistId": "5zixe6AbgXPqt4c1uSl94L",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "coral bones": {
+      "name": "Coral Bones",
+      "spotifyArtistId": "0iy6OoJOCMcDZAovtiaCaZ",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "cosmo sheldrake": {
+      "name": "Cosmo Sheldrake",
+      "spotifyArtistId": "6hV6oxGLeLFw17DGjIPkYD",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "couch": {
+      "name": "Couch",
+      "spotifyArtistId": "3nYyLjhw4mYzYfJePsCJYJ",
+      "genres": [
+        "pop soul",
+        "jazz pop",
+        "funk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "courtship.": {
+      "name": "courtship.",
+      "spotifyArtistId": "2OK16hAFRHoJiFZKeZe8A8",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "cousin simple": {
+      "name": "Cousin Simple",
+      "spotifyArtistId": "2E2W9MFs2OLciSGq8Mp03r",
+      "genres": [
+        "indie rock",
+        "alternative rock",
+        "indie pop"
+      ],
+      "source": "codex",
+      "updatedAt": "2026-11-27T01:56:33.490Z",
+      "note": "The example recordings match the Columbus, Ohio band. Indie rock and alternative rock describe its core sound, with indie pop reflecting the melodic hooks heard across its releases.",
+      "sources": [
+        "https://www.cousinsimple.com/about",
+        "https://www.berklee.edu/red-room-cafe-939/events/wild-party-cousin-simple",
+        "https://music.amazon.in/artists/B075V8NDSX/cousin-simple"
+      ]
+    },
+    "creepy nuts": {
+      "name": "Creepy Nuts",
+      "spotifyArtistId": "0pWR7TsFhvSCnbmHDjWgrE",
+      "genres": [
+        "anime",
+        "j-pop",
+        "j-rap"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "cruisr": {
+      "name": "CRUISR",
+      "spotifyArtistId": "1jNnM5dm7dzt16IocWCvJc",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "daft punk": {
+      "name": "Daft Punk",
+      "spotifyArtistId": "4tZwfgrHOc3mvqYlEYSvVi",
+      "genres": [
+        "french house",
+        "electronic",
+        "electro"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "daisy the great": {
+      "name": "Daisy the Great",
+      "spotifyArtistId": "0SrIPejckovMwhrN3MZFPB",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "dawson hollow": {
+      "name": "Dawson Hollow",
+      "spotifyArtistId": "4BgqG2TR5C45CxBXtuXJ3R",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "dayaway": {
+      "name": "dayaway",
+      "spotifyArtistId": "6doiARNekKDdYtgBXIE5tX",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "dayglow": {
+      "name": "Dayglow",
+      "spotifyArtistId": "6eJa3zG1QZLRB3xgRuyxbm",
+      "genres": [
+        "indie rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "dc talk": {
+      "name": "DC Talk",
+      "spotifyArtistId": "1zK4ACgLi1lVPpfmmcwOTh",
+      "genres": [
+        "christian",
+        "rock",
+        "ccm",
+        "alternative rock",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "dean martin": {
+      "name": "Dean Martin",
+      "spotifyArtistId": "49e4v89VmlDcFCMyDv9wQ9",
+      "genres": [
+        "adult standards",
+        "big band",
+        "swing music"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "death cab for cutie": {
+      "name": "Death Cab for Cutie",
+      "spotifyArtistId": "0YrtvWJMgSdVrk3SfNjTbx",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "didrick": {
+      "name": "Didrick",
+      "spotifyArtistId": "5yHFElFCi9F3I316qLU0QA",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "dirty heads": {
+      "name": "Dirty Heads",
+      "spotifyArtistId": "6GkJh85o22LfD2vgL9DP6f",
+      "genres": [
+        "reggae rock",
+        "reggae"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "djo": {
+      "name": "Djo",
+      "spotifyArtistId": "5p9HO3XC5P3BLxJs5Mtrhm",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "dnce": {
+      "name": "DNCE",
+      "spotifyArtistId": "6T5tfhQCknKG4UnH90qGnz",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "doublecamp": {
+      "name": "DOUBLECAMP",
+      "spotifyArtistId": "6IvIbSOsPLkPS4N1MO4Fdy",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "dr. dog": {
+      "name": "Dr. Dog",
+      "spotifyArtistId": "4mLJ3XfOM5FPjSAWdQ2Jk7",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "drakeford": {
+      "name": "Drakeford",
+      "spotifyArtistId": "5M7hCkA0s91a3BqfktxLfK",
+      "genres": [
+        "christian",
+        "folk",
+        "indie folk",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "dreamers": {
+      "name": "DREAMERS",
+      "spotifyArtistId": "1FgsVeOhRYuSw2ghkIXV0A",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "dresses": {
+      "name": "Dresses",
+      "spotifyArtistId": "4Om4kO491KUeVkwTLiVQq3",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "dwayne johnson": {
+      "name": "Dwayne Johnson",
+      "spotifyArtistId": "1T8S48bD91THNKBByWBDyn",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "easy chill": {
+      "name": "Easy Chill",
+      "spotifyArtistId": "2a2RLYP9cY8p84Z4Ufpkpf",
+      "genres": [
+        "lo-fi"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "ecclesia": {
+      "name": "Ecclesia",
+      "spotifyArtistId": "6yuXGldP2yeZ8GFNrZdlSC",
+      "genres": [
+        "christian",
+        "r&b",
+        "pop",
+        "alternative rock",
+        "lo-fi",
+        "edm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "ed sheeran": {
+      "name": "Ed Sheeran",
+      "spotifyArtistId": "6eUKZXaKkcviH0Ku9w2n3V",
+      "genres": [
+        "soft pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "edward sharpe & the magnetic zeros": {
+      "name": "Edward Sharpe & The Magnetic Zeros",
+      "spotifyArtistId": "7giUHu5pv6YTZgSkxxCcgh",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "electric light orchestra": {
+      "name": "Electric Light Orchestra",
+      "spotifyArtistId": "7jefIIksOi1EazgRTfW2Pk",
+      "genres": [
+        "art rock",
+        "soft rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "elevation rhythm": {
+      "name": "ELEVATION RHYTHM",
+      "spotifyArtistId": "0qZ8aSF0iMCQI99AAXikF8",
+      "genres": [
+        "worship",
+        "christian",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "elevation worship": {
+      "name": "Elevation Worship",
+      "spotifyArtistId": "3YCKuqpv9nCsIhJ2v8SMix",
+      "genres": [
+        "worship",
+        "christian",
+        "ccm",
+        "gospel",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "empire of the sun": {
+      "name": "Empire Of The Sun",
+      "spotifyArtistId": "67hb7towEyKvt5Z8Bx306c",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "ethan c. davis": {
+      "name": "Ethan C. Davis",
+      "spotifyArtistId": "34vEpj4qI07ROyQSkw41II",
+      "genres": [
+        "christian",
+        "pop",
+        "alternative rock",
+        "folk",
+        "lo-fi",
+        "jazz"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "fall out boy": {
+      "name": "Fall Out Boy",
+      "spotifyArtistId": "4UXqAaa6dQYAk18Lv7PEgX",
+      "genres": [
+        "emo",
+        "pop punk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "finish ticket": {
+      "name": "Finish Ticket",
+      "spotifyArtistId": "3RthMq3xfDQZl80cMEg1JQ",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "firekid": {
+      "name": "firekid",
+      "spotifyArtistId": "61XyQHQKfzbzgTmtbiVOR3",
+      "genres": [
+        "folk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "fitz and the tantrums": {
+      "name": "Fitz and The Tantrums",
+      "spotifyArtistId": "4AcHt3JxKy59IX7JNNlZn4",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "flame": {
+      "name": "FLAME",
+      "spotifyArtistId": "2s6kyMmJZFgPCHXU0QxJLp",
+      "genres": [
+        "christian",
+        "hip hop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "for king & country": {
+      "name": "for KING & COUNTRY",
+      "spotifyArtistId": "3sDbKMebVH2VYcRSl7u1VC",
+      "genres": [
+        "christian",
+        "ccm",
+        "pop",
+        "worship"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "for the foxes": {
+      "name": "For The Foxes",
+      "spotifyArtistId": "5TAL9h3eaLmeywqYanJesj",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "forrest frank": {
+      "name": "Forrest Frank",
+      "spotifyArtistId": "1scVfBymTr3CeZ4imMj1QJ",
+      "genres": [
+        "christian",
+        "pop",
+        "hip hop",
+        "worship",
+        "lo-fi",
+        "r&b"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "forrest.": {
+      "name": "Forrest.",
+      "spotifyArtistId": "6chWbUfdu6ibyaCXM1w8kQ",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "foster the people": {
+      "name": "Foster The People",
+      "spotifyArtistId": "7gP3bB2nilZXLfPHJhMdvc",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "frank sinatra": {
+      "name": "Frank Sinatra",
+      "spotifyArtistId": "1Mxqyy3pSjf8kZZL4QVxS0",
+      "genres": [
+        "big band",
+        "adult standards",
+        "swing music",
+        "jazz",
+        "vocal jazz"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "friday pilots club": {
+      "name": "Friday Pilots Club",
+      "spotifyArtistId": "3PgEvPJKRuil74QPX8wtXY",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "fun.": {
+      "name": "fun.",
+      "spotifyArtistId": "5nCi3BB41mBaMH9gfr6Su0",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "gable price and friends": {
+      "name": "Gable Price and Friends",
+      "spotifyArtistId": "6d9rhdwIVsqblUFXu7qEBp",
+      "genres": [
+        "christian",
+        "alternative rock",
+        "folk",
+        "pop",
+        "rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "gawvi": {
+      "name": "GAWVI",
+      "spotifyArtistId": "0oPd8f0W82Tgrazx2PYNab",
+      "genres": [
+        "christian",
+        "hip hop",
+        "reggaeton",
+        "pop",
+        "edm",
+        "r&b"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "generationals": {
+      "name": "Generationals",
+      "spotifyArtistId": "57MtJQ6Sc4tIxrXIhrqVJL",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "george ezra": {
+      "name": "George Ezra",
+      "spotifyArtistId": "2ysnwxxNtSgbb9t1m2Ur4j",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "gio.": {
+      "name": "gio.",
+      "spotifyArtistId": "5GevjOibFX6uwZ1mTYfhbn",
+      "genres": [
+        "christian",
+        "hip hop",
+        "pop",
+        "r&b"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "glass animals": {
+      "name": "Glass Animals",
+      "spotifyArtistId": "4yvcSjfu4PC0CYQyLy4wSq",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "glitchxcity": {
+      "name": "GlitchxCity",
+      "spotifyArtistId": "0X1wtVNo8CVrMEKh8y8knH",
+      "genres": [
+        "lo-fi",
+        "glitch"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "good kid": {
+      "name": "Good Kid",
+      "spotifyArtistId": "38SKxCyfrmNWqWunb9wGHP",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "gotye": {
+      "name": "Gotye",
+      "spotifyArtistId": "2AsusXITU8P25dlRNhcAbG",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "graham good and the painters": {
+      "name": "Graham Good and the Painters",
+      "spotifyArtistId": "5anRy2kwFKkwtewYlCX0RZ",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "grizfolk": {
+      "name": "Grizfolk",
+      "spotifyArtistId": "6Xa4nbrSTfbioA4lLShbjh",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "group 1 crew": {
+      "name": "Group 1 Crew",
+      "spotifyArtistId": "0S4zLQlUn398bugWd6Inmq",
+      "genres": [
+        "christian",
+        "pop",
+        "edm",
+        "hip hop",
+        "ccm",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "grouplove": {
+      "name": "GROUPLOVE",
+      "spotifyArtistId": "3kVUvbeRdcrqQ3oHk5hPdx",
+      "genres": [
+        "indie"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "gungor": {
+      "name": "Gungor",
+      "spotifyArtistId": "4J4o73Oun7v0XXRjN8DPif",
+      "genres": [
+        "christian",
+        "folk",
+        "alternative rock",
+        "worship",
+        "ccm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "half•alive": {
+      "name": "half•alive",
+      "spotifyArtistId": "7sOR7gk6XUlGnxj3p9F54k",
+      "genres": [
+        "indie pop",
+        "alternative rock",
+        "electropop",
+        "dance pop"
+      ],
+      "source": "codex",
+      "updatedAt": "2026-11-27T01:56:20.402Z",
+      "note": "The Spotify ID and all three recordings match the Long Beach band. Indie pop and alternative rock best describe the catalog, with synth-heavy production and dance grooves supporting the other tags. Funk and soul are influences.",
+      "sources": [
+        "https://www.mystreamcount.com/artist/7sOR7gk6XUlGnxj3p9F54k",
+        "https://www.allmusic.com/artist/half-alive-mn0003808326/biography",
+        "https://www.albumoftheyear.org/artist/41316-half-alive/",
+        "https://en.wikipedia.org/wiki/Half_Alive_%28band%29"
+      ]
+    },
+    "hamilton leithauser": {
+      "name": "Hamilton Leithauser",
+      "spotifyArtistId": "3ZXXJ9nO1Dn9B0AJ25eAQY",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "harbour": {
+      "name": "HARBOUR",
+      "spotifyArtistId": "58bPSgeKpyyFlJ9LatULIO",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "he is we": {
+      "name": "He Is We",
+      "spotifyArtistId": "6yFbpXlBH8XHVQGjUPUvKU",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "hidinin": {
+      "name": "Hidinin",
+      "spotifyArtistId": "0C6oNIq3fYBTWuHFJpsZwk",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "hillsong united": {
+      "name": "Hillsong UNITED",
+      "spotifyArtistId": "74cb3MG0x0BOnYNW1uXYnM",
+      "genres": [
+        "worship",
+        "christian",
+        "ccm",
+        "pop",
+        "gospel"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "hillsong worship": {
+      "name": "Hillsong Worship",
+      "spotifyArtistId": "3SgHzT552wy2W8pNLaLk24",
+      "genres": [
+        "worship",
+        "christian",
+        "pop",
+        "ccm",
+        "gospel"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "hillsong young & free": {
+      "name": "Hillsong Young & Free",
+      "spotifyArtistId": "7m4gF38CPATtHrk5HS42WZ",
+      "genres": [
+        "worship",
+        "christian",
+        "pop",
+        "edm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "hippo campus": {
+      "name": "Hippo Campus",
+      "spotifyArtistId": "1btWGBz4Uu1HozTwb2Lm8A",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "hnry": {
+      "name": "HNRY",
+      "spotifyArtistId": "6GNi29yEcCDY3idJNAf0Rl",
+      "genres": [
+        "christian",
+        "edm",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "honest men": {
+      "name": "Honest Men",
+      "spotifyArtistId": "7ed5eSusVIBEIvmkASgzKj",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "hot chelle rae": {
+      "name": "Hot Chelle Rae",
+      "spotifyArtistId": "6jTnHxhb6cDCaCu4rdvsQ0",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "hozier": {
+      "name": "Hozier",
+      "spotifyArtistId": "2FXC3k01G6Gw61bmprjgqS",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "hulvey": {
+      "name": "Hulvey",
+      "spotifyArtistId": "3zSrc5vUlUxyDdS0KrxFJO",
+      "genres": [
+        "christian",
+        "hip hop",
+        "r&b",
+        "pop",
+        "worship"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "hunter hunted": {
+      "name": "Hunter Hunted",
+      "spotifyArtistId": "1Xqfa9sfJ094hHdEVS1C6t",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "huntr/x": {
+      "name": "HUNTR/X",
+      "spotifyArtistId": "2yNNYQBChuox9A5Ka93BIn",
+      "genres": [
+        "k-pop",
+        "dance pop",
+        "soundtrack",
+        "pop rap"
+      ],
+      "source": "codex",
+      "updatedAt": "2026-11-27T01:57:12.037Z",
+      "note": "HUNTR/X is the fictional girl group from KPop Demon Hunters, voiced by EJAE, Audrey Nuna, and Rei Ami. Its recordings center on dance-oriented K-pop written for the film, with pop rap most prominent on the harder-edged tracks.",
+      "sources": [
+        "https://open.spotify.com/embed/artist/2yNNYQBChuox9A5Ka93BIn",
+        "https://www.netflix.com/tudum/articles/kpop-demon-hunters-soundtrack?inapp=true%2F",
+        "https://www.allmusic.com/artist/huntr-x-mn0004860211"
+      ]
+    },
+    "i am they": {
+      "name": "I AM THEY",
+      "spotifyArtistId": "0XJ5RIvhlOL0harjI9jZvX",
+      "genres": [
+        "christian",
+        "worship",
+        "ccm",
+        "folk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "idina menzel": {
+      "name": "Idina Menzel",
+      "spotifyArtistId": "73Np75Wv2tju61Eo9Zw4IR",
+      "genres": [
+        "musicals"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "illenium": {
+      "name": "ILLENIUM",
+      "spotifyArtistId": "45eNHdiiabvmbp4erw26rg",
+      "genres": [
+        "melodic bass",
+        "future bass",
+        "edm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "imagine dragons": {
+      "name": "Imagine Dragons",
+      "spotifyArtistId": "53XhwfbYqKCa1cC15pYq2q",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "ingrid michaelson": {
+      "name": "Ingrid Michaelson",
+      "spotifyArtistId": "2vm8GdHyrJh2O2MfbQFYG0",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "insaneintherainmusic": {
+      "name": "insaneintherainmusic",
+      "spotifyArtistId": "62GoYifV4njTdvS8lD2yYT",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "isla vista worship": {
+      "name": "Isla Vista Worship",
+      "spotifyArtistId": "6SPi7yJRY3SAhwhUlFFsNB",
+      "genres": [
+        "christian",
+        "lo-fi",
+        "alternative rock",
+        "worship",
+        "jazz",
+        "r&b",
+        "folk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "isly": {
+      "name": "ISLY",
+      "spotifyArtistId": "6vcdxuQqc3jvWqznVDPEAW",
+      "genres": [
+        "christian",
+        "alternative rock",
+        "pop",
+        "lo-fi",
+        "edm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "jack's mannequin": {
+      "name": "Jack's Mannequin",
+      "spotifyArtistId": "42aeGx2I3uXINpGqC8L0LD",
+      "genres": [
+        "pop punk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "jacob collier": {
+      "name": "Jacob Collier",
+      "spotifyArtistId": "0QWrMNukfcVOmgEU0FEDyD",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "jacob stanifer": {
+      "name": "Jacob Stanifer",
+      "spotifyArtistId": "6vOLg94b2uu3742kkSkRBl",
+      "genres": [
+        "christian",
+        "edm",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "jady": {
+      "name": "Jady",
+      "spotifyArtistId": "17KoLQGv2wtWE3yujz4jq1",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "jason mraz": {
+      "name": "Jason Mraz",
+      "spotifyArtistId": "4phGZZrJZRo4ElhRtViYdl",
+      "genres": [
+        "soft pop",
+        "acoustic pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "jervis campbell": {
+      "name": "Jervis Campbell",
+      "spotifyArtistId": "31Bh5G3Q9JzwqPpHDLIQtW",
+      "genres": [
+        "christian",
+        "folk",
+        "pop",
+        "worship",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "jet trouble": {
+      "name": "Jet Trouble",
+      "spotifyArtistId": "6W2lyFO79SNpk3ZpF0A2s9",
+      "genres": [
+        "christian",
+        "pop",
+        "alternative rock",
+        "edm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "jimmy clifton": {
+      "name": "Jimmy Clifton",
+      "spotifyArtistId": "2G0M287MWFHQB1dE4RwW7t",
+      "genres": [
+        "christian",
+        "folk",
+        "country",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "joan": {
+      "name": "joan",
+      "spotifyArtistId": "3HXLY1sNXIxHfulrjPiRf5",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "joe hertler & the rainbow seekers": {
+      "name": "Joe Hertler & The Rainbow Seekers",
+      "spotifyArtistId": "2bqcjvd6ETkqubaQnx3OtS",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "john lucas": {
+      "name": "John Lucas",
+      "spotifyArtistId": "7iEy8zKFtlYIINaxxLIyBk",
+      "genres": [
+        "christian",
+        "folk",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "john mark mcmillan": {
+      "name": "John Mark McMillan",
+      "spotifyArtistId": "0T1KC0OHfbRO0O5bNH2tek",
+      "genres": [
+        "christian",
+        "folk",
+        "alternative rock",
+        "worship"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "john mark pantana": {
+      "name": "John Mark Pantana",
+      "spotifyArtistId": "6cbdCv0bmLwcxSVFM7tuyG",
+      "genres": [
+        "christian",
+        "folk",
+        "lo-fi",
+        "alternative rock",
+        "worship"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "john michael howell": {
+      "name": "John Michael Howell",
+      "spotifyArtistId": "4BqK6JLgMwQ99hx85DxNhP",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "jon bellion": {
+      "name": "Jon Bellion",
+      "spotifyArtistId": "50JJSqHUf2RQ9xsHs0KMHg",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "jon guerra": {
+      "name": "Jon Guerra",
+      "spotifyArtistId": "0T5EH22oyMja9UmN0Rz95o",
+      "genres": [
+        "christian",
+        "folk",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "jordan feliz": {
+      "name": "Jordan Feliz",
+      "spotifyArtistId": "0TgNiaeQaWssaH9aWjbqnA",
+      "genres": [
+        "christian",
+        "pop",
+        "ccm",
+        "worship",
+        "edm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "jordan fisher": {
+      "name": "Jordan Fisher",
+      "spotifyArtistId": "60wslYioiBcxSTInM4nIy2",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "jordy searcy": {
+      "name": "Jordy Searcy",
+      "spotifyArtistId": "0AV5z1x1RoOGeJWeJzziDz",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "joseph o'brien": {
+      "name": "Joseph O'Brien",
+      "spotifyArtistId": "1ibVSKkKjRcDYXTJrUprGa",
+      "genres": [
+        "christian",
+        "pop",
+        "ccm",
+        "worship",
+        "folk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "josh garrels": {
+      "name": "Josh Garrels",
+      "spotifyArtistId": "16QSVsPKl743hu4U5C18R8",
+      "genres": [
+        "christian",
+        "folk",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "joshua micah": {
+      "name": "Joshua Micah",
+      "spotifyArtistId": "6pLDSW3de0uRB6cP30krKv",
+      "genres": [
+        "christian",
+        "pop",
+        "edm",
+        "ccm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "josiah queen": {
+      "name": "Josiah Queen",
+      "spotifyArtistId": "7yAymwuYh9RcpX84GSNIq2",
+      "genres": [
+        "christian",
+        "folk",
+        "worship",
+        "pop",
+        "country"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "judah & the lion": {
+      "name": "Judah & the Lion",
+      "spotifyArtistId": "3wWtfT7S2uVJJ3hGZlOLkZ",
+      "genres": [
+        "folk pop",
+        "christian",
+        "folk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "judah.": {
+      "name": "JUDAH.",
+      "spotifyArtistId": "5LnlX7FdPg0ocmyBzOzDQW",
+      "genres": [
+        "christian",
+        "alternative rock",
+        "folk",
+        "pop",
+        "worship"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "juice": {
+      "name": "Juice",
+      "spotifyArtistId": "0Rq1n6pHHHUQwXnCO8IF4E",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "jukebox the ghost": {
+      "name": "Jukebox The Ghost",
+      "spotifyArtistId": "0L8jXe7QeS9oYUoXbANmX4",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "juniper vale": {
+      "name": "Juniper Vale",
+      "spotifyArtistId": null,
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "justin bieber": {
+      "name": "Justin Bieber",
+      "spotifyArtistId": "1uNFoZAHBGtllmzznpCI3s",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "kari jobe": {
+      "name": "Kari Jobe",
+      "spotifyArtistId": null,
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "kayden": {
+      "name": "KAYDEN",
+      "spotifyArtistId": "5Dq2DMerDcvcdlzPTmo6Jn",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "kelsey breedlove": {
+      "name": "Kelsey Breedlove",
+      "spotifyArtistId": "0RylJjG2CawOJWWxRD6Qts",
+      "genres": [
+        "christian",
+        "lo-fi",
+        "folk",
+        "jazz",
+        "alternative rock",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "kindred": {
+      "name": "Kindred",
+      "spotifyArtistId": "0jkVPZMrqLtlTAaRnXbVeD",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "kings (mhm)": {
+      "name": "Kings (MHM)",
+      "spotifyArtistId": "64bkd3Cql2VeQBIfl5tjCC",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "kings kaleidoscope": {
+      "name": "Kings Kaleidoscope",
+      "spotifyArtistId": "6P9fFbQ875B2bnmdiYwN9A",
+      "genres": [
+        "christian",
+        "alternative rock",
+        "worship",
+        "folk",
+        "hymns"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "knox hamilton": {
+      "name": "Knox Hamilton",
+      "spotifyArtistId": "1XyjBsbZBunXsYDTkaYtk9",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "kowloon": {
+      "name": "Kowloon",
+      "spotifyArtistId": "4VQqGf7U3RUspgTsprypWE",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "kristen bell": {
+      "name": "Kristen Bell",
+      "spotifyArtistId": "2kHxkdiKCSnHMkhIgFBZaI",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "kygo": {
+      "name": "Kygo",
+      "spotifyArtistId": "23fqKkggKUBHNkbKtXEls4",
+      "genres": [
+        "tropical house"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "laity": {
+      "name": "Laity",
+      "spotifyArtistId": "4K2tvMk8OdoG0Lo3PHir41",
+      "genres": [
+        "christian",
+        "lo-fi",
+        "alternative rock",
+        "folk",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "land of color": {
+      "name": "Land of Color",
+      "spotifyArtistId": "42YoF8fzPiMbU5dlf59YuQ",
+      "genres": [
+        "christian",
+        "folk",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "landon conrath": {
+      "name": "Landon Conrath",
+      "spotifyArtistId": "2PJ06l59DomDd440az768u",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "lane 8": {
+      "name": "Lane 8",
+      "spotifyArtistId": "27gtK7m9vYwCyJ04zz0kIb",
+      "genres": [
+        "melodic house",
+        "progressive house"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "late night episode": {
+      "name": "Late Night Episode",
+      "spotifyArtistId": "3ZvruFeycdpcMPS4EfESRk",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "lauren daigle": {
+      "name": "Lauren Daigle",
+      "spotifyArtistId": "40LHVA5BTQp9RxHOQ9JPYj",
+      "genres": [
+        "christian",
+        "worship",
+        "ccm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "lawrence": {
+      "name": "Lawrence",
+      "spotifyArtistId": "5rwUYLyUq8gBsVaOUcUxpE",
+      "genres": [
+        "pop soul",
+        "retro soul"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "leeland": {
+      "name": "Leeland",
+      "spotifyArtistId": "6j1fmLreVuAay7k6Gudfa2",
+      "genres": [
+        "worship",
+        "christian",
+        "ccm",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "legrand": {
+      "name": "LeGrand",
+      "spotifyArtistId": "4gOUlzoljp2awye30QKLJL",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "len": {
+      "name": "LEN",
+      "spotifyArtistId": "0nyc9SZGLITSOJASmTZsnZ",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "lincoln brewster": {
+      "name": "Lincoln Brewster",
+      "spotifyArtistId": "1aoy0R8uP3x33eqKZOLpN1",
+      "genres": [
+        "christian",
+        "ccm",
+        "worship",
+        "rock",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "linus from the stars": {
+      "name": "Linus from the Stars",
+      "spotifyArtistId": "58eX9oo07KxvqPgbQmI0V5",
+      "genres": [
+        "synthpop",
+        "indie pop"
+      ],
+      "source": "codex",
+      "updatedAt": "2026-11-27T01:56:49.157Z",
+      "note": "Melodic, synth-led songwriting makes synthpop the clearest fit across the releases. Indie pop is a broader secondary fit, and finer genre distinctions are less consistently documented.",
+      "sources": [
+        "https://open.spotify.com/artist/58eX9oo07KxvqPgbQmI0V5",
+        "https://www.last.fm/music/Linus%2Bfrom%2Bthe%2BStars",
+        "https://linusfromthestars.bandcamp.com/album/hopeless-dreamer",
+        "https://linusfromthestars.bandcamp.com/album/a-summer-diary",
+        "https://www.albumoftheyear.org/ratings/user-highest-rated/ep/2019/pop/7/"
+      ]
+    },
+    "little hurt": {
+      "name": "Little Hurt",
+      "spotifyArtistId": "3QN1rAppoKbXhExveckTuO",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "little image": {
+      "name": "little image",
+      "spotifyArtistId": "5Ljgq0b8I3YkUwp3gtB1wm",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "lofi lia": {
+      "name": "Lofi Lia",
+      "spotifyArtistId": "4dR6GXV8DO4FOwHZyu8MEq",
+      "genres": [
+        "lo-fi"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "lostboycrow": {
+      "name": "Lostboycrow",
+      "spotifyArtistId": null,
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "lovelytheband": {
+      "name": "lovelytheband",
+      "spotifyArtistId": "4KJ6jujcNPzOyhdNoiNftp",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "lovkn": {
+      "name": "LOVKN",
+      "spotifyArtistId": "2bEFxVGVlzEIEdDAaQZCrc",
+      "genres": [
+        "christian",
+        "folk",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "lukas graham": {
+      "name": "Lukas Graham",
+      "spotifyArtistId": "25u4wHJWxCA9vO0CzxAbK7",
+      "genres": [
+        "dansk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "luke cyrus": {
+      "name": "Luke Cyrus",
+      "spotifyArtistId": "7eUxT2qrnRN7aRmwmhRSdg",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "luna bay": {
+      "name": "Luna Bay",
+      "spotifyArtistId": "4GxGE6FCYDdHtcDzRL7TYh",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "m83": {
+      "name": "M83",
+      "spotifyArtistId": "63MQldklfxkjYDoUE4Tppz",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "machineheart": {
+      "name": "machineheart",
+      "spotifyArtistId": "4uethVhVpoyO3OhT40JH1o",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "made in heights": {
+      "name": "Made in Heights",
+      "spotifyArtistId": null,
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "magic giant": {
+      "name": "MAGIC GIANT",
+      "spotifyArtistId": "7eaa5bidliPI0djFYv166f",
+      "genres": [
+        "folk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "magic man": {
+      "name": "Magic Man",
+      "spotifyArtistId": "6ejhZKxWJr9apHAzj74DHv",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "manchester orchestra": {
+      "name": "Manchester Orchestra",
+      "spotifyArtistId": "5wFXmYsg3KFJ8BDsQudJ4f",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "marianas trench": {
+      "name": "Marianas Trench",
+      "spotifyArtistId": "68EB3QvNdVLkC7SAgDbHIR",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "mark barlow": {
+      "name": "Mark Barlow",
+      "spotifyArtistId": "6hR5fuwetYvTHfea4EwHvl",
+      "genres": [
+        "christian",
+        "jazz",
+        "lo-fi",
+        "r&b",
+        "worship",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "marshmello": {
+      "name": "Marshmello",
+      "spotifyArtistId": "64KEffDW9EtZ1y2vBYgq8T",
+      "genres": [
+        "edm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "martin and rose music": {
+      "name": "Martin and Rose Music",
+      "spotifyArtistId": "61VbOFPL7RIKt0Q1KOykSU",
+      "genres": [
+        "children's music"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "martin solveig": {
+      "name": "Martin Solveig",
+      "spotifyArtistId": "1bj5GrcLom5gZFF5t949Xl",
+      "genres": [
+        "french house"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "mat kearney": {
+      "name": "Mat Kearney",
+      "spotifyArtistId": "2NQEwAVHBNcI0tGMLlWwF1",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "matt and kim": {
+      "name": "Matt and Kim",
+      "spotifyArtistId": "4MSMDY0ClgWqXApU53I1L1",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "maverick city music": {
+      "name": "Maverick City Music",
+      "spotifyArtistId": "58r1rB5t3VF5X6yXGPequV",
+      "genres": [
+        "worship",
+        "gospel",
+        "christian"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "max": {
+      "name": "MAX",
+      "spotifyArtistId": "1bqxdqvUtPWZri43cKHac8",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "melt": {
+      "name": "Melt",
+      "spotifyArtistId": "0G7KI9I5BApiXc5Sqpyil9",
+      "genres": [
+        "indie soul",
+        "pop soul",
+        "jazz pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "men at work": {
+      "name": "Men At Work",
+      "spotifyArtistId": "0f3EsoviYnRKTkmayI3cux",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "metric": {
+      "name": "Metric",
+      "spotifyArtistId": "1rCIEwPp5OnXW0ornlSsRl",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "mgmt": {
+      "name": "MGMT",
+      "spotifyArtistId": "0SwO7SWeDHJijQ3XNS7xEE",
+      "genres": [
+        "indie"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "michael bublé": {
+      "name": "Michael Bublé",
+      "spotifyArtistId": "1GxkXlMwML1oSg5eLPiAz3",
+      "genres": [],
+      "source": null,
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "midly jadis": {
+      "name": "Midly Jadis",
+      "spotifyArtistId": "3bPzoAqrOP0zQgHOklTjrR",
+      "genres": [
+        "christian",
+        "hip hop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "mike mains & the branches": {
+      "name": "Mike Mains & The Branches",
+      "spotifyArtistId": "0OCgRH2JnfJo0nNDJzEG0Q",
+      "genres": [
+        "christian",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "mikel": {
+      "name": "Mikel",
+      "spotifyArtistId": "5MboRLcEpLbsshOx64OdA6",
+      "genres": [
+        "lo-fi"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "miki fiki": {
+      "name": "Miki Fiki",
+      "spotifyArtistId": "1O1r2qVtIFqlTJoB4jsJKd",
+      "genres": [
+        "indie pop",
+        "bedroom pop",
+        "indie funk",
+        "neo soul"
+      ],
+      "source": "codex",
+      "updatedAt": "2026-11-27T01:57:00.442Z",
+      "note": "Ted Hartog’s Nashville project centers on indie pop, with bedroom-pop production, funk grooves, and neo-soul arrangements. Indie pop is the clearest catalog-wide label, while the other styles vary by release.",
+      "sources": [
+        "https://www.realmikifiki.com/bio",
+        "https://mokbpresents.com/event/miki-fiki-mffred-2025/",
+        "https://open.spotify.com/artist/1O1r2qVtIFqlTJoB4jsJKd"
+      ]
+    },
+    "miley cyrus": {
+      "name": "Miley Cyrus",
+      "spotifyArtistId": "5YGY8feqx7naU7z4HrwZM6",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "misterwives": {
+      "name": "MisterWives",
+      "spotifyArtistId": "5ivCbtrcD5N4rD337xIb2z",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "modest mouse": {
+      "name": "Modest Mouse",
+      "spotifyArtistId": "1yAwtBaoHLEDWAnWR87hBT",
+      "genres": [
+        "indie rock",
+        "indie",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "morgxn": {
+      "name": "MORGXN",
+      "spotifyArtistId": "034u8Qcs47NHkRQXaWkLXW",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "morningsiders": {
+      "name": "Morningsiders",
+      "spotifyArtistId": "5hPR4Atp3QY2ztiAcz1inl",
+      "genres": [
+        "folk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "motherfolk": {
+      "name": "Motherfolk",
+      "spotifyArtistId": "70fUpxdAr6t0LJw3xJmMhm",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "mr little jeans": {
+      "name": "Mr Little Jeans",
+      "spotifyArtistId": "0B2SlMW40Hs9mijOi1cDyf",
+      "genres": [
+        "chillwave"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "ms. rachel": {
+      "name": "Ms. Rachel",
+      "spotifyArtistId": "2VHUurTrOGljxENj3zk5Ep",
+      "genres": [
+        "children's music"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "much more": {
+      "name": "MUCH MORE",
+      "spotifyArtistId": "0B1cF1eekag30vXyt0YWMs",
+      "genres": [
+        "christian",
+        "alternative rock",
+        "folk",
+        "lo-fi",
+        "r&b",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "mumford & sons": {
+      "name": "Mumford & Sons",
+      "spotifyArtistId": "3gd8FJtBJtkRxdfbTu19U2",
+      "genres": [
+        "folk",
+        "indie folk",
+        "folk rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "nanobii": {
+      "name": "nanobii",
+      "spotifyArtistId": "7mUsBZ6g6BbAu2MBU8Nsu3",
+      "genres": [
+        "happy hardcore"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "natasha bedingfield": {
+      "name": "Natasha Bedingfield",
+      "spotifyArtistId": "7o95ZoZt5ZYn31e9z1Hc0a",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "needtobreathe": {
+      "name": "NEEDTOBREATHE",
+      "spotifyArtistId": "610EjgFatGvVPtib97jQ8G",
+      "genres": [
+        "christian",
+        "alternative rock",
+        "folk",
+        "ccm",
+        "rock",
+        "worship"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "neon indian": {
+      "name": "Neon Indian",
+      "spotifyArtistId": "0KydPQPUUoTNhmiHKOg5Er",
+      "genres": [
+        "chillwave",
+        "indie electronic"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "neon trees": {
+      "name": "Neon Trees",
+      "spotifyArtistId": "0RpddSzUHfncUWNJXKOsjy",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "neural cloud": {
+      "name": "Neural Cloud",
+      "spotifyArtistId": "234Ir56QKnoxoeRncwiGLn",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "never shout never": {
+      "name": "Never Shout Never",
+      "spotifyArtistId": "5pUmXBIQtqpvdV1HAy2xYC",
+      "genres": [
+        "emo"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "new politics": {
+      "name": "New Politics",
+      "spotifyArtistId": "3RbyaF3Pq6iDUKNp04AIcU",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "newsboys": {
+      "name": "Newsboys",
+      "spotifyArtistId": "1SZMaiNHfdUuU0qZKZ6y62",
+      "genres": [
+        "christian",
+        "ccm",
+        "rock",
+        "worship",
+        "alternative rock",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "nf": {
+      "name": "NF",
+      "spotifyArtistId": "6fOMl44jA4Sp5b9PpYCkzz",
+      "genres": [
+        "christian",
+        "hip hop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "nic d": {
+      "name": "Nic D",
+      "spotifyArtistId": "1XlLhtgJjC4ROQZilBZAvw",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "nichole nordeman": {
+      "name": "Nichole Nordeman",
+      "spotifyArtistId": "0KSjxPoT71Dq8qcgfWTdHh",
+      "genres": [
+        "ccm",
+        "christian"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "nicky youre": {
+      "name": "Nicky Youre",
+      "spotifyArtistId": "7qmpXeNz2ojlMl2EEfkeLs",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "noah floersch": {
+      "name": "Noah Floersch",
+      "spotifyArtistId": "6fU24B4K9kWmFt5WTwwsLF",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "north point worship": {
+      "name": "North Point Worship",
+      "spotifyArtistId": "1IGGfstLsypGtdI55tT3Z1",
+      "genres": [
+        "worship",
+        "christian",
+        "ccm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "of monsters and men": {
+      "name": "Of Monsters and Men",
+      "spotifyArtistId": "4dwdTW1Lfiq0cM8nBAqIIz",
+      "genres": [
+        "folk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "oh honey": {
+      "name": "Oh Honey",
+      "spotifyArtistId": "3yQxGz288i3AqOxq7LYHUU",
+      "genres": [
+        "folk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "okkervil river": {
+      "name": "Okkervil River",
+      "spotifyArtistId": "5E7zSu46SqTmgKqsc0tFkY",
+      "genres": [
+        "indie folk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "olivia dean": {
+      "name": "Olivia Dean",
+      "spotifyArtistId": "00x1fYSGhdqScXBRpSj3DW",
+      "genres": [
+        "pop soul"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "olivia foa'i": {
+      "name": "Olivia Foa'i",
+      "spotifyArtistId": null,
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "one direction": {
+      "name": "One Direction",
+      "spotifyArtistId": "4AK6F7OLvEQ5QYCBNiQWHq",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "onerepublic": {
+      "name": "OneRepublic",
+      "spotifyArtistId": "5Pwc4xIPtQLFEnJriah9YJ",
+      "genres": [
+        "soft pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "oso oso": {
+      "name": "Oso Oso",
+      "spotifyArtistId": "63GTn25wbdRNX3ijCHvYxD",
+      "genres": [
+        "midwest emo",
+        "math rock",
+        "emo"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "owl city": {
+      "name": "Owl City",
+      "spotifyArtistId": "07QEuhtrNmmZ0zEcqE9SF6",
+      "genres": [
+        "synthpop",
+        "electropop",
+        "indietronica",
+        "dance pop"
+      ],
+      "source": "codex",
+      "updatedAt": "2026-11-27T01:54:53.024Z",
+      "note": "Synthpop and electropop define Adam Young’s Owl City catalog, with indietronica most evident in the early recordings and dance-pop more prominent in later singles."
+    },
+    "panama wedding": {
+      "name": "Panama Wedding",
+      "spotifyArtistId": "4Cjsh7anKDaMnQ3YHB1Xwq",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "panic! at the disco": {
+      "name": "Panic! At The Disco",
+      "spotifyArtistId": "20JZFwl6HVl6yg8a4H3ZqK",
+      "genres": [
+        "emo"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "parachute": {
+      "name": "Parachute",
+      "spotifyArtistId": "2PCUhxD40qlMqsKHjTZD2e",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "paramore": {
+      "name": "Paramore",
+      "spotifyArtistId": "74XFHRwlV6OrjEM0A2NCMF",
+      "genres": [
+        "pop punk",
+        "emo"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "party wave": {
+      "name": "PARTY WAVE",
+      "spotifyArtistId": "6iQ0SOfahRnTthPNGhgzkB",
+      "genres": [
+        "christian",
+        "reggae"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "passenger": {
+      "name": "Passenger",
+      "spotifyArtistId": "0gadJ2b9A4SKsB1RFkBb66",
+      "genres": [
+        "folk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "passion": {
+      "name": "Passion",
+      "spotifyArtistId": "6piIAIurGAryW5h1rqQC16",
+      "genres": [
+        "worship",
+        "christian",
+        "ccm",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "passion pit": {
+      "name": "Passion Pit",
+      "spotifyArtistId": "7gjAu1qr5C2grXeQFFOGeh",
+      "genres": [
+        "indie"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "pat barrett": {
+      "name": "Pat Barrett",
+      "spotifyArtistId": "0289SkqAn0iOohwm0pIHv3",
+      "genres": [
+        "worship",
+        "christian",
+        "ccm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "patrick stump": {
+      "name": "Patrick Stump",
+      "spotifyArtistId": "0wsdUS0EJ7zHgti2nxTVWR",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "peabod": {
+      "name": "PEABOD",
+      "spotifyArtistId": "07pdmGwYuT4ZOVDAxR6njL",
+      "genres": [
+        "christian",
+        "hip hop",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "pentatonix": {
+      "name": "Pentatonix",
+      "spotifyArtistId": "26AHtbjWKiwYzsoGoUZq53",
+      "genres": [],
+      "source": null,
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "phil wickham": {
+      "name": "Phil Wickham",
+      "spotifyArtistId": "5d1JhBfyb58upMXCZOdbQu",
+      "genres": [
+        "worship",
+        "christian",
+        "ccm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "phillip phillips": {
+      "name": "Phillip Phillips",
+      "spotifyArtistId": "6p5JxpTc7USNnBnLzctyd4",
+      "genres": [
+        "folk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "phoenix": {
+      "name": "Phoenix",
+      "spotifyArtistId": "1xU878Z1QtBldR7ru9owdU",
+      "genres": [
+        "indie"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "polite fiction": {
+      "name": "Polite Fiction",
+      "spotifyArtistId": "5YLvl4d4PEc4ls2xHf2EtR",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "priory": {
+      "name": "Priory",
+      "spotifyArtistId": "3sk9GNYRthjLjrZDflxhiB",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "quinn xcii": {
+      "name": "Quinn XCII",
+      "spotifyArtistId": "3ApUX1o6oSz321MMECyIYd",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "rac": {
+      "name": "RAC",
+      "spotifyArtistId": "4AGwPDdh1y8hochNzHy5HC",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "ragged insomnia": {
+      "name": "Ragged Insomnia",
+      "spotifyArtistId": "58Ave2OSHxoEMkpft5IdAX",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "rainshop": {
+      "name": "Rainshop",
+      "spotifyArtistId": "4ztiJ0ekB0887HvnimlgOm",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "raynes": {
+      "name": "Raynes",
+      "spotifyArtistId": "3srupAODFNn7Dx4ZUg4uqM",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "rec hall": {
+      "name": "Rec Hall",
+      "spotifyArtistId": "7n0i6RECXvCkOElGs6IP97",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "relient k": {
+      "name": "Relient K",
+      "spotifyArtistId": "3nJWBJvK7uGvfp4iZh9CkN",
+      "genres": [
+        "christian",
+        "rock",
+        "alternative rock",
+        "pop punk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "remi wolf": {
+      "name": "Remi Wolf",
+      "spotifyArtistId": "0NB5HROxc8dDBXpkIi1v3d",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "rend collective": {
+      "name": "Rend Collective",
+      "spotifyArtistId": "11Y54BxlxC3UIAUkU2eadQ",
+      "genres": [
+        "christian",
+        "folk",
+        "worship",
+        "pop",
+        "ccm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "riders": {
+      "name": "RIDERS",
+      "spotifyArtistId": "5nRoa8Fv2bXoYkKW1y1Ze3",
+      "genres": [
+        "christian",
+        "alternative rock",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "ripe": {
+      "name": "Ripe",
+      "spotifyArtistId": "19lQ2rJLlP71FOKESiMNJT",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "rivers & robots": {
+      "name": "Rivers & Robots",
+      "spotifyArtistId": "41yDmxekjnWShKi6nRmzZ4",
+      "genres": [
+        "christian",
+        "folk",
+        "alternative rock",
+        "lo-fi",
+        "worship"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "royal & the serpent": {
+      "name": "Royal & the Serpent",
+      "spotifyArtistId": "64EHXDoln95lnccszdPum0",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "royal tailor": {
+      "name": "Royal Tailor",
+      "spotifyArtistId": "1CmWVjnzTRTqZqdVIlZSSY",
+      "genres": [
+        "christian",
+        "pop",
+        "ccm",
+        "edm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "rua young": {
+      "name": "RUA YOUNG",
+      "spotifyArtistId": "6i1jJEMjPbIki7mpvE0QQ1",
+      "genres": [
+        "christian",
+        "hip hop",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "run river north": {
+      "name": "Run River North",
+      "spotifyArtistId": "0INDB6Snts5NDbzh8jC3lk",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "ryan mack": {
+      "name": "Ryan Mack",
+      "spotifyArtistId": "5LGo1zHegJTWzqVXgeNplt",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "saint blonde": {
+      "name": "Saint Blonde",
+      "spotifyArtistId": "0nLQlvzkknOFtgjAzBCcqq",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "saint motel": {
+      "name": "Saint Motel",
+      "spotifyArtistId": "1dWEYMPtNmvSVaDNLgB6NV",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "saja boys": {
+      "name": "Saja Boys",
+      "spotifyArtistId": "0BJ2EjOqcfgFvlZXNKrNbE",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "sam greenfield": {
+      "name": "Sam Greenfield",
+      "spotifyArtistId": "03ZdbEBsbFHG3uJC6gYiOY",
+      "genres": [
+        "jazz funk",
+        "jazz fusion"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "sammy rae & the friends": {
+      "name": "Sammy Rae & The Friends",
+      "spotifyArtistId": "3lFDsTyYNPQc8WzJExnQWn",
+      "genres": [
+        "pop soul",
+        "jazz pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "satellite stories": {
+      "name": "Satellite Stories",
+      "spotifyArtistId": "2qRxFU6TyYb3HCMIIq8npH",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "scott bradlee": {
+      "name": "Scott Bradlee",
+      "spotifyArtistId": "3Xu3pjx48P1q68xyNVLhsV",
+      "genres": [
+        "ragtime",
+        "jazz pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "scrawny": {
+      "name": "Scrawny",
+      "spotifyArtistId": "300nu1ciVSTaLsJHuHAgxc",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "seabird": {
+      "name": "Seabird",
+      "spotifyArtistId": "4AbRZCdZWw8qioHDpEmojJ",
+      "genres": [
+        "christian",
+        "alternative rock",
+        "rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "sean curran": {
+      "name": "Sean Curran",
+      "spotifyArtistId": "4OWmbcuUeVoBCmgMEASW3c",
+      "genres": [
+        "worship",
+        "christian"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "shama mrema": {
+      "name": "Shama Mrema",
+      "spotifyArtistId": "2FvgUM6YfWkgdB3DwJLR52",
+      "genres": [
+        "christian",
+        "hip hop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "shane & shane": {
+      "name": "Shane & Shane",
+      "spotifyArtistId": "2LFbgsbEhfilNpQYW7mied",
+      "genres": [
+        "worship",
+        "hymns",
+        "christian",
+        "ccm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "sheppard": {
+      "name": "Sheppard",
+      "spotifyArtistId": "6VxCmtR7S3yz4vnzsJqhSV",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "sir woman": {
+      "name": "Sir Woman",
+      "spotifyArtistId": "3H03S3ZtyYLdzsk6EYndUL",
+      "genres": [
+        "pop soul"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "sky sailing": {
+      "name": "Sky Sailing",
+      "spotifyArtistId": "3uC7RGF9NH9DIJWq92UB6O",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "sleeper agent": {
+      "name": "Sleeper Agent",
+      "spotifyArtistId": "1f4it0Ej0T3TiSpYldK8qS",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "slugs and bugs": {
+      "name": "Slugs and Bugs",
+      "spotifyArtistId": "5OqR2VGSqk60tMFN8eINMN",
+      "genres": [
+        "children's music"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "smallpools": {
+      "name": "Smallpools",
+      "spotifyArtistId": "4iiQabGKtS2RtTKpVkrVTw",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "smash mouth": {
+      "name": "Smash Mouth",
+      "spotifyArtistId": "2iEvnFsWxR0Syqu2JNopAd",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "social club misfits": {
+      "name": "Social Club Misfits",
+      "spotifyArtistId": "0wnsM0ziqToBwQeEbH0akL",
+      "genres": [
+        "christian",
+        "hip hop",
+        "pop",
+        "reggaeton"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "spoon": {
+      "name": "Spoon",
+      "spotifyArtistId": "0K1q0nXQ8is36PzOKAMbNe",
+      "genres": [
+        "indie rock",
+        "indie"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "stellar": {
+      "name": "Stellar",
+      "spotifyArtistId": "5yw4tA8D5uG7tT3NaDvq10",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "stephen day": {
+      "name": "Stephen Day",
+      "spotifyArtistId": "4cnFw4bkIWVGKUBsr93OS5",
+      "genres": [
+        "pop soul"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "stessie": {
+      "name": "Stessie",
+      "spotifyArtistId": "2RssKQtZRWjMjZT0Eu9a2Q",
+      "genres": [
+        "future bass"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "still woozy": {
+      "name": "Still Woozy",
+      "spotifyArtistId": "4iMO20EPodreIaEl8qW66y",
+      "genres": [
+        "bedroom pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "strings & heart": {
+      "name": "Strings & Heart",
+      "spotifyArtistId": "5lHDypXbNmHTDoFWpSTqXd",
+      "genres": [
+        "christian",
+        "pop",
+        "folk",
+        "alternative rock",
+        "worship"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "strings and heart": {
+      "name": "Strings And Heart",
+      "spotifyArtistId": null,
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "sub-radio": {
+      "name": "Sub-Radio",
+      "spotifyArtistId": "2lCUVconWp5YjxdYssfZ8J",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "sun heat": {
+      "name": "Sun Heat",
+      "spotifyArtistId": "7bvsCuLF2FR79zNzUbv18f",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "super simple songs": {
+      "name": "Super Simple Songs",
+      "spotifyArtistId": "7CdGfkCRgPhElnqy3HPJ4a",
+      "genres": [
+        "children's music",
+        "lullaby"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "super whatevr": {
+      "name": "Super Whatevr",
+      "spotifyArtistId": "2kbAovdYb7krLSGdOrBMRu",
+      "genres": [
+        "midwest emo"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "sure sure": {
+      "name": "Sure Sure",
+      "spotifyArtistId": "1anAI9P9iSzc9qzLv6AtHZ",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "surfaces": {
+      "name": "Surfaces",
+      "spotifyArtistId": "4ETSs924pXMzjIeD6E9b4u",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "swimming with dolphins": {
+      "name": "Swimming With Dolphins",
+      "spotifyArtistId": "6pHeVyEQkA28FvpQTvWyBa",
+      "genres": [
+        "christian",
+        "edm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "switchfoot": {
+      "name": "Switchfoot",
+      "spotifyArtistId": "6S58b0fr8TkWrEHOH4tRVu",
+      "genres": [
+        "christian",
+        "rock",
+        "alternative rock",
+        "ccm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "tarkio": {
+      "name": "Tarkio",
+      "spotifyArtistId": "2Ze5e5TePrBNdEg94bTvWv",
+      "genres": [
+        "alt country"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "tauren wells": {
+      "name": "Tauren Wells",
+      "spotifyArtistId": "3SKza3YPBri1k43LB1Tqy4",
+      "genres": [
+        "christian",
+        "worship",
+        "pop",
+        "ccm"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "taylor swift": {
+      "name": "Taylor Swift",
+      "spotifyArtistId": "06HL4z0CvFAxyc27GXpf02",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the 1975": {
+      "name": "The 1975",
+      "spotifyArtistId": "3mIj9lX2MWuHmhNCA7LSCW",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the 502s": {
+      "name": "The 502s",
+      "spotifyArtistId": "4sIuoDOzSlBqeiNJl631zX",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the astronomers": {
+      "name": "The Astronomers",
+      "spotifyArtistId": "3jx7HGyoa2APekVbiXZvFh",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the band camino": {
+      "name": "The Band CAMINO",
+      "spotifyArtistId": "6d4jrmreCmsenscuieJERc",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the beach boys": {
+      "name": "The Beach Boys",
+      "spotifyArtistId": "3oDbviiivRWhXwIE8hxkVV",
+      "genres": [
+        "baroque pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "the beta band": {
+      "name": "The Beta Band",
+      "spotifyArtistId": "2LMR8u7DOMF0FBseDpTsRa",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the black keys": {
+      "name": "The Black Keys",
+      "spotifyArtistId": "7mnBLXK823vNxN3UWB7Gfz",
+      "genres": [
+        "blues rock",
+        "garage rock",
+        "modern blues",
+        "rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "the brilliance": {
+      "name": "The Brilliance",
+      "spotifyArtistId": null,
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the brook & the bluff": {
+      "name": "The Brook & The Bluff",
+      "spotifyArtistId": "4dWtsQvuME6tCWFycaTvO7",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the chainsmokers": {
+      "name": "The Chainsmokers",
+      "spotifyArtistId": "69GGBxA162lTqCwzJG5jLp",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the cinema": {
+      "name": "The Cinema",
+      "spotifyArtistId": "6DL8cHjzUa0J8WSH2EWDMX",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the classic crime": {
+      "name": "The Classic Crime",
+      "spotifyArtistId": "4Y2ImQoh83EyhkbaJXmJr1",
+      "genres": [
+        "christian",
+        "rock",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "the collection": {
+      "name": "The Collection",
+      "spotifyArtistId": null,
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the colourist": {
+      "name": "The Colourist",
+      "spotifyArtistId": "0hK26QoGcuKV3lH0x9MvUU",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the cotards": {
+      "name": "The Cotards",
+      "spotifyArtistId": "7gWpYaASTwdQuTgXZO612R",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the dip": {
+      "name": "The Dip",
+      "spotifyArtistId": "2qFOYqFxPaIwEnffVhJhEn",
+      "genres": [
+        "retro soul"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "the figs": {
+      "name": "The Figs",
+      "spotifyArtistId": "0guOtxDAwFFEGGCxrbW5KF",
+      "genres": [
+        "christian",
+        "folk",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "the format": {
+      "name": "The Format",
+      "spotifyArtistId": "3ZJC8cLts8Q8s8JbNJKsLf",
+      "genres": [
+        "emo"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "the ghost club": {
+      "name": "The Ghost Club",
+      "spotifyArtistId": "5dXivPEjgjJmjTemfAPRnX",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the gray havens": {
+      "name": "The Gray Havens",
+      "spotifyArtistId": "4gzyIFii6fWdCiLsP0bocC",
+      "genres": [
+        "christian",
+        "folk",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "the griswolds": {
+      "name": "The Griswolds",
+      "spotifyArtistId": "3nUbzTTtP2w4HqvT5y5vkV",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the happy fits": {
+      "name": "The Happy Fits",
+      "spotifyArtistId": "73rPcaYEhBd0UuVZBqqyQJ",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the heydaze": {
+      "name": "The Heydaze",
+      "spotifyArtistId": "5UWH3rIlO4qbXk6PMFZEbP",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the hush sound": {
+      "name": "The Hush Sound",
+      "spotifyArtistId": "1RCoE2Dq19lePKhPzt9vM5",
+      "genres": [
+        "baroque pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "the jackson 5": {
+      "name": "The Jackson 5",
+      "spotifyArtistId": "2iE18Oxc8YSumAU232n4rW",
+      "genres": [
+        "motown"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "the lighthouse and the whaler": {
+      "name": "The Lighthouse And The Whaler",
+      "spotifyArtistId": "6ls5A8Wys9Swixpz4v6kj3",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the limousines": {
+      "name": "The Limousines",
+      "spotifyArtistId": "2rKoD8HgdamRQpAtp4N4BA",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the lumineers": {
+      "name": "The Lumineers",
+      "spotifyArtistId": "16oZKvXb6WkQlVAjwo2Wbg",
+      "genres": [
+        "folk pop",
+        "indie folk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "the modern post": {
+      "name": "The Modern Post",
+      "spotifyArtistId": "6z989iXQpOqgPU7vDclfna",
+      "genres": [
+        "christian",
+        "folk",
+        "alternative rock",
+        "worship",
+        "hymns"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "the mowgli's": {
+      "name": "The Mowgli's",
+      "spotifyArtistId": "6AGUQK1EWK6nvN4pLIDQDQ",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the naked and famous": {
+      "name": "The Naked And Famous",
+      "spotifyArtistId": "0oeUpvxWsC8bWS6SnpU8b9",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the night game": {
+      "name": "The Night Game",
+      "spotifyArtistId": "79QO0Xmn1dZhvaLicS2Yrs",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the notionaries": {
+      "name": "The Notionaries",
+      "spotifyArtistId": "09d07NXpVZ0OcrPT62TFIX",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the orphan the poet": {
+      "name": "The Orphan The Poet",
+      "spotifyArtistId": "4cqHx0neEP7BFbGlKkmIHQ",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the people's thieves": {
+      "name": "The People's Thieves",
+      "spotifyArtistId": "1tTuZa1MH1Q3RcSftJuTa3",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the polish ambassador": {
+      "name": "The Polish Ambassador",
+      "spotifyArtistId": "2dI9IuajQnLR5dLxHjTTqU",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the postal service": {
+      "name": "The Postal Service",
+      "spotifyArtistId": "5yV1qdnmxyIYiSFB02wpDj",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the ready set": {
+      "name": "The Ready Set",
+      "spotifyArtistId": "2eRJjYEaWyGZbOBGYFLBoC",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the royal concept": {
+      "name": "The Royal Concept",
+      "spotifyArtistId": "7LAucJAvbQa7ZIA0qP8YI2",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the strike": {
+      "name": "The Strike",
+      "spotifyArtistId": "6VB4TqEl0yfaF88LYHH4wj",
+      "genres": [
+        "synthwave"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "the strokes": {
+      "name": "The Strokes",
+      "spotifyArtistId": "0epOFNiUfyON9EYx7Tpr6V",
+      "genres": [
+        "garage rock",
+        "indie rock",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "the unlikely candidates": {
+      "name": "The Unlikely Candidates",
+      "spotifyArtistId": "4hwJwkgsufeilLXS1ZfJqq",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the war on drugs": {
+      "name": "The War On Drugs",
+      "spotifyArtistId": "6g0mn3tzAds6aVeUYRsryU",
+      "genres": [
+        "indie rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "the wombats": {
+      "name": "The Wombats",
+      "spotifyArtistId": "0Ya43ZKWHTKkAbkoJJkwIB",
+      "genres": [
+        "indie"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "the wonderlands": {
+      "name": "The Wonderlands",
+      "spotifyArtistId": "5d9MnG7M9Kj02Aa8XQ06mA",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "the worship initiative": {
+      "name": "The Worship Initiative",
+      "spotifyArtistId": "1bMkQIx4MpNHLxoylvipdQ",
+      "genres": [
+        "worship",
+        "hymns",
+        "christian"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "third eye blind": {
+      "name": "Third Eye Blind",
+      "spotifyArtistId": "6TcnmlCSxihzWOQJ8k0rNS",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "tiny tunes": {
+      "name": "Tiny Tunes",
+      "spotifyArtistId": "638T30qarWGaQXeFFF4d1X",
+      "genres": [
+        "children's music"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "tobymac": {
+      "name": "TobyMac",
+      "spotifyArtistId": "5VX8hxrcfJWwaTLiqGUHG3",
+      "genres": [
+        "christian",
+        "pop",
+        "ccm",
+        "rock",
+        "hip hop",
+        "worship",
+        "edm",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "toddler fun learning": {
+      "name": "Toddler Fun Learning",
+      "spotifyArtistId": "6J7tunc4bHIFmzTevQ2J6Q",
+      "genres": [
+        "lullaby",
+        "children's music"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "toddler tunes": {
+      "name": "Toddler Tunes",
+      "spotifyArtistId": "3uGrMgq7tseqZq7FCjMGnW",
+      "genres": [
+        "children's music",
+        "lullaby"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "train": {
+      "name": "Train",
+      "spotifyArtistId": "3FUY2gzHeIiaesXtOAdB7A",
+      "genres": [
+        "soft pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "transviolet": {
+      "name": "Transviolet",
+      "spotifyArtistId": "7ixzNQXQ64I2ayrtyhlF7i",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "troy": {
+      "name": "Troy",
+      "spotifyArtistId": "6zTbBugfNc95zo8ClFDhIn",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "truslow": {
+      "name": "Truslow",
+      "spotifyArtistId": "0zBShgJCo19qQZtM0CZxJv",
+      "genres": [
+        "christian",
+        "rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "twenty one pilots": {
+      "name": "Twenty One Pilots",
+      "spotifyArtistId": "3YQKmKGau1PzlVlkL1iodx",
+      "genres": [
+        "alternative rock",
+        "alternative hip hop",
+        "electropop",
+        "indie pop",
+        "emo pop"
+      ],
+      "source": "codex",
+      "updatedAt": "2026-11-27T01:56:08.941Z",
+      "note": "Alternative rock is the through line, with rapped verses and synth-driven pop recurring across the catalog. The last two labels capture the band’s melodic and emo-influenced songwriting, which varies by album.",
+      "sources": [
+        "https://open.spotify.com/artist/3YQKmKGau1PzlVlkL1iodx",
+        "https://www.allmusic.com/artist/twenty-one-pilots-mn0002398414",
+        "https://musicbrainz.org/artist/a6c6897a-7415-4f8d-b5a5-3a5e05f3be67?all=1&page=1&va=0"
+      ]
+    },
+    "twenty trucks": {
+      "name": "Twenty Trucks",
+      "spotifyArtistId": "2PSiJ0ZRJuYb5ySOOexs7w",
+      "genres": [
+        "children's music"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "two door cinema club": {
+      "name": "Two Door Cinema Club",
+      "spotifyArtistId": "536BYVgOnRky0xjsPT96zl",
+      "genres": [
+        "indie"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "twrp": {
+      "name": "TWRP",
+      "spotifyArtistId": "6N3egqZ7OtcYYXyU6PBdNr",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "umphrey's mcgee": {
+      "name": "Umphrey's McGee",
+      "spotifyArtistId": "7mQilAy42MqNPqUFqK4Z0o",
+      "genres": [
+        "jam band",
+        "newgrass"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "urban rescue": {
+      "name": "Urban Rescue",
+      "spotifyArtistId": "4IrPx5Pieem55X7D0OTAiW",
+      "genres": [
+        "christian",
+        "edm",
+        "worship",
+        "alternative rock",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "vampire weekend": {
+      "name": "Vampire Weekend",
+      "spotifyArtistId": "5BvJzeQpmsdsFp4HGUYUEx",
+      "genres": [
+        "indie",
+        "baroque pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "vance joy": {
+      "name": "Vance Joy",
+      "spotifyArtistId": "10exVja0key0uqUkk6LJRT",
+      "genres": [
+        "folk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "veggietales": {
+      "name": "VeggieTales",
+      "spotifyArtistId": "4QKx7KohkWZAOkO4sI3GRx",
+      "genres": [
+        "children's music"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "vertical worship": {
+      "name": "Vertical Worship",
+      "spotifyArtistId": "6N6Sk9XOoHsadAGYR44C2o",
+      "genres": [
+        "worship",
+        "christian",
+        "ccm",
+        "pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "vian izak": {
+      "name": "Vian Izak",
+      "spotifyArtistId": "46U5WmejGzsPqUiw3Uw0Xq",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "vinyl theatre": {
+      "name": "Vinyl Theatre",
+      "spotifyArtistId": "7xSEWLsywYbocdtt3xsQsU",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "vision of leo": {
+      "name": "Vision of Leo",
+      "spotifyArtistId": "21HnuUEkcsr902YIGJRL2e",
+      "genres": [
+        "christian",
+        "edm",
+        "pop",
+        "hip hop",
+        "r&b"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "vocal few": {
+      "name": "Vocal Few",
+      "spotifyArtistId": "4XNEA2zwGthyCOdS9znQGd",
+      "genres": [
+        "christian",
+        "folk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "vulfpeck": {
+      "name": "Vulfpeck",
+      "spotifyArtistId": "7pXu47GoqSYRajmBCjxdD6",
+      "genres": [
+        "funk",
+        "funk rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "walk the moon": {
+      "name": "WALK THE MOON",
+      "spotifyArtistId": "6DIS6PRrLS3wbnZsf7vYic",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "wallows": {
+      "name": "Wallows",
+      "spotifyArtistId": "0NIPkIjTV8mB795yEIiPYL",
+      "genres": [
+        "indie"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "weezer": {
+      "name": "Weezer",
+      "spotifyArtistId": "3jOstUTkEu2JkjvRdBA5Gu",
+      "genres": [
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "westover": {
+      "name": "Westover",
+      "spotifyArtistId": "3IUGN5NE9KUwcbbbb057vZ",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "whales•talk": {
+      "name": "WHALES•TALK",
+      "spotifyArtistId": "0CqDdSmQpezWGxxjvDGzqT",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "wheeland brothers": {
+      "name": "Wheeland Brothers",
+      "spotifyArtistId": "5mabMBNdrC8AIPmjpiqvEq",
+      "genres": [
+        "reggae rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "wheels on the bus": {
+      "name": "Wheels on the Bus",
+      "spotifyArtistId": "1UDjGxtS0sJPWn9Oc3M0Fn",
+      "genres": [
+        "children's music",
+        "lullaby"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-26T20:22:51.894Z"
+    },
+    "wild": {
+      "name": "WILD",
+      "spotifyArtistId": "0jcaMhfyinUx3Pj8w4nmWZ",
+      "genres": [
+        "folk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "wild party": {
+      "name": "Wild Party",
+      "spotifyArtistId": "48PAAxWdIDbA4WHkHjgsEv",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "wilder woods": {
+      "name": "Wilder Woods",
+      "spotifyArtistId": "26DytDdxKgr9N0tdrBSLs2",
+      "genres": [
+        "christian",
+        "folk"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "wingtip": {
+      "name": "Wingtip",
+      "spotifyArtistId": "1Eie0tY91rpi7Y0jtIOXzI",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "wolf gang": {
+      "name": "Wolf Gang",
+      "spotifyArtistId": "6EkvDqOOEX08BotcQppKoD",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "xander sallows": {
+      "name": "Xander Sallows",
+      "spotifyArtistId": "1qkNJ1IgevMh0GG9rMEh8F",
+      "genres": [
+        "christian",
+        "edm",
+        "pop",
+        "alternative rock"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "young rising sons": {
+      "name": "Young Rising Sons",
+      "spotifyArtistId": "6ZUjdwG0NvY6MT7vvmluhV",
+      "genres": [
+        "folk pop"
+      ],
+      "source": "spotify",
+      "updatedAt": "2026-11-27T00:00:07.602Z"
+    },
+    "young the giant": {
+      "name": "Young the Giant",
+      "spotifyArtistId": "4j56EQDQu5XnL7R3E9iFJT",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    },
+    "youngblood hawke": {
+      "name": "Youngblood Hawke",
+      "spotifyArtistId": "6VXZCpbkwm0W0aPjQR1t4K",
+      "genres": [],
+      "source": null,
+      "updatedAt": null
+    }
+  }
+}

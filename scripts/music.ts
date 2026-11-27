@@ -10,6 +10,7 @@ import { publishMusic } from "./music/publish.ts";
 import type { MusicManifest } from "../src/lib/music/types.ts";
 import type { Listen } from "../src/lib/music/types.ts";
 import { deduplicate, digest } from "../src/lib/music/normalize.ts";
+import { generateArtistGenres, parseGenreOptions, pullArtistGenreInputs } from "./music/artist-genres.ts";
 
 const args = process.argv.slice(2), command = args.shift();
 const flag = (name: string) => { const index = args.indexOf(name); return index >= 0 ? args[index + 1] : undefined; };
@@ -84,6 +85,20 @@ try {
       if (!args.includes("--prod")) await browserFiles(); break;
     }
     case "aggregate": { const stores = args.includes("--prod") ? await production() : { privateStore: local, publicStore: localPublic }; const result = await publishMusic(stores.privateStore, stores.publicStore); console.log({ listens: result.listens, datasets: result.datasets }); if (!args.includes("--prod")) await browserFiles(); break; }
+    case "genres": {
+      if (args.includes("--help")) {
+        console.log("Usage: npm run music:genres -- [--limit 25|all] [--artist NAME] [--no-pull] [--dry-run] [--discover-only] [--retry-unknown] [--model MODEL] [--codex-bin PATH]\nPulls current production Spotify catalogs and listening partitions, then saves each missing artist's ordered genres to content/artist_genres.json. Uses your saved Codex login. Codex generation requires more than 25 cumulative listens. Default: at most 25 eligible artists, ranked by current-year plays then all-time plays. Repeat --artist for multiple artists. No Git commits, production writes, or deployment are performed.");
+        break;
+      }
+      const options = parseGenreOptions(args);
+      if (!options.noPull) console.log(`Pulled ${await pullArtistGenreInputs((await production()).privateStore, local)} Spotify input objects.`);
+      const catalog = await generateArtistGenres(local, options);
+      if (!options.dryRun && !options.discoverOnly) {
+        const result = await publishMusic(local, localPublic, new Date(), catalog); await browserFiles();
+        console.log(`Updated local summaries (${result.datasets} datasets). Review and commit content/artist_genres.json to release the artist genre catalog.`);
+      }
+      break;
+    }
     case "pull": {
       const prod = await production();
       const manifest = await readJson<MusicManifest>(prod.publicStore, "manifest.json");
@@ -130,6 +145,6 @@ try {
       await writeFile(path, `MUSIC_JOB_SECRET=${randomBytes(32).toString("hex")}\n`, { flag: "wx" });
       console.log("Saved private job key to .music/job.env. Import with netlify env:import; never commit this file."); break;
     }
-    default: console.log("Music commands: auth, import, sync, aggregate, pull [--all], push [--credentials], prepare, job-key");
+    default: console.log("Music commands: auth, import, sync, genres [--help], aggregate, pull [--all], push [--credentials], prepare, job-key");
   }
 } catch (error) { console.error(error instanceof Error ? error.message : "Music command failed"); process.exitCode = 1; }
