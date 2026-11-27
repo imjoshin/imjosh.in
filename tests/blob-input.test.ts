@@ -74,9 +74,10 @@ test("renderer input excludes links and controls, stops on release, and disarms 
   }
   function dispatch(type: string, fields: Record<string, unknown> = {}) {
     const { target, ...properties } = fields;
-    const event = Object.assign(new Event(type), { button: 0, buttons: 1, pointerType: "mouse", clientX: 999, clientY: 1, ...properties });
+    const event = Object.assign(new Event(type, { cancelable: true }), { button: 0, buttons: 1, pointerType: "mouse", clientX: 999, clientY: 1, ...properties });
     if (target) Object.defineProperty(event, "target", { value: target });
     windowTarget.dispatchEvent(event);
+    return event;
   }
   function typePeW(fields: Record<string, unknown> = {}) {
     for (const key of "pew") dispatch("keydown", { key, ...fields });
@@ -86,6 +87,44 @@ test("renderer input excludes links and controls, stops on release, and disarms 
   }
   function activate() { typePeW(); assert.equal(attributes.has("data-pew-mode"), true); }
   function reset() { dispatch("keydown", { key: "Escape" }); tick(); assert.equal(pointCount, 0); }
+
+  const pointer = t.mock.method(BlobSimulation.prototype, "setPointer");
+  const boosted = () => pointer.mock.calls.at(-1)?.arguments[1] ?? false;
+  const grab = () => dispatch("pointerdown", { button: 2, buttons: 2 });
+  grab();
+  assert.equal(boosted(), true);
+  dispatch("pointermove", { buttons: 2 });
+  assert.equal(boosted(), true);
+  assert.equal(dispatch("contextmenu", { button: 2 }).defaultPrevented, true);
+  assert.equal(dispatch("contextmenu").defaultPrevented, false, "keyboard context menus remain available");
+  assert.equal(dispatch("contextmenu", { button: 2, clientX: 1000 }).defaultPrevented, false);
+  for (const selector of ["a,", "button", "input", "details", "contenteditable"]) {
+    const target = blocked(selector);
+    assert.equal(dispatch("contextmenu", { button: 2, target }).defaultPrevented, false);
+    grab();
+    dispatch("pointermove", { buttons: 2, target });
+    assert.equal(boosted(), false);
+    dispatch("pointerdown", { button: 2, buttons: 2, target });
+    assert.equal(boosted(), false);
+  }
+  for (const type of ["pointerup", "pointercancel", "blur"]) {
+    grab();
+    dispatch(type, { button: 2, buttons: 0 });
+    assert.equal(boosted(), false);
+  }
+  grab(); dispatch("pointermove", { buttons: 0 });
+  assert.equal(boosted(), false, "a missed release cannot leave the boost stuck on");
+  grab(); root.dispatchEvent(new Event("pointerleave"));
+  assert.equal(boosted(), false);
+  grab(); controller.setPaused(true);
+  assert.equal(boosted(), false);
+  assert.equal(dispatch("contextmenu", { button: 2 }).defaultPrevented, false);
+  controller.setPaused(false);
+  grab(); controller.setHome(false);
+  assert.equal(boosted(), false);
+  assert.equal(dispatch("contextmenu", { button: 2 }).defaultPrevented, false);
+  controller.setHome(true);
+  pointer.mock.restore();
 
   // Only successful desktop mouse hits count, and the fifth reveals the hint once.
   const burst = t.mock.method(BlobSimulation.prototype, "burstAt", (point: Point) => point[0] === 0 ? [0] : []);
@@ -175,4 +214,7 @@ test("renderer input excludes links and controls, stops on release, and disarms 
   assert.equal(attributes.has("data-pew-mode"), false);
   tick();
   assert.equal(pointCount, 0);
+  controller.destroy();
+  dispose = () => {};
+  assert.equal(dispatch("contextmenu", { button: 2 }).defaultPrevented, false);
 });

@@ -1,6 +1,6 @@
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
-import { BlobSimulation, MIN_FRAGMENT_VOLUME } from "../src/lib/blob-physics.ts";
+import { BlobSimulation, MIN_FRAGMENT_VOLUME, POINTER_GRAVITY_BOOST, VELOCITY_SPLIT_SPEED } from "../src/lib/blob-physics.ts";
 
 function advance(simulation: BlobSimulation, seconds: number, step = 1 / 120) {
   for (let elapsed = 0; elapsed < seconds - 1e-8; elapsed += step) simulation.step(Math.min(step, seconds - elapsed));
@@ -98,6 +98,88 @@ test("pointer gravity attracts particles individually rather than translating th
   const shifts = attracted.particles.map((particle, i) => particle.position[0] - idle.particles[i].position[0]);
   assert.ok(Math.max(...shifts) - Math.min(...shifts) > .2);
   assert.ok(new Set(attracted.particles.map((particle) => particle.mass)).size > 1);
+});
+
+test("right-drag gravity multiplies only the cursor force by five", () => {
+  const idle = fixture([[0, 0, 0]]);
+  const normal = fixture([[0, 0, 0]]);
+  const boosted = fixture([[0, 0, 0]]);
+  normal.setPointer([.8, .4]);
+  boosted.setPointer([.8, .4], true);
+  for (const simulation of [idle, normal, boosted]) simulation.step(1 / 120);
+  for (const axis of [0, 1]) {
+    const ordinary = normal.particles[0].velocity[axis] - idle.particles[0].velocity[axis];
+    const stronger = boosted.particles[0].velocity[axis] - idle.particles[0].velocity[axis];
+    assert.ok(Math.abs(stronger / ordinary - POINTER_GRAVITY_BOOST) < 1e-10);
+  }
+});
+
+test("speed alone splits a fast particle while slow neighbors retain their volumes", () => {
+  const simulation = fixture([[0, 0, 0], [.8, 0, 0]]);
+  const fast = simulation.particles[0];
+  fast.velocity = [VELOCITY_SPLIT_SPEED * 1.5, 0, 0];
+  simulation.step(1 / 120);
+  assert.equal(simulation.particles.length, 3);
+  assert.equal(simulation.particles[1].volume, simulation.roots[1].volume);
+  const pieces = simulation.particles.filter((particle) => particle.root === 0);
+  assert.ok(pieces.every((piece) => piece.volume === simulation.roots[0].volume / 2));
+  assert.deepEqual(pieces[0].velocity, pieces[1].velocity);
+  assert.ok(Math.abs(pieces[0].impulse[1] + pieces[1].impulse[1]) < 1e-10);
+  assert.ok(Math.abs(pieces[0].impulse[1]) > 0);
+  advance(simulation, .2);
+  assert.equal(simulation.particles.length, 3, "new pieces have a split cooldown");
+  assertVolume(simulation);
+});
+
+test("fast right-drag circles shed fragments across refresh rates while ordinary gravity stays calm", () => {
+  for (const dt of [1 / 30, 1 / 60, 1 / 144]) {
+    for (const boosted of [false, true]) {
+      const simulation = new BlobSimulation({ aspect: 1.6 });
+      let peak = simulation.particles.length;
+      for (let elapsed = 0; elapsed < 12; elapsed += dt) {
+        simulation.setPointer([Math.cos(elapsed * Math.PI * 2) * .6, Math.sin(elapsed * Math.PI * 2) * .6], boosted);
+        simulation.step(dt);
+        peak = Math.max(peak, simulation.particles.length);
+        assertVolume(simulation);
+        assert.ok(simulation.particles.every((particle) => [...particle.position, ...particle.velocity].every(Number.isFinite)));
+        assert.ok(simulation.particles.length <= simulation.maxParticles);
+      }
+      assert.equal(peak > simulation.roots.length, boosted);
+      simulation.setPointer(null);
+      advance(simulation, 30);
+      assert.equal(simulation.particles.length, simulation.roots.length);
+      assertVolume(simulation);
+    }
+  }
+});
+
+test("recent click and pellet impacts cannot cause extra velocity splits", () => {
+  for (const shoot of [false, true]) {
+    const simulation = fixture([[0, 0, 0]]);
+    if (shoot) simulation.burstAlong([0, 0, 2], [0, 0, -1]);
+    else simulation.burstAt([0, 0]);
+    for (const particle of simulation.particles) particle.velocity = [VELOCITY_SPLIT_SPEED * 2, 0, 0];
+    advance(simulation, 1);
+    assert.equal(simulation.particles.length, 2);
+    assertVolume(simulation);
+  }
+});
+
+test("velocity splitting respects minimum fragment volumes and the renderer capacity", () => {
+  for (const maxParticles of [8, 128]) {
+    const simulation = new BlobSimulation({ count: 1, maxParticles });
+    for (let frame = 0; frame < 8 * 120; frame++) {
+      simulation.particles.forEach((particle) => {
+        particle.position = [particle.id * 2, 0, 0];
+        particle.velocity = [VELOCITY_SPLIT_SPEED * 2, 0, 0];
+      });
+      simulation.step(1 / 120);
+      assertVolume(simulation);
+      assert.ok(simulation.particles.length <= maxParticles);
+      assert.ok(simulation.particles.every((particle) => particle.volume >= simulation.roots[0].volume * MIN_FRAGMENT_VOLUME));
+    }
+    assert.equal(simulation.particles.length, Math.min(maxParticles, 32));
+  }
 });
 
 test("a single click disperses particles for seconds and they gradually recover without a held pointer", () => {

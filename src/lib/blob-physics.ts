@@ -5,6 +5,8 @@ export const BLOB_SEPARATED_BLEND = .07;
 export const BLOB_RADIUS_BLEND = .6;
 export const MAX_BLOB_PARTICLES = 128;
 export const MIN_FRAGMENT_VOLUME = 1 / 32;
+export const POINTER_GRAVITY_BOOST = 5;
+export const VELOCITY_SPLIT_SPEED = 1.1;
 
 export type RootBlob = Readonly<{ radius: number; volume: number }>;
 export type Particle = {
@@ -52,6 +54,7 @@ export class BlobSimulation {
   time = 0;
   private pointer: Point | null = null;
   private pointerStrength = 0;
+  private pointerBoost = false;
   private nextId = 0;
   private merges: Merge[] = [];
 
@@ -154,6 +157,7 @@ export class BlobSimulation {
     this.merges = (state.merges as Merge[]).map((merge) => ({ ...merge }));
     this.pointer = null;
     this.pointerStrength = 0;
+    this.pointerBoost = false;
     return true;
   }
 
@@ -237,7 +241,10 @@ export class BlobSimulation {
     ];
   }
 
-  setPointer(pointer: Point | null) { this.pointer = pointer; }
+  setPointer(pointer: Point | null, boosted = false) {
+    this.pointer = pointer;
+    this.pointerBoost = pointer !== null && boosted;
+  }
 
   setAspect(aspect: number) {
     if (!Number.isFinite(aspect) || aspect <= 0) return;
@@ -340,10 +347,11 @@ export class BlobSimulation {
       const remaining = (1 - progress) / Math.max(1e-10, 1 - merge.progress);
       const delta = source.position.map((value, axis) => (value - target.position[axis]) * remaining);
       const transfer = merge.volume * (progress - merge.progress);
+      const displayTotal = target.displayVolume + source.displayVolume;
       this.setVolume(target, Math.min(this.roots[target.root].volume, target.volume + transfer));
       this.setVolume(source, Math.max(0, source.volume - transfer));
-      target.displayVolume = target.volume;
-      source.displayVolume = source.volume;
+      target.displayVolume = displayTotal * target.volume / total;
+      source.displayVolume = displayTotal * source.volume / total;
       for (let axis = 0; axis < 3; axis++) {
         target.position[axis] = center[axis] - delta[axis] * source.volume / total;
         source.position[axis] = center[axis] + delta[axis] * target.volume / total;
@@ -369,6 +377,28 @@ export class BlobSimulation {
         occupied.add(target.id); occupied.add(source.id);
         break;
       }
+    }
+  }
+
+  private splitFastParticles() {
+    // Snapshot the list so newborn fragments cannot split again in the same step.
+    for (const particle of [...this.particles]) {
+      // Let direct click/shot bursts settle instead of cascading their impulses.
+      if (this.time < particle.mergeAfter || particle.burstEnergy > .2) continue;
+      const speed = Math.hypot(...particle.velocity);
+      if (speed < VELOCITY_SPLIT_SPEED * this.scale) continue;
+      const child = this.split(particle);
+      if (!child) continue;
+      // Peel apart across the direction of travel while preserving net momentum.
+      const [vx, vy] = particle.velocity;
+      const length = Math.hypot(vx, vy);
+      const direction: Vector = length > 1e-8 ? [-vy / length, vx / length, 0] : [1, 0, 0];
+      const spread = Math.min(speed * .45, .9 * this.scale);
+      for (let axis = 0; axis < 3; axis++) {
+        particle.impulse[axis] -= direction[axis] * spread;
+        child.impulse[axis] += direction[axis] * spread;
+      }
+      particle.mergeAfter = child.mergeAfter = this.time + 1.1;
     }
   }
 
@@ -403,7 +433,8 @@ export class BlobSimulation {
           const dx = this.pointer[0] - particle.position[0];
           const dy = this.pointer[1] - particle.position[1];
           const distance = Math.hypot(dx, dy);
-          const gravity = this.pull * 3.5 * this.pointerStrength * (1 - particle.burst * .85) / (distance * distance + .8) ** 1.5;
+          const gravity = this.pull * 3.5 * this.pointerStrength * (this.pointerBoost ? POINTER_GRAVITY_BOOST : 1)
+            * (1 - particle.burst * .85) / (distance * distance + .8) ** 1.5;
           force[0] += dx * gravity;
           force[1] += dy * gravity;
         }
@@ -418,6 +449,7 @@ export class BlobSimulation {
           particle.position[axis] += particle.velocity[axis] * dt;
         }
       });
+      this.splitFastParticles();
       this.coalesce(dt);
     }
   }

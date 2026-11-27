@@ -105,6 +105,7 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
   let resolutionComplexity = complexity();
   let home = o.home ?? true, interactive = false, paused = false;
   let blobClicks = 0, hintVisible = false, hintDismissed = false;
+  let gravityGrab = false;
   let speed = home ? 1 : INNER_PAGE_SPEED, dark = isDark() ? 1 : 0;
   let raf = 0, lastFrame = performance.now(), dead = false;
   let viewWidth = 0, viewHeight = 0, resizeAfter = Infinity;
@@ -134,6 +135,10 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
     gl.viewport(0, 0, canvas.width, canvas.height);
   };
   const blockedTarget = target => target?.closest?.('a,button,input,select,textarea,details,[contenteditable]:not([contenteditable="false"])');
+  const overCanvas = e => {
+    const r = canvas.getBoundingClientRect();
+    return e.clientX >= r.left && e.clientX < r.left + r.width && e.clientY >= r.top && e.clientY < r.top + r.height;
+  };
   const syncCursor = () => document.documentElement.toggleAttribute('data-pew-mode', pew.active);
   const setPewHint = visible => {
     if (hintVisible === visible) return;
@@ -142,12 +147,18 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
   };
   const pm = e => {
     const point = toWorld(e);
-    simulation.setPointer(point);
+    if (blockedTarget(e.target) || (e.pointerType === 'mouse' && !(e.buttons & 2))) gravityGrab = false;
+    simulation.setPointer(point, gravityGrab);
     pew.setAim(point);
     if (blockedTarget(e.target) || (e.pointerType === 'mouse' && !(e.buttons & 1))) pew.stop();
   };
   const pd = e => {
-    if (blockedTarget(e.target)) { pew.stop(); return; }
+    if (blockedTarget(e.target)) { gravityGrab = false; simulation.setPointer(toWorld(e)); pew.stop(); return; }
+    if (e.button === 2 && e.pointerType === 'mouse' && overCanvas(e)) {
+      gravityGrab = true;
+      simulation.setPointer(toWorld(e), true);
+      return;
+    }
     if (e.button !== 0) return;
     if (pew.active) {
       if (e.pointerType === 'mouse') { pew.setAim(toWorld(e)); pew.start(); }
@@ -159,8 +170,15 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
       && window.matchMedia('(min-width: 768px)').matches
       && ++blobClicks === 5) setPewHint(true);
   };
-  const leave = () => { simulation.setPointer(null); pew.stop(); };
-  const up = e => { pew.stop(); if (e.pointerType !== 'mouse') leave(); };
+  const leave = () => { gravityGrab = false; simulation.setPointer(null); pew.stop(); };
+  const up = e => {
+    pew.stop();
+    if (e.pointerType !== 'mouse') leave();
+    else if (e.button === 2) { gravityGrab = false; simulation.setPointer(toWorld(e)); }
+  };
+  const context = e => {
+    if (e.button === 2 && !blockedTarget(e.target) && overCanvas(e)) e.preventDefault();
+  };
   const kd = e => {
     if (e.repeat || e.isComposing || e.altKey || e.ctrlKey || e.metaKey
       || e.target?.closest?.('input,select,textarea,[contenteditable]:not([contenteditable="false"])')) return;
@@ -181,6 +199,7 @@ void main(){float r=length(gl_PointCoord*2.-1.);if(r>1.)discard;
     window[method]('pointerdown', pd);
     window[method]('pointerup', up);
     window[method]('pointercancel', leave);
+    window[method]('contextmenu', context);
     window[method]('keydown', kd);
     document.documentElement[method]('pointerleave', leave);
     window[method]('blur', leave);
