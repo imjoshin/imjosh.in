@@ -18,7 +18,7 @@ import { MusicArtistHistory } from "./music-artist-history";
 import { MusicLastTracks } from "./music-last-tracks";
 import { MusicRecommendations } from "./music-recommendations";
 import { trackEvent } from "@/lib/analytics";
-import { MusicHeading } from "./music-info";
+import { MusicIntro } from "./music-info";
 
 const periodLabels: Record<string, string> = { all: "All time", "30d": "Last 30 days", "365d": "Last year" };
 const safeImage = (value: string | null) => value && /^https:\/\/(i\.scdn\.co|image-cdn[^/]*\.spotifycdn\.com)\//.test(value) ? value : undefined;
@@ -116,7 +116,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
   const artistPhoto = findMusicArtistPhoto(featured?.artists[0], artistImages);
   const rankings = stats ? tab === "artists" ? stats.topArtists : tab === "albums" ? stats.topAlbums : stats.topTracks : [];
   return <MusicHoverProvider file={manifest?.files.entities} api={api} resetKey={`${period}:${tab}`}>
-    <div className="flex flex-col justify-between gap-7 sm:flex-row sm:items-end"><div className="min-w-0"><MusicHeading /><p className="mt-6 max-w-[42ch] text-[18px] leading-relaxed text-muted">The songs that stick around. A listening history, one obsession at a time.</p></div><a className="pill w-fit" data-analytics-social="spotify" href="https://open.spotify.com/user/1271912429" target="_blank" rel="noopener noreferrer">Find me on Spotify<span className="sr-only"> (opens in a new tab)</span></a></div>
+    <div className="flex flex-col justify-between gap-7 sm:flex-row sm:items-end"><div className="min-w-0"><h1 className="page-title">For the <em className="text-accent">record</em></h1><MusicIntro /></div><a className="pill w-fit" data-analytics-social="spotify" href="https://open.spotify.com/user/1271912429" target="_blank" rel="noopener noreferrer">Find me on Spotify<span className="sr-only"> (opens in a new tab)</span></a></div>
 
     {/* Mount fresh swap content when data beats the grace period, without animating an unseen fallback. */}
     <section key={featureReady ? "ready" : "pending"} data-pending={!featureReady || undefined} data-analytics-view="featured_music" data-analytics-period={provider ? "spotify_short_term" : current?.period || period} data-analytics-item-rank={1} className="music-feature panel relative grid min-h-[340px] overflow-hidden rounded-[28px] md:grid-cols-[1.05fr_1fr]" aria-label="Featured music">

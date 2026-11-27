@@ -61,7 +61,7 @@ function MusicInfoContent({ titleId, descriptionId }: { titleId: string; descrip
   </>;
 }
 
-export function MusicHeading() {
+export function MusicIntro() {
   const dialog = useRef<HTMLDialogElement>(null);
   const scroll = useRef<HTMLDivElement>(null);
   const backdropDown = useRef(false);
@@ -79,8 +79,9 @@ export function MusicHeading() {
     return () => { element.close(); root.style.overflow = previousOverflow; };
   }, [open]);
 
-  return <div className="music-title-row">
-    <h1 className="page-title">For the <span className="whitespace-nowrap"><em className="text-accent">record</em><button type="button" className="music-info-trigger" aria-label="How this music page works" aria-haspopup="dialog" aria-expanded={open} aria-controls={id} onClick={() => setOpen(true)}><Icon><circle cx="12" cy="12" r="9" /><path d="M12 11v6m0-10v.01" /></Icon></button></span></h1>
+  return <div className="mt-6 max-w-[48ch] text-[18px] leading-relaxed text-muted">
+    <p>The songs that stick <span className="whitespace-nowrap">around.<button type="button" className="music-info-trigger" aria-label="How this music page works" aria-haspopup="dialog" aria-expanded={open} aria-controls={id} onClick={() => setOpen(true)}><Icon><circle cx="12" cy="12" r="9" /><path d="M12 11v6m0-10v.01" /></Icon></button></span></p>
+    <p>A listening history, one obsession at a time.</p>
     <dialog ref={dialog} id={id} className="music-info-dialog" aria-labelledby={`${id}-title`} aria-describedby={`${id}-description`} onClose={() => setOpen(false)} onPointerDown={event => { backdropDown.current = event.target === event.currentTarget; }} onClick={event => { if (backdropDown.current && event.target === event.currentTarget) dialog.current?.close(); }}>
       <button type="button" className="music-info-close" aria-label="Close music information" autoFocus onClick={() => dialog.current?.close()}><Icon><path d="m6 6 12 12M6 18 18 6" /></Icon></button>
       <div ref={scroll} className="music-info-scroll"><MusicInfoContent titleId={`${id}-title`} descriptionId={`${id}-description`} /></div>
