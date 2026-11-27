@@ -51,12 +51,14 @@ function Rotation({ items }: { items: RankedMusic[] }) {
 interface Props { initialManifest: MusicManifest | null; initialData: MusicDataset | null; initialSpotify: SpotifySnapshot | null; initialSoundtrack: MusicSoundtrackDataset | null; initialArtistHistory: MusicArtistHistoryDataset | null; initialRecommendations: MusicRecommendationsDataset | null; initialRecentTracks: MusicRecentTrack[] }
 export function MusicExplorer({ initialManifest, initialData, initialSpotify, initialSoundtrack, initialArtistHistory, initialRecommendations, initialRecentTracks }: Props) {
   const [period, setPeriod] = useState("30d");
+  const [pendingChart, setPendingChart] = useState<"favorites" | null>(null);
   const [tab, setTab] = useState<"tracks" | "artists" | "albums">("tracks");
-  const { manifest, data, spotify, soundtrack, artistHistory, recommendations, error, loading, api } = useMusicCollection({ manifest: initialManifest, data: initialData, spotify: initialSpotify, soundtrack: initialSoundtrack, artistHistory: initialArtistHistory, recommendations: initialRecommendations }, period);
+  const { manifest, data, spotify, soundtrack, artistHistory, recommendations, error, loading, api, ready } = useMusicCollection({ manifest: initialManifest, data: initialData, spotify: initialSpotify, soundtrack: initialSoundtrack, artistHistory: initialArtistHistory, recommendations: initialRecommendations }, period);
   const playback = useMusicPlayback();
   const [headerHeight, setHeaderHeight] = useState<number | null>(null);
   const historyHeading = useRef<HTMLDivElement>(null);
   const historyFilters = useRef<HTMLDivElement>(null);
+  const favorites = useRef<HTMLElement>(null);
   const [filtersStuck, setFiltersStuck] = useState(false);
   useEffect(() => {
     const header = document.querySelector<HTMLElement>(".site-header");
@@ -85,16 +87,34 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
   useEffect(() => {
     const applyLocation = () => {
       const query = new URLSearchParams(location.search); setPeriod(query.get("period") || "30d");
+      setPendingChart(query.get("chart") === "favorites" ? "favorites" : null);
       if (query.has("platform")) { query.delete("platform"); history.replaceState(history.state, "", `${location.pathname}${query.size ? `?${query}` : ""}${location.hash}`); }
     };
     applyLocation(); addEventListener("popstate", applyLocation);
     return () => removeEventListener("popstate", applyLocation);
   }, []);
   useEffect(() => { if (manifest && !manifest.periods.includes(period)) setPeriod("30d"); }, [manifest, period]);
+  useEffect(() => {
+    if (pendingChart !== "favorites" || !ready || headerHeight === null) return;
+    let cancelled = false, frame = 0;
+    // The collection commits all datasets together. Wait for font layout before measuring the destination.
+    void document.fonts.ready.then(() => {
+      if (cancelled) return;
+      frame = requestAnimationFrame(() => {
+        const target = favorites.current, filters = historyFilters.current;
+        if (!target || !filters) return;
+        const offset = parseFloat(getComputedStyle(filters).top) + filters.getBoundingClientRect().height + 24;
+        window.scrollTo({ top: Math.max(0, window.scrollY + target.getBoundingClientRect().top - offset), behavior: "instant" });
+        setPendingChart(null);
+      });
+    });
+    return () => { cancelled = true; cancelAnimationFrame(frame); };
+  }, [pendingChart, ready, headerHeight]);
   function filter(nextPeriod: string, replace = false) {
     if (nextPeriod === period) return;
     trackEvent("music_period_change", { period: nextPeriod, method: replace ? "scrub" : "select" });
     setPeriod(nextPeriod);
+    setPendingChart(null);
     const query = new URLSearchParams(location.search); query.delete("platform"); query.set("period", nextPeriod);
     history[replace ? "replaceState" : "pushState"](history.state, "", `${location.pathname}?${query}${location.hash}`);
   }
@@ -136,7 +156,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
       <div aria-busy={loading} className="flex flex-col gap-5">
         <div className="music-stat-grid">{[["Recorded plays", stats?.plays || 0], ["Different artists", stats?.artists || 0], ["Different tracks", stats?.tracks || 0], ["Measured hours", Math.round((stats?.msPlayed || 0) / 3600000)]].map(([label, value]) => <div key={label} className="panel rounded-[20px] p-5 sm:p-6"><p className="music-label">{label}</p><p className="mt-3 font-display text-[clamp(44px,5vw,64px)] leading-none tabular-nums">{label === "Measured hours" && !stats?.durationKnown ? <span className="text-muted">Pending</span> : <MusicNumber value={Number(value)} />}</p></div>)}</div>
         {current && <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]"><ListeningChart data={current} /><WeekdayChart data={current} /></div>}
-        <section className="panel rounded-[24px] p-5 sm:p-7" data-analytics-view="favorites" data-analytics-period={current?.period || period} data-analytics-metric={tab} aria-labelledby="music-ranking-title"><div className="mb-5 flex flex-wrap items-center justify-between gap-4"><h2 id="music-ranking-title" className="font-display text-[36px] leading-none">The <em className="text-accent">favorites.</em></h2><div role="group" aria-label="Rank music by" className="music-tabs">{(["tracks", "albums", "artists"] as const).map(t => <button key={t} aria-pressed={tab === t} onClick={() => { if (t !== tab) trackEvent("music_ranking_change", { metric: t, period }); setTab(t); }} className="capitalize">{t}</button>)}</div></div><Ranking kind={tab === "tracks" ? "track" : tab === "albums" ? "album" : "artist"} resetKey={`${period}:${current?.period}`} items={rankings.map(item => ({ ...item, key: `${tab}:${item.key}` }))} empty={stats?.plays ? "More metadata is needed for this view." : "The first chapters of this collection are still coming in."} /></section>
+        <section ref={favorites} className="panel rounded-[24px] p-5 sm:p-7" data-analytics-view="favorites" data-analytics-period={current?.period || period} data-analytics-metric={tab} aria-labelledby="music-ranking-title"><div className="mb-5 flex flex-wrap items-center justify-between gap-4"><h2 id="music-ranking-title" className="font-display text-[36px] leading-none">The <em className="text-accent">favorites.</em></h2><div role="group" aria-label="Rank music by" className="music-tabs">{(["tracks", "albums", "artists"] as const).map(t => <button key={t} aria-pressed={tab === t} onClick={() => { if (t !== tab) trackEvent("music_ranking_change", { metric: t, period }); setTab(t); }} className="capitalize">{t}</button>)}</div></div><Ranking kind={tab === "tracks" ? "track" : tab === "albums" ? "album" : "artist"} resetKey={`${period}:${current?.period}`} items={rankings.map(item => ({ ...item, key: `${tab}:${item.key}` }))} empty={stats?.plays ? "More metadata is needed for this view." : "The first chapters of this collection are still coming in."} /></section>
       </div>
       <MusicSoundtrackChart data={soundtrack} period={period} api={api} loading={loading} error={error} />
       </div>

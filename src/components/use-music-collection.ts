@@ -5,7 +5,7 @@ import { readMusicCollection, type MusicCollection, type MusicJsonReader } from 
 import { cacheMusicSpotify, readCachedMusicSpotify } from "@/lib/music/spotify-cache";
 
 export function useMusicCollection(initial: MusicCollection, period: string) {
-  const [collection, setCollection] = useState(initial), [loading, setLoading] = useState(false), [error, setError] = useState(false), [api, setApi] = useState(false);
+  const [collection, setCollection] = useState(initial), [loading, setLoading] = useState(false), [error, setError] = useState(false), [api, setApi] = useState(false), [ready, setReady] = useState(false);
   const latest = useRef(initial), selection = useRef(period), priorPeriod = useRef(period);
   selection.current = period;
   const cache = useRef<Map<string, unknown> | null>(null);
@@ -41,7 +41,7 @@ export function useMusicCollection(initial: MusicCollection, period: string) {
       if (token !== generation.current || selection.current !== selected) return;
       // Keep the bundled recommendations until an older publisher supplies the new dataset.
       if (!next.manifest?.files.recommendations) next.recommendations = latest.current.recommendations ?? null;
-      latest.current = next; setCollection(next); setError(false);
+      latest.current = next; setCollection(next); setError(false); setReady(true);
       cacheMusicSpotify(next.spotify);
     } catch {
       if (token === generation.current && selection.current === selected) setError(true);
@@ -59,5 +59,5 @@ export function useMusicCollection(initial: MusicCollection, period: string) {
     return () => { ++generation.current; controller.current?.abort(); clearInterval(interval); document.removeEventListener("visibilitychange", visible); removeEventListener("online", online); };
   }, [refresh]);
   useEffect(() => { if (priorPeriod.current !== period) { priorPeriod.current = period; void refresh(); } }, [period, refresh]);
-  return { ...collection, loading, error, api };
+  return { ...collection, loading, error, api, ready: ready && collection.data?.period === period && !loading && !error };
 }
