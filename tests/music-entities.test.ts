@@ -6,7 +6,7 @@ import { musicTrack, spotifyListen } from "../src/lib/music/normalize.ts";
 import { aggregateMusic } from "../src/lib/music/aggregate.ts";
 import { aggregateSeasons } from "../src/lib/music/seasons.ts";
 import type { Listen } from "../src/lib/music/types.ts";
-import type { MusicDataset, MusicEntityDataset, MusicGenreSongsDataset, MusicManifest, MusicSeasonalDataset } from "../src/lib/music/types.ts";
+import type { MusicDataset, MusicEntityDataset, MusicSongsDataset, MusicManifest, MusicSeasonalDataset } from "../src/lib/music/types.ts";
 import { publishMusic } from "../scripts/music/publish.ts";
 import { readJson, saveListens, writeJson, type MusicStore } from "../scripts/music/store.ts";
 
@@ -62,7 +62,7 @@ test("Spotify links use the right entity type, validate destinations, and search
   assert.equal(decodeURIComponent(fallback.pathname), '/search/album:"A & B / Deluxe" artist:"Artist"');
 });
 
-test("publication supplies direct links and lazy genre song details while whitelisting metadata", async () => {
+test("publication supplies direct links and lazy genre, artist, and album song details while whitelisting metadata", async () => {
   const memory = (): MusicStore => {
     const values = new Map<string, Uint8Array>();
     return { async get(key) { return values.get(key) || null; }, async set(key, value) { values.set(key, value); }, async list(prefix) { return [...values.keys()].filter(key => key.startsWith(prefix)); } };
@@ -85,14 +85,18 @@ test("publication supplies direct links and lazy genre song details while whitel
   const entities = (await readJson<MusicEntityDataset>(publicStore, manifest.files.entities))!;
   assert.equal(Object.values(entities.entities).length, 3);
   assert.equal(JSON.stringify(entities).includes("PRIVATE-CATALOG-FIELD"), false);
-  const songFile = seasonal.genreFiles!.indie;
-  assert.ok(Object.values(manifest.files).includes(songFile));
-  const songs = (await readJson<MusicGenreSongsDataset>(publicStore, songFile))!;
-  assert.equal(songs.tracks[0].plays, 11);
-  assert.equal(songs.entities[songs.tracks[0].key].plays, 11);
-  assert.equal(songs.entities[musicEntityKey("artist", "Artist")].plays, 11);
-  assert.equal(JSON.stringify(songs).includes("PRIVATE-CATALOG-FIELD"), false);
-  assert.equal(JSON.stringify(songs).includes("PRIVATE-RAW"), false);
+  assert.equal(seasonal.genreFiles!.indie, seasonal.songFiles!.genres!.indie);
+  for (const [metric, key] of [["genres", "indie"], ["artists", "artist"], ["albums", musicEntityKey("album", "Album", ["Artist"])]] as const) {
+    const songFile = seasonal.songFiles![metric]![key];
+    assert.ok(Object.values(manifest.files).includes(songFile));
+    const songs = (await readJson<MusicSongsDataset>(publicStore, songFile))!;
+    assert.equal(songs.metric, metric); assert.equal(songs.key, key);
+    assert.equal(songs.tracks[0].plays, 11);
+    assert.equal(songs.entities[songs.tracks[0].key].plays, 11);
+    assert.equal(songs.entities[musicEntityKey("artist", "Artist")].plays, 11);
+    assert.equal(JSON.stringify(songs).includes("PRIVATE-CATALOG-FIELD"), false);
+    assert.equal(JSON.stringify(songs).includes("PRIVATE-RAW"), false);
+  }
 });
 
 test("public hover downloads cover displayed music while totals retain history outside the rankings", async () => {

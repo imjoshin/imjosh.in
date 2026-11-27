@@ -1,8 +1,9 @@
-import type { Listen, MusicGenreSongCounts, MusicSeason, MusicSeasonalDataset, SeasonalMetric, SeasonalMetricData, SeasonalSeries } from "./types.ts";
+import type { Listen, MusicSongCounts, MusicSeason, MusicSeasonalDataset, MusicTrack, SeasonalMetric, SeasonalMetricData, SeasonalSeries } from "./types.ts";
 import { MUSIC_TIMEZONE, publicMusicListens } from "./aggregate.ts";
 import { musicEntityKey } from "./entity-links.ts";
 
 const names = ["Winter", "Spring", "Summer", "Fall"];
+const seasonalMetrics = ["genres", "artists", "albums"] as const;
 export const MINIMUM_SEASONAL_PLAYS = 11;
 const textKey = (value: string) => value.normalize("NFKC").trim().replace(/\s+/g, " ").toLocaleLowerCase("en-US");
 const seasonAt = (index: number): MusicSeason => ({ key: `${Math.floor(index / 4)}-${names[index % 4].toLowerCase()}`, label: `${Math.floor(index / 4)} ${names[index % 4]}` });
@@ -18,6 +19,13 @@ export function musicSeason(date: Date, timezone = MUSIC_TIMEZONE) {
   return seasonWithFormatter(date, new Intl.DateTimeFormat("en-US", { timeZone: timezone, year: "numeric", month: "numeric" }));
 }
 
+function trackEntries(track: MusicTrack, metric: SeasonalMetric) {
+  const entries = metric === "genres" ? track.genres.map(name => ({ key: textKey(name), name: textKey(name), artists: [] as string[] }))
+    : metric === "artists" ? track.artists.map(name => ({ key: textKey(name), name, artists: [] as string[] }))
+    : track.album ? [{ key: musicEntityKey("album", track.album, track.albumArtists?.length ? track.albumArtists : track.artists), name: track.album, artists: track.albumArtists?.length ? track.albumArtists : track.artists }] : [];
+  return new Map(entries.filter(item => item.key && item.name).map(item => [item.key, item]));
+}
+
 export function aggregateSeasons(input: Listen[], now = new Date(), timezone = MUSIC_TIMEZONE): Record<string, MusicSeasonalDataset> {
   const listens = publicMusicListens(input, now);
   const formatter = new Intl.DateTimeFormat("en-US", { timeZone: timezone, year: "numeric", month: "numeric" });
@@ -29,15 +37,11 @@ export function aggregateSeasons(input: Listen[], now = new Date(), timezone = M
     const first = bounds?.[0] || 0;
     const seasons = bounds ? Array.from({ length: bounds[1] - first + 1 }, (_, i) => seasonAt(first + i)) : [];
     const metrics = {} as Record<SeasonalMetric, SeasonalMetricData>;
-    for (const metric of ["genres", "artists", "albums"] as const) {
+    for (const metric of seasonalMetrics) {
       const all = new Map<string, SeasonalSeries>();
       let classifiedPlays = 0;
       for (const { listen, season } of rows) {
-        const track = listen.track;
-        const entries = metric === "genres" ? track.genres.map(name => ({ key: textKey(name), name: textKey(name), artists: [] as string[] }))
-          : metric === "artists" ? track.artists.map(name => ({ key: textKey(name), name, artists: [] as string[] }))
-          : track.album ? [{ key: musicEntityKey("album", track.album, track.albumArtists?.length ? track.albumArtists : track.artists), name: track.album, artists: track.albumArtists?.length ? track.albumArtists : track.artists }] : [];
-        const unique = new Map(entries.filter(item => item.key && item.name).map(item => [item.key, item]));
+        const unique = trackEntries(listen.track, metric);
         if (unique.size) classifiedPlays++;
         for (const [key, item] of unique) {
           const series = all.get(key) || { ...item, plays: Array(seasons.length).fill(0) };
@@ -59,25 +63,28 @@ export function aggregateSeasons(input: Listen[], now = new Date(), timezone = M
   return datasets;
 }
 
-/** Song lists include all approved plays for displayed genres, without the chart's volume cutoff. */
-export function aggregateGenreSongs(input: Listen[], seasonal: Record<string, MusicSeasonalDataset>, now = new Date(), timezone = MUSIC_TIMEZONE): Record<string, Record<string, MusicGenreSongCounts[]>> {
+/** Song lists include all approved matching plays, without the chart's volume cutoff. */
+export function aggregateSeasonSongs(input: Listen[], seasonal: Record<string, MusicSeasonalDataset>, now = new Date(), timezone = MUSIC_TIMEZONE): Record<string, Record<SeasonalMetric, Record<string, MusicSongCounts[]>>> {
   const formatter = new Intl.DateTimeFormat("en-US", { timeZone: timezone, year: "numeric", month: "numeric" });
   const dated = publicMusicListens(input, now).map(listen => ({ listen, season: seasonWithFormatter(new Date(listen.playedAt), formatter).key }));
-  const result: Record<string, Record<string, MusicGenreSongCounts[]>> = {};
+  const result: Record<string, Record<SeasonalMetric, Record<string, MusicSongCounts[]>>> = {};
   for (const [key, dataset] of Object.entries(seasonal)) {
-    const groups = new Map(dataset.metrics.genres.series.map(series => [series.key, new Map<string, MusicGenreSongCounts>()]));
-    for (const { listen, season } of dated) {
-      if (dataset.platform !== "all" && listen.platform !== dataset.platform) continue;
-      for (const genre of new Set(listen.track.genres.map(textKey))) {
-        if (!groups.has(genre)) continue;
-        const songs = groups.get(genre)!;
-        const trackKey = musicEntityKey("track", listen.track.title, listen.track.artists);
-        const song = songs.get(trackKey) || { key: trackKey, plays: 0, seasons: {} };
-        song.plays++; song.seasons[season] = (song.seasons[season] || 0) + 1;
-        songs.set(trackKey, song);
+    result[key] = { genres: {}, artists: {}, albums: {} };
+    for (const metric of seasonalMetrics) {
+      const groups = new Map(dataset.metrics[metric].series.map(series => [series.key, new Map<string, MusicSongCounts>()]));
+      for (const { listen, season } of dated) {
+        if (dataset.platform !== "all" && listen.platform !== dataset.platform) continue;
+        for (const entry of trackEntries(listen.track, metric).keys()) {
+          const songs = groups.get(entry);
+          if (!songs) continue;
+          const trackKey = musicEntityKey("track", listen.track.title, listen.track.artists);
+          const song = songs.get(trackKey) || { key: trackKey, plays: 0, seasons: {} };
+          song.plays++; song.seasons[season] = (song.seasons[season] || 0) + 1;
+          songs.set(trackKey, song);
+        }
       }
+      result[key][metric] = Object.fromEntries([...groups].map(([entry, songs]) => [entry, [...songs.values()].sort((a, b) => b.plays - a.plays || a.key.localeCompare(b.key))]));
     }
-    result[key] = Object.fromEntries([...groups].map(([genre, songs]) => [genre, [...songs.values()].sort((a, b) => b.plays - a.plays || a.key.localeCompare(b.key))]));
   }
   return result;
 }

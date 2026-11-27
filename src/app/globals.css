@@ -208,6 +208,7 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-chart-tooltip { position: absolute; top: 12px; left: clamp(min(138px, 50%), var(--chart-tooltip-x, 50%), max(50%, calc(100% - 138px))); z-index: 6; width: 260px; max-width: calc(100% - 16px); transform: translateX(-50%); pointer-events: none; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; color: var(--ink); background: color-mix(in srgb, var(--bg) 95%, transparent); backdrop-filter: blur(16px); box-shadow: 0 8px 24px #0002; animation: music-tooltip-appear .14s ease-out; }
 .music-chart-tooltip[data-placement="bottom"] { top: auto; bottom: 12px; }
 .music-chart-tooltip[data-linked="true"] { pointer-events: auto; }
+.music-season-plot .music-chart-tooltip { max-height: 150px; overflow-y: auto; overscroll-behavior: contain; }
 .music-entity-link { transition: color .18s; }
 .music-entity-link:hover { color: var(--acc); }
 .music-entity-card { position: fixed; z-index: 80; width: min(350px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: auto; overscroll-behavior: contain; border: 1px solid var(--line); border-radius: 22px; padding: 22px; background: color-mix(in srgb, var(--bg) 96%, transparent); color: var(--ink); backdrop-filter: blur(22px); animation: music-card-arrive .18s ease-out backwards; }

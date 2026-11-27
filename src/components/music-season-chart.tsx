@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { type MusicSeasonalDataset, type SeasonalMetric, type SeasonalSeries } from "@/lib/music/types";
 import { MusicChartTooltip } from "./music-chart-tooltip";
 import { chartPointAt, nearestChartIndex, type MusicChartPoint } from "@/lib/music/chart-interaction";
 import { MusicNumber, useMusicLineMotion, useMusicPresence } from "./music-motion";
 import { isMusicCardTarget } from "./music-entity-link";
 import { useMusicChartInteraction } from "./use-music-chart-interaction";
-import { MusicGenreSongs, type GenreSongSelection } from "./music-genre-songs";
+import { MusicSeasonSongs, type SongSelection } from "./music-season-songs";
 
 const number = (value: number) => new Intl.NumberFormat("en-US").format(value);
 const metrics: SeasonalMetric[] = ["genres", "artists", "albums"];
@@ -19,7 +19,7 @@ interface PlotSeries { key: string; source: SeasonalSeries; points: MusicChartPo
 interface Inspection { keys: string[]; x: number; placement: "top" | "bottom" }
 interface PointInput { clientX: number; clientY: number; target: EventTarget | null }
 
-function SeasonLine({ item, phase, selectedTime, highlighted, dimmed, frames, choose }: { item: PlotSeries; phase: "present" | "enter" | "exit"; selectedTime: number; highlighted: boolean; dimmed: boolean; frames: Map<string, MusicChartPoint[]>; choose: (key: string, event: MouseEvent<SVGGElement>) => void }) {
+function SeasonLine({ item, phase, selectedTime, highlighted, dimmed, frames }: { item: PlotSeries; phase: "present" | "enter" | "exit"; selectedTime: number; highlighted: boolean; dimmed: boolean; frames: Map<string, MusicChartPoint[]> }) {
   const points = useMusicLineMotion(phase === "exit" ? [] : item.points, 290, phase === "enter");
   useLayoutEffect(() => { frames.set(item.key, points); return () => { frames.delete(item.key); }; }, [frames, item.key, points]);
   let pen = false;
@@ -31,10 +31,9 @@ function SeasonLine({ item, phase, selectedTime, highlighted, dimmed, frames, ch
   const isolated = points.filter(point => item.qualifying.has(point.t) && !item.qualifying.has(point.t - 1) && !item.qualifying.has(point.t + 1));
   const selected = chartPointAt(points, selectedTime);
   return <g className="music-series-presence" data-phase={phase} aria-hidden={phase === "exit" || undefined} pointerEvents={phase === "exit" ? "none" : undefined}>
-    <g className="music-season-line" data-key={item.source.key} style={{ opacity: dimmed ? .13 : 1 }} onClick={event => { event.stopPropagation(); choose(item.source.key, event); }}>
-      <path className="music-season-path" d={path} stroke={color(item.index)} strokeWidth={highlighted ? 3.5 : 2} strokeDasharray={dash[item.index % dash.length]} strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <path d={path} stroke="transparent" strokeWidth="16" fill="none" className="cursor-pointer" aria-hidden="true" />
-      {isolated.map(point => <g key={point.t}><circle cx={point.x} cy={point.y} r="9" fill="transparent" className="cursor-pointer" /><circle cx={point.x} cy={point.y} r="3" fill={color(item.index)} /></g>)}
+    <g className="music-season-line" data-key={item.source.key} style={{ opacity: dimmed ? .13 : 1 }}>
+      <path className="music-season-path cursor-pointer" d={path} stroke={color(item.index)} strokeWidth={highlighted ? 3.5 : 2} strokeDasharray={dash[item.index % dash.length]} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {isolated.map(point => <circle key={point.t} cx={point.x} cy={point.y} r="3" fill={color(item.index)} className="cursor-pointer" />)}
       {item.qualifying.has(selectedTime) && <circle cx={selected.x} cy={selected.y} r={highlighted ? 5 : 3} fill={color(item.index)} stroke="var(--bg)" strokeWidth="1.5" className="cursor-pointer" />}
     </g>
   </g>;
@@ -45,10 +44,11 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
   const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
   const [pinned, setPinned] = useState<string | null>(null), [hovered, setHovered] = useState<string | null>(null);
   const [inspection, setInspection] = useState<Inspection | null>(null);
-  const [songs, setSongs] = useState<GenreSongSelection | null>(null);
+  const [songs, setSongs] = useState<SongSelection | null>(null);
   const [compact, setCompact] = useState(false);
   const trigger = useRef<HTMLElement | null>(null);
   const svg = useRef<SVGSVGElement>(null);
+  const press = useRef<{ id: number; x: number; y: number; key: string; season: string; metric: SeasonalMetric } | null>(null);
   const interaction = useMusicChartInteraction(inspection !== null, () => setInspection(null), inspect);
   const id = useId();
   const [plotWidth, setPlotWidth] = useState(760);
@@ -65,7 +65,7 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
     return () => media.removeEventListener("change", update);
   }, []);
   useEffect(() => {
-    if (songs && !data?.metrics.genres.series.some(line => line.key === songs.genre)) { setSongs(null); setPinned(null); }
+    if (songs && !data?.metrics[songs.metric].series.some(line => line.key === songs.key)) { setSongs(null); setPinned(null); }
   }, [data, songs]);
 
   const coordinates = { left: 56, right: plotWidth - 16, top: 24, bottom: 290 };
@@ -112,20 +112,31 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
     setSelectedSeason(seasons[value.index].key); setHovered(null);
     setInspection({ keys: value.matches.map(line => line.key), x: value.x, placement: value.placement });
   }
-  function openGenre(key: string, season: string | null, owner: HTMLElement | null) {
+  function openSongs(key: string, season: string | null, owner: HTMLElement | null) {
+    const line = data?.metrics[metric].series.find(line => line.key === key);
+    if (!line) return;
     trigger.current = owner;
-    setSongs({ genre: key, season }); setPinned(key); setHovered(null); setInspection(null);
+    setSongs({ metric, key, name: line.name, artists: line.artists, season }); setPinned(key); setHovered(null); setInspection(null);
   }
   function closeSongs() {
     setSongs(null); setPinned(null); setHovered(null); setInspection(null);
     requestAnimationFrame(() => { (trigger.current?.isConnected ? trigger.current : interaction.ref.current)?.focus({ preventScroll: true }); setHovered(null); });
   }
-  function chooseLine(key: string, event: MouseEvent<SVGGElement>) {
-    const value = hit(event, key);
-    if (!value) return;
-    setSelectedSeason(seasons[value.index].key);
-    if (metric === "genres") openGenre(key, seasons[value.index].key, interaction.ref.current);
-    else { setPinned(old => old === key ? null : key); setInspection(null); setHovered(null); }
+  function beginSelection(event: PointerEvent<HTMLDivElement>) {
+    if (event.button !== 0 || !event.isPrimary || !(event.target instanceof Element) || !event.target.closest(".music-season-svg")) return;
+    const value = hit(event);
+    if (!value?.matches[0]) return;
+    press.current = { id: event.pointerId, x: event.clientX, y: event.clientY, key: value.matches[0].key, season: seasons[value.index].key, metric };
+    // Keep release events on the chart if inspection opens a tooltip beneath the pointer.
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+  function finishSelection(event: PointerEvent<HTMLDivElement>) {
+    const start = press.current;
+    press.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    if (!start || start.id !== event.pointerId || start.metric !== metric || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 10) return;
+    setSelectedSeason(start.season);
+    openSongs(start.key, start.season, interaction.ref.current);
   }
   function explore(event: KeyboardEvent<HTMLDivElement>) {
     if (event.target !== event.currentTarget || !seasons.length) return;
@@ -138,9 +149,9 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
       const index = current < 0 ? event.key === "ArrowDown" ? 0 : series.length - 1 : (current + (event.key === "ArrowDown" ? 1 : -1) + series.length) % series.length;
       setHovered(series[index].key);
       setInspection({ keys: [series[index].key], x: x(selectedIndex) / plotWidth * 100, placement: "top" });
-    } else if ((event.key === "Enter" || event.key === " ") && metric === "genres") {
+    } else if (event.key === "Enter" || event.key === " ") {
       const key = highlightKeys[0] || leaders[0]?.key;
-      if (key) { event.preventDefault(); openGenre(key, seasons[selectedIndex].key, event.currentTarget); }
+      if (key) { event.preventDefault(); openSongs(key, seasons[selectedIndex].key, event.currentTarget); }
     } else if (event.key === "Escape") { event.preventDefault(); closeSongs(); }
   }
 
@@ -149,33 +160,33 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
       <div><p className="music-label">Every season has its favorites</p><h2 id={id + "-heading"} className="mt-2 font-display text-[clamp(36px,4vw,48px)] leading-none">The changing <em className="text-accent">soundtrack.</em></h2></div>
       <div className="music-tabs" role="group" aria-label="Seasonal chart metric">{metrics.map(value => <button key={value} aria-pressed={metric === value} onClick={() => { setMetric(value); setSongs(null); setPinned(null); setHovered(null); setInspection(null); }} className="capitalize">{value}</button>)}</div>
     </div>
-    <p className="mt-4 max-w-[80ch] text-[14px] leading-relaxed text-muted">The top five from each season, across the whole collection. Only seasonal totals with more than 10 plays appear. Songs may have multiple genres based on their artists.</p>
+    <p className="mt-4 max-w-[80ch] text-[14px] leading-relaxed text-muted">The top five from each season, across the whole collection. Only seasonal totals with more than 10 plays appear.</p>
     <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-[13px] text-muted"><span>{loading ? "Updating seasonal history…" : error ? "Seasonal history is unavailable. Try reloading." : number(series.length) + " lines · Plays per season"}</span></div>
     <div hidden={!seasons.length}>
       <div className="music-season-layout mt-5" data-expanded={!!songs || undefined}>
         <div className="music-season-plot min-w-0" ref={measurePlot}>
           <p className="music-label mb-2">Recorded plays</p>
-          <div ref={interaction.ref} className="music-chart-surface" role="group" tabIndex={0} inert={!!songs && compact ? true : undefined} aria-label="Seasonal listening chart" aria-describedby={id + "-chart-help" + (inspection ? " " + id + "-tooltip" : "")} onKeyDown={explore} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget) && !isMusicCardTarget(event.relatedTarget)) setInspection(null); }} onPointerLeave={event => { if (event.pointerType !== "touch" && !event.currentTarget.contains(document.activeElement) && !isMusicCardTarget(event.relatedTarget)) setInspection(null); }}>
-            <p id={id + "-chart-help"} className="sr-only">Use Left and Right to explore seasons, Up and Down to highlight lines, Enter to open songs for a genre, and Escape to clear the selection.</p>
-            <svg ref={svg} viewBox={"0 0 " + plotWidth + " 350"} preserveAspectRatio="none" className="music-season-svg" role="img" aria-labelledby={id + "-chart-title " + id + "-chart-description"} onPointerMove={interaction.onPointerMove} onPointerDown={interaction.onPointerDown} onPointerUp={interaction.onPointerUp} onPointerCancel={interaction.onPointerCancel} onClick={event => { const value = hit(event); if (metric === "genres" && value?.matches[0]) openGenre(value.matches[0].key, seasons[value.index].key, interaction.ref.current); }}>
+          <div ref={interaction.ref} className="music-chart-surface" role="group" tabIndex={0} inert={!!songs && compact ? true : undefined} aria-label="Seasonal listening chart" aria-describedby={id + "-chart-help" + (inspection ? " " + id + "-tooltip" : "")} onPointerDownCapture={beginSelection} onPointerUpCapture={finishSelection} onPointerMoveCapture={event => { const start = press.current; if (start && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 10) press.current = null; }} onPointerCancelCapture={() => { press.current = null; setInspection(null); }} onLostPointerCapture={() => { press.current = null; }} onKeyDown={explore} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget) && !isMusicCardTarget(event.relatedTarget)) setInspection(null); }} onPointerLeave={event => { if (event.pointerType !== "touch" && !event.currentTarget.contains(document.activeElement) && !isMusicCardTarget(event.relatedTarget)) setInspection(null); }}>
+            <p id={id + "-chart-help"} className="sr-only">Use Left and Right to explore seasons, Up and Down to highlight lines, Enter to open songs for the selected line, and Escape to clear the selection.</p>
+            <svg ref={svg} viewBox={"0 0 " + plotWidth + " 350"} preserveAspectRatio="none" className="music-season-svg" role="img" aria-labelledby={id + "-chart-title " + id + "-chart-description"} onPointerMove={interaction.onPointerMove} onPointerDown={interaction.onPointerDown} onPointerUp={interaction.onPointerUp} onPointerCancel={interaction.onPointerCancel}>
               <title id={id + "-chart-title"}>{"Seasonal top " + metric + ", all time"}</title>
-              <desc id={id + "-chart-description"}>{series.length + " series selected from each season's top five with at least 11 plays. Lower-volume periods appear as gaps. Select a genre line or legend entry to view its songs."}</desc>
+              <desc id={id + "-chart-description"}>{series.length + " series selected from each season's top five with at least 11 plays. Lower-volume periods appear as gaps. Select a line or legend entry to view its songs."}</desc>
               {Array.from({ length: Math.round(ceiling / step) + 1 }, (_, i) => i * step).map(value => <g key={value} pointerEvents="none"><line x1={coordinates.left} x2={coordinates.right} y1={y(value)} y2={y(value)} stroke="var(--line)" strokeDasharray="3 6" /><text x={coordinates.left - 8} y={y(value) + 4} textAnchor="end" fill="var(--mute)" fontSize="13">{number(value)}</text></g>)}
               {seasons.map((season, i) => <g key={season.key} pointerEvents="none">{(i === seasons.length - 1 || i % labelStride === 0 && (i === 0 || x(seasons.length - 1) - x(i) >= 90)) && <text x={x(i)} y="319" textAnchor={i === 0 && seasons.length > 1 ? "start" : i === seasons.length - 1 && seasons.length > 1 ? "end" : "middle"} fill="var(--mute)" fontSize="13">{season.label.split(" ")[0]}<tspan x={x(i)} dy="17">{season.label.split(" ")[1]}</tspan></text>}</g>)}
               {inspection && <line x1={x(selectedIndex)} x2={x(selectedIndex)} y1={coordinates.top} y2={coordinates.bottom} stroke="var(--ink)" opacity=".25" pointerEvents="none" />}
-              {plotted.map(({ item, phase }) => <SeasonLine key={item.key} item={item} phase={phase} selectedTime={seasons[selectedIndex] ? seasonTime(seasons[selectedIndex].key) : 0} highlighted={highlightKeys.includes(item.source.key)} dimmed={highlightKeys.length > 0 && !highlightKeys.includes(item.source.key)} frames={frames.current} choose={chooseLine} />)}
+              {plotted.map(({ item, phase }) => <SeasonLine key={item.key} item={item} phase={phase} selectedTime={seasons[selectedIndex] ? seasonTime(seasons[selectedIndex].key) : 0} highlighted={highlightKeys.includes(item.source.key)} dimmed={highlightKeys.length > 0 && !highlightKeys.includes(item.source.key)} frames={frames.current} />)}
             </svg>
             {inspection && <MusicChartTooltip id={id + "-tooltip"} title={seasons[selectedIndex]?.label || ""} x={inspection.x} placement={inspection.placement} onCardClose={() => setInspection(null)} rows={tooltipSeries.map(line => ({
               key: line.key, label: line.name, entity: metric === "genres" ? undefined : { kind: metric === "artists" ? "artist" : "album", name: line.name, artists: line.artists, url: line.url },
               artists: line.artists, detail: line.artists.join(", "), value: line.plays[selectedIndex] || 0, color: color(series.indexOf(line)),
-              onSelect: metric === "genres" ? () => openGenre(line.key, seasons[selectedIndex].key, interaction.ref.current) : undefined,
+              onSelect: () => openSongs(line.key, seasons[selectedIndex].key, interaction.ref.current),
             }))} />}
           </div>
         </div>
-        {songs && <MusicGenreSongs selection={songs} file={data?.genreFiles?.[songs.genre]} api={api} seasonLabel={seasons.find(season => season.key === songs.season)?.label} close={closeSongs} />}
+        {songs && <MusicSeasonSongs selection={songs} file={data?.songFiles?.[songs.metric]?.[songs.key] || (songs.metric === "genres" ? data?.genreFiles?.[songs.key] : undefined)} api={api} seasonLabel={seasons.find(season => season.key === songs.season)?.label} close={closeSongs} />}
       </div>
-      <div className="mt-5 flex items-center justify-between gap-3 text-[13px] text-muted"><p>{metric === "genres" ? "Select a genre to explore its songs. Legend counts span all qualifying seasons." : "Choose a line to highlight it."}</p><button className={"shrink-0 text-accent underline underline-offset-4" + (pinned ? "" : " invisible")} disabled={!pinned} aria-hidden={!pinned || undefined} tabIndex={pinned ? 0 : -1} onClick={closeSongs}>Show all</button></div>
-      <div className="music-season-legend mt-3" role="group" aria-label={metric + " chart legend"}>{legend.map(line => { const index = series.indexOf(line); return <button key={line.key} type="button" className="music-season-chip" data-highlighted={pinned === line.key || undefined} aria-pressed={pinned === line.key} onClick={event => { if (metric === "genres") { if (songs?.genre === line.key && songs.season === null) closeSongs(); else openGenre(line.key, null, event.currentTarget); } else setPinned(pinned === line.key ? null : line.key); }} onPointerEnter={event => { if (event.pointerType !== "touch") setHovered(line.key); }} onPointerLeave={() => setHovered(null)} onFocus={event => { if (event.currentTarget.matches(":focus-visible")) setHovered(line.key); }} onBlur={() => setHovered(null)}>
+      <div className="mt-5 flex items-center justify-between gap-3 text-[13px] text-muted"><p>{"Select " + (metric === "artists" ? "an " : "a ") + metric.slice(0, -1) + " to explore its songs. Legend counts span all qualifying seasons."}</p><button className={"shrink-0 text-accent underline underline-offset-4" + (pinned ? "" : " invisible")} disabled={!pinned} aria-hidden={!pinned || undefined} tabIndex={pinned ? 0 : -1} onClick={closeSongs}>Show all</button></div>
+      <div className="music-season-legend mt-3" role="group" aria-label={metric + " chart legend"}>{legend.map(line => { const index = series.indexOf(line); return <button key={line.key} type="button" className="music-season-chip" data-highlighted={pinned === line.key || undefined} aria-pressed={pinned === line.key} onClick={event => { if (songs?.metric === metric && songs.key === line.key && songs.season === null) closeSongs(); else openSongs(line.key, null, event.currentTarget); }} onPointerEnter={event => { if (event.pointerType !== "touch") setHovered(line.key); }} onPointerLeave={() => setHovered(null)} onFocus={event => { if (event.currentTarget.matches(":focus-visible")) setHovered(line.key); }} onBlur={() => setHovered(null)}>
         <svg width="24" height="8" viewBox="0 0 24 8" aria-hidden="true" className="shrink-0"><line x1="0" x2="24" y1="4" y2="4" stroke={color(index)} strokeWidth="2.5" strokeDasharray={dash[index % dash.length]} /></svg>
         <span className="min-w-0 truncate">{line.name}{line.artists.length > 0 && <span className="text-muted"> · {line.artists.join(", ")}</span>}</span>
         <span className="shrink-0 tabular-nums text-muted"><MusicNumber value={total(line)} /><span className="sr-only"> plays</span></span>

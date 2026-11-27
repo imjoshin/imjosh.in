@@ -130,20 +130,25 @@ export interface MusicSeasonalDataset {
   seasons: MusicSeason[];
   metrics: Record<SeasonalMetric, SeasonalMetricData>;
   minimumPlays?: number;
+  songFiles?: Partial<Record<SeasonalMetric, Record<string, string>>>;
+  /** Kept for clients opened before artist and album song lists were added. */
   genreFiles?: Record<string, string>;
 }
 
-export interface MusicGenreSongCounts {
+export interface MusicSongCounts {
   key: string;
   plays: number;
   seasons: Record<string, number>;
 }
 
-export interface MusicGenreSongsDataset {
+export interface MusicSongsDataset {
   version: 1;
   generatedAt: string;
-  genre: string;
-  tracks: MusicGenreSongCounts[];
+  metric: SeasonalMetric;
+  key: string;
+  /** Legacy genre clients use this field instead of metric/key. */
+  genre?: string;
+  tracks: MusicSongCounts[];
   entities: Record<string, MusicEntity>;
 }
 

@@ -1,6 +1,6 @@
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
-import { aggregateGenreSongs, aggregateSeasons } from "../src/lib/music/seasons.ts";
+import { aggregateSeasonSongs, aggregateSeasons } from "../src/lib/music/seasons.ts";
 import { aggregateMusic } from "../src/lib/music/aggregate.ts";
 import { musicEntityKey } from "../src/lib/music/entity-links.ts";
 import { musicTrack, spotifyListen } from "../src/lib/music/normalize.ts";
@@ -38,12 +38,48 @@ test("genre song lists retain one-play songs and low-volume seasons independentl
   const before = JSON.stringify(rows);
   const seasonal = aggregateSeasons(rows, now);
   assert.deepEqual(seasonal["all/seasons"].metrics.genres.series[0].plays, [12, 0, 0]);
-  const songs = aggregateGenreSongs(rows, seasonal, now)["all/seasons"].indie;
+  const songs = aggregateSeasonSongs(rows, seasonal, now)["all/seasons"].genres.indie;
   assert.equal(songs.reduce((sum, row) => sum + row.plays, 0), 13);
   const one = songs.find(row => row.key === musicEntityKey("track", "One-off", ["One-off"]))!;
   assert.equal(one.plays, 1); assert.equal(one.seasons["2024-fall"], 1);
   const quiet = songs.find(row => row.key === musicEntityKey("track", "Quiet season", ["Quiet season"]))!;
   assert.equal(quiet.plays, 1); assert.equal(quiet.seasons["2025-spring"], 1);
   assert.equal(songs.length, 3);
+  assert.equal(JSON.stringify(rows), before);
+});
+
+test("artist and album song lists preserve quiet seasons, guest credits, and platform attribution", () => {
+  const credited = (count: number, title: string, date: string, artists = ["Artist"], album = "Shared title", albumArtists = ["Artist"]) => plays(count, title, date, "indie").map(row => ({ ...row, track: musicTrack(title, artists, { album, albumArtists, genres: ["indie"] }) }));
+  const rows = [
+    ...credited(11, "Main", "2024-09-15T12:00:00Z"),
+    ...credited(1, "Guest song", "2024-09-16T12:00:00Z", ["Artist", "Guest", "ARTIST"]),
+    ...credited(1, "Quiet", "2025-03-15T12:00:00Z"),
+    ...credited(1, "Other album", "2024-09-16T12:00:00Z", ["Artist"], "Other album"),
+    ...credited(12, "Unrelated", "2024-09-16T12:00:00Z", ["Other artist"], "Shared title", ["Other artist"]),
+  ];
+  rows.push({ ...credited(1, "Quiet", "2025-03-16T12:00:00Z")[0], id: "google-quiet", platform: "google-play-music" });
+  rows.push({ ...credited(1, "Private", "2024-09-16T12:00:00Z")[0], privateSession: true });
+  rows.push({ ...credited(1, "Kids", "2024-09-16T12:00:00Z")[0], track: musicTrack("Kids", ["Artist"], { album: "Shared title", albumArtists: ["Artist"], genres: ["kids music"] }) });
+  rows.push(...credited(1, "Disney", "2024-09-16T12:00:00Z"));
+  const before = JSON.stringify(rows);
+  const seasonal = aggregateSeasons(rows, now);
+  const songs = aggregateSeasonSongs(rows, seasonal, now);
+  const albumKey = musicEntityKey("album", "Shared title", ["Artist"]);
+  const otherAlbumKey = musicEntityKey("album", "Shared title", ["Other artist"]);
+  const sum = (items: { plays: number }[]) => items.reduce((sum, song) => sum + song.plays, 0);
+  assert.deepEqual(seasonal["all/seasons"].metrics.artists.series.find(line => line.key === "artist")!.plays, [13, 0, 0]);
+  assert.deepEqual(seasonal["all/seasons"].metrics.albums.series.find(line => line.key === albumKey)!.plays, [12, 0, 0]);
+  assert.equal(sum(songs["all/seasons"].artists.artist), 15);
+  assert.equal(sum(songs["spotify/seasons"].artists.artist), 14);
+  assert.equal(sum(songs["all/seasons"].albums[albumKey]), 14);
+  assert.equal(sum(songs["spotify/seasons"].albums[albumKey]), 13);
+  assert.equal(sum(songs["all/seasons"].albums[otherAlbumKey]), 12);
+  const guestKey = musicEntityKey("track", "Guest song", ["Artist", "Guest"]);
+  assert.equal(songs["all/seasons"].artists.artist.find(song => song.key === guestKey)!.plays, 1);
+  assert.equal(songs["all/seasons"].albums[albumKey].find(song => song.key === guestKey)!.plays, 1);
+  const quietKey = musicEntityKey("track", "Quiet", ["Artist"]);
+  assert.equal(songs["all/seasons"].albums[albumKey].find(song => song.key === quietKey)!.seasons["2025-spring"], 2);
+  assert.equal(songs["all/seasons"].artists.artist.length, 4);
+  assert.equal(songs["all/seasons"].albums[albumKey].length, 3);
   assert.equal(JSON.stringify(rows), before);
 });
