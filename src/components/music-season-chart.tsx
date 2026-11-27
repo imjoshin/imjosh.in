@@ -16,7 +16,7 @@ const color = (index: number) => { const hue = (264 + index * 137.508) % 360; re
 const total = (series: SeasonalSeries) => series.plays.reduce((a, b) => a + b, 0);
 const seasonTime = (key: string) => { const [year, name] = key.split("-"); return Number(year) * 4 + ["winter", "spring", "summer", "fall"].indexOf(name); };
 interface PlotSeries { key: string; source: SeasonalSeries; points: MusicChartPoint[]; index: number; qualifying: Set<number> }
-interface Inspection { keys: string[]; x: number; placement: "top" | "bottom" }
+interface Inspection { keys: string[]; x: number }
 interface PointInput { clientX: number; clientY: number; target: EventTarget | null }
 
 function SeasonLine({ item, phase, selectedTime, highlighted, dimmed, frames }: { item: PlotSeries; phase: "present" | "enter" | "exit"; selectedTime: number; highlighted: boolean; dimmed: boolean; frames: Map<string, MusicChartPoint[]> }) {
@@ -104,13 +104,13 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
     }));
     const nearest = Math.min(...distances.map(item => item.distance));
     const matches = known ? [known] : nearest <= 16 ? distances.filter(item => Math.abs(item.distance - nearest) < 1e-9).map(item => item.line) : [];
-    return { index, matches, x: x(index) / plotWidth * 100, placement: py < 175 ? "bottom" as const : "top" as const };
+    return { index, matches, x: x(index) / plotWidth * 100 };
   }
   function inspect(event: PointerEvent<SVGSVGElement>) {
     const value = hit(event);
     if (!value) { setInspection(null); return; }
     setSelectedSeason(seasons[value.index].key); setHovered(null);
-    setInspection({ keys: value.matches.map(line => line.key), x: value.x, placement: value.placement });
+    setInspection({ keys: value.matches.map(line => line.key), x: value.x });
   }
   function openSongs(key: string, season: string | null, owner: HTMLElement | null) {
     const line = data?.metrics[metric].series.find(line => line.key === key);
@@ -143,12 +143,12 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
     const next = event.key === "ArrowLeft" ? Math.max(0, selectedIndex - 1) : event.key === "ArrowRight" ? Math.min(seasons.length - 1, selectedIndex + 1) : event.key === "Home" ? 0 : event.key === "End" ? seasons.length - 1 : undefined;
     if (next !== undefined) {
       event.preventDefault(); setSelectedSeason(seasons[next].key); setHovered(null);
-      setInspection({ keys: [], x: x(next) / plotWidth * 100, placement: "top" });
+      setInspection({ keys: [], x: x(next) / plotWidth * 100 });
     } else if ((event.key === "ArrowUp" || event.key === "ArrowDown") && series.length) {
       event.preventDefault(); const current = series.findIndex(line => line.key === highlightKeys[0]);
       const index = current < 0 ? event.key === "ArrowDown" ? 0 : series.length - 1 : (current + (event.key === "ArrowDown" ? 1 : -1) + series.length) % series.length;
       setHovered(series[index].key);
-      setInspection({ keys: [series[index].key], x: x(selectedIndex) / plotWidth * 100, placement: "top" });
+      setInspection({ keys: [series[index].key], x: x(selectedIndex) / plotWidth * 100 });
     } else if (event.key === "Enter" || event.key === " ") {
       const key = highlightKeys[0] || leaders[0]?.key;
       if (key) { event.preventDefault(); openSongs(key, seasons[selectedIndex].key, event.currentTarget); }
@@ -176,7 +176,7 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
               {inspection && <line x1={x(selectedIndex)} x2={x(selectedIndex)} y1={coordinates.top} y2={coordinates.bottom} stroke="var(--ink)" opacity=".25" pointerEvents="none" />}
               {plotted.map(({ item, phase }) => <SeasonLine key={item.key} item={item} phase={phase} selectedTime={seasons[selectedIndex] ? seasonTime(seasons[selectedIndex].key) : 0} highlighted={highlightKeys.includes(item.source.key)} dimmed={highlightKeys.length > 0 && !highlightKeys.includes(item.source.key)} frames={frames.current} />)}
             </svg>
-            {inspection && <MusicChartTooltip id={id + "-tooltip"} title={seasons[selectedIndex]?.label || ""} x={inspection.x} placement={inspection.placement} preferTop={!compact} onCardClose={() => setInspection(null)} rows={tooltipSeries.map(line => ({
+            {inspection && <MusicChartTooltip id={id + "-tooltip"} title={seasons[selectedIndex]?.label || ""} x={inspection.x} preferTop onCardClose={() => setInspection(null)} rows={tooltipSeries.map(line => ({
               key: line.key, label: line.name, entity: metric === "genres" ? undefined : { kind: metric === "artists" ? "artist" : "album", name: line.name, artists: line.artists, url: line.url },
               artists: line.artists, detail: line.artists.join(", "), value: line.plays[selectedIndex] || 0, color: color(series.indexOf(line)),
               onSelect: () => openSongs(line.key, seasons[selectedIndex].key, interaction.ref.current),

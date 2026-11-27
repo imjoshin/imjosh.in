@@ -273,7 +273,7 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-season-line { transition: opacity .22s; }
 .music-season-path { transition: stroke-width .2s; }
 .music-series-dot { width: 8px; height: 8px; flex: none; border-radius: 50%; }
-.music-season-legend { display: flex; flex-wrap: wrap; gap: 8px; max-height: 220px; overflow-y: auto; padding: 3px; scrollbar-width: thin; }
+.music-season-legend { position: relative; z-index: 0; isolation: isolate; display: flex; flex-wrap: wrap; gap: 8px; max-height: 220px; overflow-y: auto; padding: 3px; scrollbar-width: thin; }
 .music-season-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; max-width: 100%; border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 13px; text-align: left; transition: background-color .2s, border-color .2s; }
 .music-season-chip:is(:hover, :focus-within, [data-highlighted]) { background: color-mix(in srgb, var(--acc) 9%, transparent); border-color: var(--acc); }
 @keyframes music-away { to { opacity: 0; transform: translateY(-7px); filter: blur(2px); } }
