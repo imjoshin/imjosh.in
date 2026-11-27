@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { formatGearDate, itemName } from "@/lib/uses";
+import { gearItemHeadingClassName } from "@/components/gear-item-summary";
 import type { UsesItem } from "../../content/uses";
 
 export function GearDetails({ item, children, heading = false, className = "" }: { item: UsesItem; children: ReactNode; heading?: boolean; className?: string }) {
@@ -82,7 +83,7 @@ export function GearDetails({ item, children, heading = false, className = "" }:
 
   return (
     <>
-      {heading ? <h3 className="text-[18px] leading-[1.2] font-medium">{button}</h3> : button}
+      {heading ? <h3 className={gearItemHeadingClassName}>{button}</h3> : button}
       <div ref={panel} id={id} popover="auto" role="dialog" aria-labelledby={`${id}-title`} className="gear-popover" onToggle={(event) => { const next = event.newState === "open"; setOpen(next); if (next) position(); }} onPointerEnter={cancelClose} onPointerLeave={(event) => { if (event.pointerType === "mouse") queueClose(); }} onFocus={cancelClose} onBlur={queueClose}>
         <div className="relative flex min-h-44 items-center justify-center rounded-t-[19px] bg-line/30 px-10 py-6">
           <img src={item.image.src} alt={item.image.alt} width={320} height={200} loading="lazy" className="h-40 w-full object-contain" />

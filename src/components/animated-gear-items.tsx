@@ -3,6 +3,7 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import type { usesAt } from "@/lib/uses";
 import { GearDetails } from "@/components/gear-details";
+import { GearItemSummary } from "@/components/gear-item-summary";
 import styles from "./animated-gear-items.module.css";
 
 type GearItem = ReturnType<typeof usesAt>["categories"][number]["items"][number];
@@ -49,14 +50,9 @@ export function AnimatedGearItems({ items, emptyLabel, month, direction }: { ite
         <div key={id} className={styles.item} data-phase={phase} inert={phase === "exit"} aria-hidden={phase === "exit" ? true : undefined}>
           <div className={styles.clip}>
             <div className={`${styles.content} ${phase === "enter" ? "date-value" : ""}`}>
-              {item ? <div className="flex flex-col gap-[3px]">
+              {item ? <GearItemSummary item={item}>
                 <GearDetails key={`${id}:${month}`} item={item.details} heading>{item.name}</GearDetails>
-                {item.spec && <p className={`text-[14px] leading-[1.35] text-muted ${item.details.category === "laptop" ? "line-clamp-2" : ""}`}>
-                  {item.details.subtype === "computer"
-                    ? Object.entries(item.details.specs).slice(0, 2).map(([label, value]) => <span key={label} className="block truncate">{value}</span>)
-                    : item.spec}
-                </p>}
-              </div> : <p className="font-display text-[22px] text-muted italic">{entryEmptyLabel}</p>}
+              </GearItemSummary> : <p className="font-display text-[22px] text-muted italic">{entryEmptyLabel}</p>}
             </div>
           </div>
         </div>

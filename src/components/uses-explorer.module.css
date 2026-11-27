@@ -37,6 +37,94 @@
   gap: 36px;
 }
 
+.gearGrid {
+  display: grid;
+  grid-template-columns: repeat(var(--gear-columns), minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+
+.gearGrid[data-measured="true"] {
+  grid-auto-rows: 1px;
+  grid-auto-flow: row dense;
+  row-gap: 0;
+  margin-bottom: -14px;
+}
+
+.gearGrid[data-measured="true"] > .gearCard { margin-bottom: 14px; }
+.gearCard { overflow: clip; }
+.gearBody { position: relative; min-width: 0; }
+.gearLive { position: absolute; inset: 0; }
+
+.gearReserve {
+  display: grid;
+  visibility: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.sizingSnapshot {
+  grid-area: 1 / 1;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.changesList {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.changesList::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 9.5px;
+  width: 1px;
+  background: var(--line);
+}
+
+.changeMonth {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 32px;
+}
+
+.changeMonthTitle::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--panel-raised);
+}
+
+.monthChanges {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.changeEvent {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 8px;
+}
+
+.changeItem { min-width: 0; line-height: 1.35; }
+
 @media screen and (min-width: 1024px) {
   .inventoryLayout {
     grid-template-columns: minmax(0, 1fr) 300px;
@@ -56,46 +144,6 @@
     padding-right: 4px;
   }
 
-  .changesList {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .changesList::before {
-    content: "";
-    position: absolute;
-    top: 10px;
-    bottom: 10px;
-    left: 9.5px;
-    width: 1px;
-    background: var(--line);
-  }
-
-  .changeEvent {
-    position: relative;
-    grid-template-columns: 20px minmax(0, 1fr);
-    align-items: start;
-    gap: 6px 12px;
-  }
-
-  .changeDate { grid-area: 1 / 2; line-height: 20px; }
-
-  .changeMarker {
-    grid-area: 1 / 1;
-    display: grid;
-    place-items: center;
-    width: 20px;
-    height: 20px;
-    border: 1px solid var(--line);
-    border-radius: 50%;
-    background: var(--panel-raised);
-    font-size: 13px;
-    line-height: 1;
-  }
-
-  .changeItem { grid-area: 2 / 2; line-height: 1.35; }
 }
 
 @media (max-width: 767px) {

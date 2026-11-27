@@ -69,6 +69,23 @@ export function usesAt(period: number | string, items: UsesItem[] = usesItems) {
   };
 }
 
+// A category only changes at an acquisition or retirement month. Keep each distinct
+// rendered inventory so the layout can reserve its largest real snapshot.
+export type GearCategorySnapshot = ReturnType<typeof usesAt>["categories"][number];
+
+export function usesSizingSnapshots(items: UsesItem[] = usesItems) {
+  const firstYear = items.length ? Math.min(...items.map((item) => Number(item.acquireDate.slice(0, 4)))) : timelineStartYear;
+  const periods = new Set([`${firstYear}-01`, ...items.flatMap((item) => [item.acquireDate, ...(!item.active ? [item.doneDate] : [])]).map((date) => date.length === 4 ? `${date}-01` : date.slice(0, 7))]);
+  const snapshots = Object.fromEntries(categories.map(([key]) => [key, new Map<string, GearCategorySnapshot>()])) as Record<GearCategory, Map<string, GearCategorySnapshot>>;
+  for (const period of [...periods].sort()) {
+    for (const category of usesAt(period, items).categories) {
+      const signature = JSON.stringify([category.hasHistory, category.items.map((item) => item.id)]);
+      if (!snapshots[category.key].has(signature)) snapshots[category.key].set(signature, category);
+    }
+  }
+  return Object.fromEntries(categories.map(([key]) => [key, [...snapshots[key].values()]])) as Record<GearCategory, GearCategorySnapshot[]>;
+}
+
 export function monthIndex(month: string): number {
   const [year, value] = month.split("-").map(Number);
   return (year - timelineStartYear) * 12 + value - 1;

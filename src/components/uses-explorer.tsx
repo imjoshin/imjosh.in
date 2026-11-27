@@ -1,23 +1,53 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
-import { itemId, itemName, monthAt, monthIndex, readTimelineMonth, timelineStartYear, usesAt } from "@/lib/uses";
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
+import { itemId, itemName, monthAt, monthIndex, readTimelineMonth, timelineStartYear, usesAt, usesSizingSnapshots, type GearCategorySnapshot } from "@/lib/uses";
 import { AnimatedDate } from "@/components/animated-date";
 import { AnimatedGearItems } from "@/components/animated-gear-items";
 import { GearDetails } from "@/components/gear-details";
 import { trackEvent } from "@/lib/analytics";
 import { GearCategoryIcon } from "@/components/gear-category-icon";
+import { GearItemSummary, gearItemHeadingClassName } from "@/components/gear-item-summary";
 import styles from "./uses-explorer.module.css";
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+const GearSizingReserve = memo(function GearSizingReserve({ snapshots }: { snapshots: GearCategorySnapshot[] }) {
+  return <div className={styles.gearReserve} aria-hidden="true" inert>
+    {snapshots.map((snapshot, index) => <div key={index} className={styles.sizingSnapshot}>
+      {snapshot.items.length ? snapshot.items.map((item) => <GearItemSummary key={item.id} item={item}><div className={gearItemHeadingClassName}>{item.name}</div></GearItemSummary>) : <p className="font-display text-[22px] text-muted italic">{snapshot.hasHistory ? "nothing currently" : "nothing yet"}</p>}
+    </div>)}
+  </div>;
+});
 
 export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
   const [currentMonth, setCurrentMonth] = useState(initialMonth);
   const [selection, setSelection] = useState({ position: monthIndex(initialMonth), direction: 1 });
   const heading = useRef<HTMLDivElement>(null);
   const timeline = useRef<HTMLDivElement>(null);
+  const gearGrid = useRef<HTMLDivElement>(null);
+  const [gearRowSpans, setGearRowSpans] = useState<number[] | null>(null);
+  const sizingSnapshots = useMemo(() => usesSizingSnapshots(), []);
   const [headerHeight, setHeaderHeight] = useState<number | null>(null);
   const [timelineStuck, setTimelineStuck] = useState(false);
+
+  useLayoutEffect(() => {
+    const grid = gearGrid.current;
+    if (!grid) return;
+    const cards = [...grid.children];
+    let frame = 0;
+    function measure() {
+      const spans = cards.map((card) => Math.ceil(card.getBoundingClientRect().height + 14));
+      setGearRowSpans((previous) => previous?.every((span, index) => span === spans[index]) ? previous : spans);
+    }
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
+    });
+    cards.forEach((card) => observer.observe(card));
+    measure();
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); };
+  }, []);
 
   useEffect(() => {
     const date = new Date();
@@ -93,6 +123,16 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
 
   const inventory = useMemo(() => usesAt(month), [month]);
   const changes = useMemo(() => usesAt(selectedYear).changes, [selectedYear]);
+  const changeGroups = useMemo(() => {
+    const groups = new Map<string, typeof changes>();
+    for (const event of changes) {
+      const date = event.date.slice(0, 7);
+      const events = groups.get(date);
+      if (events) events.push(event);
+      else groups.set(date, [event]);
+    }
+    return [...groups].map(([date, events]) => ({ date, events }));
+  }, [changes]);
   const tickYears = [...Array.from({ length: Math.ceil((currentYear - timelineStartYear) / 5) }, (_, index) => timelineStartYear + index * 5).filter((year) => year === timelineStartYear || currentYear - year >= 3), currentYear];
 
   return (
@@ -120,11 +160,16 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
 
       <div className={styles.inventoryLayout}>
         <section aria-label={`Equipment in ${monthLabel}`} className="@container min-w-0 self-start">
-          <div className="flex flex-wrap justify-center gap-[14px] [--gear-columns:1] @min-[514px]:[--gear-columns:2] @min-[778px]:[--gear-columns:3]">
-            {inventory.categories.map((category) => (
-              <article key={category.key} className="panel flex min-h-[120px] w-[calc((100%+14px)/var(--gear-columns)-14px)] min-w-0 shrink-0 flex-col gap-[14px] rounded-[20px] px-[22px] py-5">
+          <div ref={gearGrid} data-measured={gearRowSpans ? true : undefined} className={`${styles.gearGrid} [--gear-columns:1] @min-[514px]:[--gear-columns:2] @min-[778px]:[--gear-columns:3]`}>
+            {inventory.categories.map((category, index) => (
+              <article key={category.key} style={gearRowSpans ? { gridRowEnd: `span ${gearRowSpans[index]}` } : undefined} className={`${styles.gearCard} panel flex min-h-[120px] min-w-0 flex-col gap-[14px] rounded-[20px] px-[22px] py-5`}>
                 <h2 className="eyebrow flex items-center gap-2.5"><GearCategoryIcon category={category.key} />{category.label}</h2>
-                <AnimatedGearItems items={category.items} emptyLabel={category.hasHistory ? "nothing currently" : "nothing yet"} month={month} direction={selection.direction} />
+                <div className={styles.gearBody}>
+                  <GearSizingReserve snapshots={sizingSnapshots[category.key]} />
+                  <div className={styles.gearLive}>
+                    <AnimatedGearItems items={category.items} emptyLabel={category.hasHistory ? "nothing currently" : "nothing yet"} month={month} direction={selection.direction} />
+                  </div>
+                </div>
               </article>
             ))}
           </div>
@@ -134,16 +179,22 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
           <h2 id="changes-title" className="eyebrow">Changes in {selectedYear}</h2>
           <p className="sr-only" role="status">Showing {inventory.categories.reduce((sum, category) => sum + category.items.length, 0)} items in {monthLabel} and {changes.length} changes in {selectedYear}.</p>
           <div key={selectedYear} className={styles.changesBody}>
-            {changes.length ? <ul className={`${styles.changesList} grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-x-7 gap-y-[10px]`}>
-              {changes.map((event) => <li key={`${event.date}:${event.op}:${itemId(event.item)}`} className={`${styles.changeEvent} grid grid-cols-[80px_18px_minmax(0,1fr)] items-baseline gap-2 text-base ${event.op === "+" ? "text-accent" : "text-muted"}`}>
-                <time dateTime={event.date} className={`${styles.changeDate} text-[13px] text-muted`}>{event.date.length === 4 ? event.date : months[Number(event.date.slice(5, 7)) - 1]}</time>
-                <span className={`${styles.changeMarker} font-semibold`} aria-label={event.op === "+" ? "Acquired" : "Retired"}>{event.op === "+" ? "+" : "−"}</span>
-                <GearDetails key={`${itemId(event.item)}:${selectedYear}`} item={event.item} className={`${styles.changeItem} flex items-start gap-2`}>
-                  <span className="mt-[3px]"><GearCategoryIcon category={event.item.category === "microphone" ? "microphone" : event.category} muted={event.op === "-"} /></span>
-                  <span className={event.op === "-" ? "line-through" : ""}>{itemName(event.item)}</span>
-                </GearDetails>
+            {changes.length ? <ol className={styles.changesList}>
+              {changeGroups.map((group) => <li key={group.date} className={styles.changeMonth}>
+                <h3 className={`${styles.changeMonthTitle} text-[13px] leading-5 font-medium text-muted`}>
+                  <time dateTime={group.date}>{group.date.length === 4 ? group.date : months[Number(group.date.slice(5, 7)) - 1]}</time>
+                </h3>
+                <ul className={styles.monthChanges}>
+                  {group.events.map((event) => <li key={`${event.date}:${event.op}:${itemId(event.item)}`} className={`${styles.changeEvent} text-base ${event.op === "+" ? "text-accent" : "text-muted"}`}>
+                    <span className="font-semibold" aria-label={event.op === "+" ? "Acquired" : "Retired"}>{event.op === "+" ? "+" : "−"}</span>
+                    <GearDetails key={`${itemId(event.item)}:${selectedYear}`} item={event.item} className={`${styles.changeItem} flex items-start gap-2`}>
+                      <span className="mt-[3px]"><GearCategoryIcon category={event.item.category === "microphone" ? "microphone" : event.category} muted={event.op === "-"} /></span>
+                      <span className={event.op === "-" ? "line-through" : ""}>{itemName(event.item)}</span>
+                    </GearDetails>
+                  </li>)}
+                </ul>
               </li>)}
-            </ul> : <p className="font-display text-2xl text-muted italic">A quiet year. Nothing in, nothing out.</p>}
+            </ol> : <p className="font-display text-2xl text-muted italic">A quiet year. Nothing in, nothing out.</p>}
           </div>
         </section>
       </div>

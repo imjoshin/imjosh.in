@@ -558,7 +558,7 @@ export const usesItems: UsesItem[] = [
         ],
         acquireDate: "2023-03",
         active: false,
-        doneDate: "2026-01-19",
+        doneDate: "2024-09",
     },
     {
         category: "desktop",
@@ -1624,36 +1624,6 @@ export const usesItems: UsesItem[] = [
             }
         ],
         "acquireDate": "2022-09-12",
-        "active": true
-    },
-    {
-        "category": "desk",
-        "subtype": "mount",
-        "make": "VIVO",
-        "model": "STAND-V257R",
-        "description": "Stacked dual ultrawide monitor mount",
-        "producer": "VIVO",
-        "releaseYear": null,
-        "image": {
-            "src": "/gear/vivo-stand-v257r.jpg",
-            "alt": "VIVO STAND-V257R product view",
-            "sourceUrl": "https://cdn.shopify.com/s/files/1/1190/2562/files/STAND-V257R_01_v_1.0_p1_AFTER_27ccfc89-5165-4287-bc4b-d8829cb115b4.jpg?v=1794743612&width=1000",
-            "note": "Mount shown with illustrative monitors."
-        },
-        "specs": {
-            "Type": "Vertical dual ultrawide monitor mount",
-            "Screen support": "Up to 57-inch ultrawides",
-            "Capacity": "Up to 59.4 lb per flat monitor; 48.4 lb per curved monitor",
-            "Mounting": "Desk clamp or grommet",
-            "Pole height": "35.2 inches"
-        },
-        "sources": [
-            {
-                "label": "Manufacturer product information",
-                "url": "https://vivo-us.com/products/stand-v257r"
-            }
-        ],
-        "acquireDate": "2026-01-19",
         "active": true
     },
     {

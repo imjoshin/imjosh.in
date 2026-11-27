@@ -2,11 +2,26 @@ import { strict as assert } from "node:assert";
 import { test } from "node:test";
 import { existsSync } from "node:fs";
 import { usesItems } from "../content/uses.ts";
-import { buildEvents, categories, itemId, itemName, itemSpec, monthAt, monthIndex, parseMonth, parseYear, readTimelineMonth, usesAt } from "../src/lib/uses.ts";
+import { buildEvents, categories, itemId, itemName, itemSpec, monthAt, monthIndex, parseMonth, parseYear, readTimelineMonth, usesAt, usesSizingSnapshots } from "../src/lib/uses.ts";
 
 test("the current snapshot contains exactly the authoritative active inventory", () => {
   const latest = usesAt(2026).categories.flatMap((category) => category.items.map((item) => item.id));
   assert.deepEqual(latest.sort(), usesItems.filter((item) => item.active).map(itemId).sort());
+});
+
+test("card sizing covers every monthly inventory without reserving combinations that never coexist", () => {
+  const snapshots = usesSizingSnapshots();
+  const signature = (category: ReturnType<typeof usesAt>["categories"][number]) => JSON.stringify([category.hasHistory, category.items.map((item) => item.id)]);
+  const expected = Object.fromEntries(categories.map(([key]) => [key, new Set<string>()])) as Record<keyof typeof snapshots, Set<string>>;
+  const lastYear = Math.max(...usesItems.map((item) => Number((item.active ? item.acquireDate : item.doneDate).slice(0, 4))));
+  for (let position = 0; position <= monthIndex(`${lastYear}-12`); position++) {
+    for (const category of usesAt(monthAt(position)).categories) expected[category.key].add(signature(category));
+  }
+  for (const [key] of categories) {
+    const actual = snapshots[key].map(signature);
+    assert.equal(actual.length, new Set(actual).size, `${key}: duplicate sizing snapshots`);
+    assert.deepEqual(actual.sort(), [...expected[key]].sort(), `${key}: sizing must match the full monthly history`);
+  }
 });
 
 test("2010 keeps the Dell setup alongside the first phone", () => {
@@ -186,14 +201,17 @@ test("the January 2026 display upgrade retains the portable monitor and replaces
   assert.equal(monitors("2021-12").filter((item) => item.name.includes("27QN600")).length, 1);
   assert.equal(monitors("2023-03").filter((item) => item.name.includes("27QN600")).length, 2);
   assert.ok(monitors("2025-12").some((item) => item.name.includes("PG34WCDM")));
-  assert.ok(monitors("2025-12").some((item) => item.name.includes("34GP63A")));
+  assert.ok(monitors("2024-08").some((item) => item.name.includes("34GP63A")));
+  assert.ok(!monitors("2024-09").some((item) => item.name.includes("34GP63A")));
+  assert.ok(monitors("2024-09").some((item) => item.name.includes("PG34WCDM")));
+  assert.ok(!monitors("2025-12").some((item) => item.name.includes("34GP63A")));
   assert.deepEqual(monitors("2026-01").map((item) => item.name).sort(), [
     'LG UltraGear 34G600A-B 34"',
     'Samsung Odyssey G9 G95C 49"',
     'Upperizon 16" QHD Portable Monitor',
   ].sort());
   const changes = usesAt("2026-01").changes.filter((event) => event.category === "monitor");
-  assert.equal(changes.filter((event) => event.op === "-").length, 4);
+  assert.equal(changes.filter((event) => event.op === "-").length, 3);
   assert.equal(changes.filter((event) => event.op === "+").length, 2);
   assert.ok(changes.every((event) => event.date === "2026-01-19"));
 });
@@ -242,7 +260,7 @@ test("approved desk equipment has its own category without excluded household ge
   const desk = usesAt("2026-11").categories.find((category) => category.key === "desk")!.items;
   assert.ok(desk.some((item) => item.name === "VIVO DESK-V102E"));
   assert.ok(desk.every((item) => item.details.subtype !== "webcam"));
-  assert.ok(desk.some((item) => item.name === "VIVO STAND-V257R"));
+  assert.ok(desk.every((item) => item.details.subtype !== "mount"));
   const names = usesItems.map((item) => `${item.make} ${item.model}`).join("\n");
   for (const excluded of ["DESK-V102EW", "MasterKeys", "Sonar", "K400", "Bnnwa", "EF-M 15-45mm"]) assert.ok(!names.includes(excluded), excluded);
 });
