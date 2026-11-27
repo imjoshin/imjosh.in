@@ -3916,9 +3916,20 @@
     "wild party": {
       "name": "Wild Party",
       "spotifyArtistId": "48PAAxWdIDbA4WHkHjgsEv",
-      "genres": [],
-      "source": null,
-      "updatedAt": null
+      "genres": [
+        "indie pop",
+        "indie rock",
+        "power pop"
+      ],
+      "source": "codex",
+      "updatedAt": "2026-11-27T02:22:33.928Z",
+      "note": "The Spotify ID and recordings identify the San Antonio band. Melodic hooks and danceable rhythms make indie pop the best fit, with guitar-driven indie rock and a power pop streak across the catalog.",
+      "sources": [
+        "https://recentmusic.com/artist/48PAAxWdIDbA4WHkHjgsEv/",
+        "https://www.allmusic.com/artist/wild-party-mn0002855520",
+        "https://music.apple.com/us/album/cheeky-giants/1810813539",
+        "https://first-avenue.com/performer/wild-party/"
+      ]
     },
     "wilder woods": {
       "name": "Wilder Woods",

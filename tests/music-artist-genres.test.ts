@@ -93,9 +93,13 @@ test("Codex generation requires strictly more than 25 cumulative listens, even f
   assert.equal(catalog.artists.eligible.source, null);
 });
 
-test("Codex responses must identify the requested artist and stay within five ordered genres", () => {
+test("Codex responses must identify the artist and contain 2-5 distinct raw genres or an explained unknown", () => {
   const artist = candidate("Artist"), valid = { artist: "Artist", genres: ["Synthpop", "pop", "SYNTHPOP"], note: "Broad classification.", sources: [] };
   assert.deepEqual(parseGenreClassification(valid, artist).genres, ["synthpop", "pop"]);
+  assert.deepEqual(parseGenreClassification({ ...valid, genres: ["rock", "pop"] }, artist).genres, ["rock", "pop"]);
+  assert.equal(parseGenreClassification({ ...valid, genres: ["rock", "pop", "indie pop", "synthpop", "electropop"] }, artist).genres.length, 5);
+  assert.deepEqual(parseGenreClassification({ ...valid, genres: [], note: "Artist identity is uncertain" }, artist).genres, []);
+  for (const genres of [["pop"], ["POP", "pop"]]) assert.throws(() => parseGenreClassification({ ...valid, genres }, artist), /2-5 distinct genres/);
   for (const change of [{ artist: "Someone Else" }, { genres: Array(6).fill("pop") }, { genres: [""] }, { genres: [], note: "" }, { sources: ["invented-url"] }]) assert.throws(() => parseGenreClassification({ ...valid, ...change }, artist), /Invalid|explain/);
   const prompt = genrePrompt(artist);
   assert.ok(prompt.includes("spotify-id")); assert.ok(prompt.includes("Song"));
@@ -104,7 +108,7 @@ test("Codex responses must identify the requested artist and stay within five or
   assert.equal(parseGenreOptions(["--limit", "all"]).limit, Infinity);
 });
 
-test("each result is checkpointed, failed artists resume, and uncertain results are not repeatedly generated", async () => {
+test("raw Codex genres pass through shared rules before checkpointing, and interrupted runs resume", async () => {
   const dir = await mkdtemp(join(tmpdir(), "imjosh-genre-test-")), path = join(dir, "artist_genres.json");
   try {
     await writeFile(path, JSON.stringify({ version: 1, artists: {} }));
@@ -113,16 +117,18 @@ test("each result is checkpointed, failed artists resume, and uncertain results 
     await saveListens(store, ["a", "b", "c"].flatMap(name => Array.from({ length: 26 }, (_, i) => event(name, `${name}-${i}`))));
     await assert.rejects(generateArtistGenres(store, options, async artist => {
       if (artist.key === "b") throw new Error("connection lost");
-      return { artist: artist.name, genres: ["pop"], note: "Classified", sources: [] };
+      return { artist: artist.name, genres: ["Christmas", "lo-fi worship", "ccm", "christian alternative rock", "alternative rock"], note: "Classified", sources: [] };
     }, path), /connection lost/);
     const saved = JSON.parse(await readFile(path, "utf8"));
     assert.equal(saved.artists.a.source, "codex"); assert.equal(saved.artists.b.source, null);
+    assert.deepEqual(saved.artists.a.genres, ["lo-fi", "christian", "alternative rock"]);
     const visited: string[] = [];
     await generateArtistGenres(store, options, async artist => {
       visited.push(artist.key);
-      return { artist: artist.name, genres: artist.key === "b" ? [] : ["rock"], note: artist.key === "b" ? "Uncertain identity" : "Classified", sources: [] };
+      return { artist: artist.name, genres: artist.key === "b" ? [] : ["ccm", "worship"], note: artist.key === "b" ? "Uncertain identity" : "Classified", sources: [] };
     }, path);
     assert.deepEqual(visited, ["b", "c"]);
+    assert.deepEqual(JSON.parse(await readFile(path, "utf8")).artists.c.genres, ["christian"]);
     await generateArtistGenres(store, options, async () => { throw new Error("should not repeat"); }, path);
     await writeFile(`${path}.lock`, "active");
     await assert.rejects(generateArtistGenres(store, options, undefined, path), /Another genre run/);
