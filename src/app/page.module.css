@@ -1,13 +1,21 @@
-.copy, .heading {
+.copy, .heading, .headingText, .intro, .socials {
   transform-origin: bottom left;
   transition: scale .6s cubic-bezier(.22, 1, .36, 1);
 }
 
-/* Scale spacing with the copy, preserving line breaks and the bottom-left anchor.
-   The extra heading scale keeps its total size at .8 * .625 = .5. */
-:global(html[data-pew-mode]) .copy { scale: .8; }
+.socials { transform-origin: bottom right; }
+
+/* Scale vertical spacing together, but keep each column's horizontal anchor.
+   Match the heading's horizontal scale to the wrapper's vertical scale so it
+   stays proportional throughout the transition, ending at .8 * .625 = .5. */
+:global(html[data-pew-mode]) .copy { scale: 1 .8; }
 :global(html[data-pew-mode]) .heading { scale: .625; }
+:global(html[data-pew-mode]) :is(.headingText, .intro, .socials) { scale: .8 1; }
+
+@media (width < 40rem) {
+  .socials { transform-origin: bottom left; }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .copy, .heading { transition: none; }
+  .copy, .heading, .headingText, .intro, .socials { transition: none; }
 }
