@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { trackEvent } from "@/lib/analytics";
-import { itemName } from "@/lib/uses";
+import { formatGearDate, itemName } from "@/lib/uses";
 import type { UsesItem } from "../../content/uses";
 
 export function GearDetails({ item, children, heading = false, className = "" }: { item: UsesItem; children: ReactNode; heading?: boolean; className?: string }) {
@@ -92,7 +92,10 @@ export function GearDetails({ item, children, heading = false, className = "" }:
           <div className="flex flex-col gap-2">
             <p className="eyebrow">{item.make === "Custom" ? "Custom build" : <>{item.producer} <span aria-hidden="true">·</span> {item.releaseYear ? `Released ${item.releaseYear}` : "Release year unconfirmed"}</>}</p>
             <h3 id={`${id}-title`} className="font-display text-[30px] leading-[1.05] text-ink">{name}</h3>
+            <p className="text-sm text-muted">Acquired <time dateTime={item.acquireDate}>{formatGearDate(item.acquireDate)}</time></p>
+            {item.modelApproximate && <p className="text-sm leading-snug text-muted">Approximate period reference. Exact model not recalled.</p>}
             {item.image.note && <p className="text-[13px] leading-snug text-muted">{item.image.note}</p>}
+            {item.image.credit && <p className="text-[13px] leading-snug text-muted">Photo: <a href={item.image.credit.url} target="_blank" rel="noreferrer" className="underline decoration-line underline-offset-4 hover:text-accent">{item.image.credit.label}</a> (<a href={item.image.credit.licenseUrl} target="_blank" rel="noreferrer" className="underline decoration-line underline-offset-4 hover:text-accent">{item.image.credit.license}</a>).</p>}
           </div>
           <dl className="flex flex-col divide-y divide-line text-[14px] leading-snug">
             {Object.entries(item.specs).map(([key, value]) => <div key={key} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] gap-4 py-2 first:pt-0 last:pb-0"><dt className="text-muted">{key}</dt><dd className="text-ink">{value}</dd></div>)}

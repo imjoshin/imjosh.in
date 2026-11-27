@@ -1,9 +1,11 @@
 import { usesItems, type UsesItem } from "../../content/uses.ts";
 
+export const timelineStartYear = Math.min(...usesItems.map((item) => Number(item.acquireDate.slice(0, 4))));
+
 export const categories = [
-  ["desktop", "Desktop"], ["laptop", "Laptop"], ["monitor", "Monitors"],
-  ["keyboard", "Keyboard"], ["mouse", "Mouse"], ["camera", "Camera"],
-  ["lens", "Lenses"], ["phone", "Phone"],
+  ["desktop", "Desktop"], ["monitor", "Monitors"], ["keyboard", "Keyboard"], ["mouse", "Mouse"],
+  ["laptop", "Laptop"], ["phone", "Phone"], ["camera", "Camera"], ["lens", "Lenses"],
+  ["desk", "Desk"], ["audio", "Audio"], ["console", "Consoles"],
 ] as const;
 
 export type GearCategory = (typeof categories)[number][0];
@@ -12,11 +14,21 @@ export type GearEvent = { date: string; op: "+" | "-"; category: GearCategory; i
 export function itemCategory(item: UsesItem): GearCategory {
   if (item.category === "desktop") return item.subtype === "computer" || item.subtype === "peripheral" ? "desktop" : item.subtype;
   if (item.category === "camera") return item.subtype === "lens" ? "lens" : "camera";
+  if (item.category === "microphone") return "audio";
   return item.category;
 }
 
-export function itemName(item: UsesItem) { return `${item.make} ${item.model}`; }
+export function itemName(item: UsesItem) { return `${item.make} ${item.model}${item.modelApproximate ? " (approx.)" : ""}`; }
 export function itemId(item: UsesItem) { return `${item.category}:${item.subtype}:${itemName(item)}:${item.acquireDate}`; }
+
+const gearMonthDate = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
+const gearDayDate = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+
+export function formatGearDate(value: string): string {
+  if (value.length === 4) return value;
+  const [year, month, day] = value.split("-").map(Number);
+  return (day ? gearDayDate : gearMonthDate).format(new Date(Date.UTC(year, month - 1, day ?? 1)));
+}
 
 export function itemSpec(item: UsesItem): string {
   if ((item.category === "desktop" && item.subtype === "computer") || item.category === "laptop") {
@@ -27,6 +39,7 @@ export function itemSpec(item: UsesItem): string {
   }
   if (item.category === "camera" && item.subtype === "lens") return `${item.focalLength} ${item.maxAperture}`;
   if (item.category === "desktop" && item.subtype === "peripheral") return item.description ?? "";
+  if (item.category === "desk" || item.category === "audio" || item.category === "microphone" || item.category === "console") return item.description;
   return item.notes ?? "";
 }
 
@@ -47,9 +60,10 @@ export function usesAt(period: number | string, items: UsesItem[] = usesItems) {
   return {
     categories: categories.map(([key, label]) => ({
       key, label,
+      hasHistory: items.some((item) => itemCategory(item) === key && item.acquireDate <= cutoff),
       items: active.filter((item) => itemCategory(item) === key)
         .sort((a, b) => b.acquireDate.localeCompare(a.acquireDate))
-        .map((item) => ({ id: itemId(item), name: itemName(item), spec: itemSpec(item), details: item, isNew: item.acquireDate === prefix || item.acquireDate.startsWith(`${prefix}-`) })),
+        .map((item) => ({ id: itemId(item), name: itemName(item), spec: itemSpec(item), details: item, isNew: item.acquireDate === prefix || item.acquireDate.startsWith(`${prefix}-`) || item.acquireDate === String(year) })),
     })),
     changes: buildEvents(items).filter((event) => event.date === prefix || event.date.startsWith(`${prefix}-`)),
   };
@@ -57,17 +71,17 @@ export function usesAt(period: number | string, items: UsesItem[] = usesItems) {
 
 export function monthIndex(month: string): number {
   const [year, value] = month.split("-").map(Number);
-  return (year - 2010) * 12 + value - 1;
+  return (year - timelineStartYear) * 12 + value - 1;
 }
 
 export function monthAt(position: number): string {
   const index = Math.max(0, Math.round(position));
-  return `${2010 + Math.floor(index / 12)}-${String(index % 12 + 1).padStart(2, "0")}`;
+  return `${timelineStartYear + Math.floor(index / 12)}-${String(index % 12 + 1).padStart(2, "0")}`;
 }
 
 export function parseMonth(value: string | null, currentMonth: string): string {
   if (!value || !/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) return currentMonth;
-  return value >= "2010-01" && value <= currentMonth ? value : currentMonth;
+  return value >= `${timelineStartYear}-01` && value <= currentMonth ? value : currentMonth;
 }
 
 export function readTimelineMonth(params: URLSearchParams, currentMonth: string): string {
@@ -84,5 +98,5 @@ export function readTimelineMonth(params: URLSearchParams, currentMonth: string)
 export function parseYear(value: string | null, currentYear: number): number {
   if (!value || !/^\d{4}$/.test(value)) return currentYear;
   const year = Number(value);
-  return year >= 2010 && year <= currentYear ? year : currentYear;
+  return year >= timelineStartYear && year <= currentYear ? year : currentYear;
 }

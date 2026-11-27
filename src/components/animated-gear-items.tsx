@@ -6,19 +6,19 @@ import { GearDetails } from "@/components/gear-details";
 import styles from "./animated-gear-items.module.css";
 
 type GearItem = ReturnType<typeof usesAt>["categories"][number]["items"][number];
-type Entry = { id: string; item: GearItem | null; phase: "idle" | "enter" | "exit" };
+type Entry = { id: string; item: GearItem | null; emptyLabel?: string; phase: "idle" | "enter" | "exit" };
 
-function entriesFor(items: GearItem[]): Entry[] {
+function entriesFor(items: GearItem[], emptyLabel: string): Entry[] {
   return items.length
     ? items.map((item) => ({ id: item.id, item, phase: "idle" }))
-    : [{ id: "empty", item: null, phase: "idle" }];
+    : [{ id: `empty:${emptyLabel}`, item: null, emptyLabel, phase: "idle" }];
 }
 
-export function AnimatedGearItems({ items, month, direction }: { items: GearItem[]; month: string; direction: number }) {
-  const [snapshot, setSnapshot] = useState(() => ({ items, entries: entriesFor(items) }));
+export function AnimatedGearItems({ items, emptyLabel, month, direction }: { items: GearItem[]; emptyLabel: string; month: string; direction: number }) {
+  const [snapshot, setSnapshot] = useState(() => ({ items, emptyLabel, entries: entriesFor(items, emptyLabel) }));
 
-  if (snapshot.items !== items) {
-    const next = entriesFor(items).map((entry): Entry => {
+  if (snapshot.items !== items || snapshot.emptyLabel !== emptyLabel) {
+    const next = entriesFor(items, emptyLabel).map((entry): Entry => {
       const previous = snapshot.entries.find(({ id }) => id === entry.id);
       return { ...entry, phase: !previous || previous.phase === "exit" ? "enter" : previous.phase };
     });
@@ -29,7 +29,7 @@ export function AnimatedGearItems({ items, month, direction }: { items: GearItem
       const position = following ? next.findIndex(({ id }) => id === following.id) : next.length;
       next.splice(position, 0, { ...entry, phase: "exit" });
     });
-    setSnapshot({ items, entries: next });
+    setSnapshot({ items, emptyLabel, entries: next });
   }
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export function AnimatedGearItems({ items, month, direction }: { items: GearItem
 
   return (
     <div className={styles.list} style={{ "--date-offset": `${direction * .45}em` } as CSSProperties}>
-      {snapshot.entries.map(({ id, item, phase }) => (
+      {snapshot.entries.map(({ id, item, emptyLabel: entryEmptyLabel, phase }) => (
         <div key={id} className={styles.item} data-phase={phase} inert={phase === "exit"} aria-hidden={phase === "exit" ? true : undefined}>
           <div className={styles.clip}>
             <div className={`${styles.content} ${phase === "enter" ? "date-value" : ""}`}>
@@ -56,7 +56,7 @@ export function AnimatedGearItems({ items, month, direction }: { items: GearItem
                     ? Object.entries(item.details.specs).slice(0, 2).map(([label, value]) => <span key={label} className="block truncate">{value}</span>)
                     : item.spec}
                 </p>}
-              </div> : <p className="font-display text-[22px] text-muted italic">nothing yet</p>}
+              </div> : <p className="font-display text-[22px] text-muted italic">{entryEmptyLabel}</p>}
             </div>
           </div>
         </div>
