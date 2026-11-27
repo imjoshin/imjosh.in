@@ -99,13 +99,19 @@ test("Codex responses must identify the artist and contain 2-5 distinct raw genr
   assert.deepEqual(parseGenreClassification({ ...valid, genres: ["rock", "pop"] }, artist).genres, ["rock", "pop"]);
   assert.equal(parseGenreClassification({ ...valid, genres: ["rock", "pop", "indie pop", "synthpop", "electropop"] }, artist).genres.length, 5);
   assert.deepEqual(parseGenreClassification({ ...valid, genres: [], note: "Artist identity is uncertain" }, artist).genres, []);
+  assert.throws(() => parseGenreClassification({ ...valid, artist: "Artist (stage name)" }, artist), /artist name must match Artist/);
+  assert.throws(() => parseGenreClassification({ ...valid, note: "x".repeat(1501) }, artist), /note must be a string of at most 1500/);
+  assert.throws(() => parseGenreClassification({ ...valid, sources: ["spotify:artist:id"] }, artist), /HTTP\(S\) URLs/);
   for (const genres of [["pop"], ["POP", "pop"]]) assert.throws(() => parseGenreClassification({ ...valid, genres }, artist), /2-5 distinct genres/);
   for (const change of [{ artist: "Someone Else" }, { genres: Array(6).fill("pop") }, { genres: [""] }, { genres: [], note: "" }, { sources: ["invented-url"] }]) assert.throws(() => parseGenreClassification({ ...valid, ...change }, artist), /Invalid|explain/);
   const prompt = genrePrompt(artist);
   assert.ok(prompt.includes("spotify-id")); assert.ok(prompt.includes("Song"));
   assert.equal(prompt.includes('"plays"'), false); assert.equal(prompt.includes('"yearPlays"'), false);
-  for (const args of [["--limit", "0"], ["--limit", "NaN"], ["--artist"], ["--prod"]]) assert.throws(() => parseGenreOptions(args));
+  for (const args of [["--limit", "0"], ["--limit", "NaN"], ["--artist"], ["--prod"], ["--effort", "unknown"]]) assert.throws(() => parseGenreOptions(args));
   assert.equal(parseGenreOptions(["--limit", "all"]).limit, Infinity);
+  assert.equal(parseGenreOptions([]).model, "gpt-6.1-terra");
+  assert.equal(parseGenreOptions([]).effort, "medium");
+  assert.equal(parseGenreOptions(["--effort", "high"]).effort, "high");
 });
 
 test("raw Codex genres pass through shared rules before checkpointing, and interrupted runs resume", async () => {
@@ -121,6 +127,8 @@ test("raw Codex genres pass through shared rules before checkpointing, and inter
     }, path), /connection lost/);
     const saved = JSON.parse(await readFile(path, "utf8"));
     assert.equal(saved.artists.a.source, "codex"); assert.equal(saved.artists.b.source, null);
+    assert.equal(saved.artists.a.model, "gpt-6.1-terra");
+    assert.equal(saved.artists.a.reasoningEffort, "medium");
     assert.deepEqual(saved.artists.a.genres, ["lo-fi", "christian", "alternative rock"]);
     const visited: string[] = [];
     await generateArtistGenres(store, options, async artist => {

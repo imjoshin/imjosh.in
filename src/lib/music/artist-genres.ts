@@ -8,6 +8,7 @@ export interface ArtistGenreEntry {
   note?: string;
   sources?: string[];
   model?: string;
+  reasoningEffort?: string;
 }
 
 export interface ArtistGenreCatalog {

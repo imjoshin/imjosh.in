@@ -13,6 +13,7 @@ export const artistGenrePath = fileURLToPath(new URL("../../content/artist_genre
 export const MINIMUM_ARTIST_GENRE_LISTENS = 26;
 const MINIMUM_CODEX_GENRES = 2;
 const MAXIMUM_CODEX_GENRES = 5;
+const REASONING_EFFORTS = ["low", "medium", "high", "xhigh", "max", "ultra"] as const;
 export interface GenreCandidate {
   key: string;
   name: string;
@@ -29,12 +30,13 @@ export interface GenreOptions {
   dryRun: boolean;
   discoverOnly: boolean;
   retryUnknown: boolean;
-  model?: string;
+  model: string;
+  effort: typeof REASONING_EFFORTS[number];
   codexBin: string;
 }
 
 export function parseGenreOptions(args: string[]): GenreOptions {
-  const options: GenreOptions = { limit: 25, artists: [], noPull: false, dryRun: false, discoverOnly: false, retryUnknown: false, codexBin: process.env.CODEX_BIN || "codex" };
+  const options: GenreOptions = { limit: 25, artists: [], noPull: false, dryRun: false, discoverOnly: false, retryUnknown: false, model: "gpt-6.1-terra", effort: "medium", codexBin: process.env.CODEX_BIN || "codex" };
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     const value = () => { const v = args[++i]; if (!v || v.startsWith("--")) throw new Error(`Missing value for ${arg}`); return v; };
@@ -45,6 +47,11 @@ export function parseGenreOptions(args: string[]): GenreOptions {
       case "--retry-unknown": options.retryUnknown = true; break;
       case "--artist": options.artists.push(artistGenreKey(value())); break;
       case "--model": options.model = value(); break;
+      case "--effort": {
+        const effort = value();
+        if (!(REASONING_EFFORTS as readonly string[]).includes(effort)) throw new Error(`--effort must be one of ${REASONING_EFFORTS.join(", ")}`);
+        options.effort = effort as GenreOptions["effort"]; break;
+      }
       case "--codex-bin": options.codexBin = value(); break;
       case "--limit": {
         const raw = value(); options.limit = raw === "all" ? Infinity : Number(raw);
@@ -168,20 +175,26 @@ Artist metadata: ${JSON.stringify({ name: artist.name, spotifyArtistId: artist.s
 
 export function parseGenreClassification(value: unknown, artist: GenreCandidate): GenreClassification {
   const result = value as GenreClassification;
-  if (!result || typeof result.artist !== "string" || artistGenreKey(result.artist) !== artist.key || !Array.isArray(result.genres) || result.genres.length > MAXIMUM_CODEX_GENRES || result.genres.some(g => typeof g !== "string" || !g.trim() || g.length > 80) || typeof result.note !== "string" || result.note.length > 1500 || !Array.isArray(result.sources) || result.sources.length > 5 || result.sources.some(url => typeof url !== "string" || !/^https?:\/\//.test(url))) throw new Error(`Invalid Codex genre response for ${artist.name}; nothing saved for this artist`);
+  const invalid = (reason: string): never => { throw new Error(`Invalid Codex genre response for ${artist.name}: ${reason}; nothing saved for this artist`); };
+  if (!result || typeof result.artist !== "string") invalid("missing artist name");
+  if (artistGenreKey(result.artist) !== artist.key) invalid(`artist name must match ${artist.name}`);
+  if (!Array.isArray(result.genres) || result.genres.length > MAXIMUM_CODEX_GENRES) invalid("genres must be an array of at most five labels");
+  if (result.genres.some(g => typeof g !== "string" || !g.trim() || g.length > 80)) invalid("genre labels must be nonempty strings of at most 80 characters");
+  if (typeof result.note !== "string" || result.note.length > 1500) invalid("note must be a string of at most 1500 characters");
+  if (!Array.isArray(result.sources) || result.sources.length > 5 || result.sources.some(url => typeof url !== "string" || !/^https?:\/\//.test(url))) invalid("sources must contain at most five HTTP(S) URLs");
   const genres = [...new Set(result.genres.map(g => artistGenreKey(g).replaceAll("\u2014", "-")))];
   if (genres.length > 0 && genres.length < MINIMUM_CODEX_GENRES) throw new Error(`Codex must return 2-5 distinct genres or an explained empty result for ${artist.name}; nothing saved for this artist`);
   if (!genres.length && !result.note.trim()) throw new Error(`Codex must explain an unknown artist: ${artist.name}`);
   return { artist: artist.name, genres, note: result.note.trim().replaceAll("\u2014", "-"), sources: [...new Set(result.sources)] };
 }
 
-export async function classifyArtistWithCodex(artist: GenreCandidate, options: Pick<GenreOptions, "codexBin" | "model">, signal?: AbortSignal): Promise<GenreClassification> {
+export async function classifyArtistWithCodex(artist: GenreCandidate, options: Pick<GenreOptions, "codexBin" | "model" | "effort">, signal?: AbortSignal): Promise<GenreClassification> {
   const dir = await mkdtemp(join(tmpdir(), "imjosh-artist-genres-"));
   try {
     const schema = join(dir, "schema.json"), output = join(dir, "result.json");
-    await writeFile(schema, JSON.stringify({ type: "object", additionalProperties: false, required: ["artist", "genres", "note", "sources"], properties: { artist: { type: "string" }, genres: { anyOf: [{ type: "array", items: { type: "string" }, minItems: MINIMUM_CODEX_GENRES, maxItems: MAXIMUM_CODEX_GENRES }, { type: "array", items: { type: "string" }, maxItems: 0 }] }, note: { type: "string" }, sources: { type: "array", items: { type: "string" }, maxItems: 5 } } }));
+    await writeFile(schema, JSON.stringify({ type: "object", additionalProperties: false, required: ["artist", "genres", "note", "sources"], properties: { artist: { type: "string", enum: [artist.name] }, genres: { anyOf: [{ type: "array", items: { type: "string", minLength: 1, maxLength: 80 }, minItems: MINIMUM_CODEX_GENRES, maxItems: MAXIMUM_CODEX_GENRES }, { type: "array", items: { type: "string" }, maxItems: 0 }] }, note: { type: "string", maxLength: 1500 }, sources: { type: "array", items: { type: "string", pattern: "^https?://" }, maxItems: 5 } } }));
     const args = ["exec", "--ignore-user-config", "--ephemeral", "--skip-git-repo-check", "--sandbox", "read-only", "--color", "never", "--output-schema", schema, "--output-last-message", output, "-c", 'web_search="cached"'];
-    if (options.model) args.push("--model", options.model);
+    args.push("--model", options.model, "-c", `model_reasoning_effort="${options.effort}"`);
     args.push("-");
     // Reuse saved Codex login, without forwarding Spotify/Netlify credentials or task context.
     const allowed = /^(PATH|PATHEXT|HOME|USERPROFILE|APPDATA|LOCALAPPDATA|SYSTEMROOT|WINDIR|SYSTEMDRIVE|COMSPEC|TEMP|TMP|TMPDIR|CODEX_HOME|HTTP_PROXY|HTTPS_PROXY|ALL_PROXY|NO_PROXY|SSL_CERT_FILE|SSL_CERT_DIR)$/i;
@@ -220,6 +233,7 @@ export async function generateArtistGenres(store: MusicStore, options: GenreOpti
     const pending = pendingGenreArtists(catalog, candidates, spotify, { ...options, limit: Infinity });
     const queue = pending.slice(0, options.limit);
     console.log(`${candidates.length} artists discovered; ${pending.length} need genres with at least ${MINIMUM_ARTIST_GENRE_LISTENS} cumulative listens; ${queue.length} selected.`);
+    console.log(`Codex model: ${options.model}; reasoning effort: ${options.effort}.`);
     if (options.dryRun) { for (const a of queue) console.log(`Would classify: ${a.name}`); return catalog; }
     await saveArtistGenres(path, catalog);
     if (options.discoverOnly) return catalog;
@@ -228,7 +242,7 @@ export async function generateArtistGenres(store: MusicStore, options: GenreOpti
       console.log(`[${index + 1}/${queue.length}] Asking Codex: ${artist.name}`);
       const result = parseGenreClassification(await classify(artist, options, abort.signal), artist);
       result.genres = canonicalGeneratedGenres(result.genres, spotify);
-      catalog.artists[artist.key] = { ...catalog.artists[artist.key], genres: result.genres, source: "codex", updatedAt: new Date().toISOString(), note: result.note, ...(result.sources.length ? { sources: result.sources } : {}), ...(options.model ? { model: options.model } : {}) };
+      catalog.artists[artist.key] = { ...catalog.artists[artist.key], genres: result.genres, source: "codex", updatedAt: new Date().toISOString(), note: result.note, ...(result.sources.length ? { sources: result.sources } : {}), model: options.model, reasoningEffort: options.effort };
       await saveArtistGenres(path, catalog);
       console.log(`Saved ${artist.name}: ${result.genres.join(", ") || "unknown (retained for review)"}`);
     }
