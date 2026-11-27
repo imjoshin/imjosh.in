@@ -84,7 +84,7 @@ export function GearDetails({ item, children, heading = false, className = "" }:
       <div ref={panel} id={id} popover="auto" role="dialog" aria-labelledby={`${id}-title`} className="gear-popover" onToggle={(event) => { const next = event.newState === "open"; setOpen(next); if (next) position(); }} onPointerEnter={cancelClose} onPointerLeave={(event) => { if (event.pointerType === "mouse") queueClose(); }} onFocus={cancelClose} onBlur={queueClose}>
         <div className="relative flex min-h-44 items-center justify-center rounded-t-[19px] bg-line/30 px-10 py-6">
           <img src={item.image.src} alt={item.image.alt} width={320} height={200} loading="lazy" className="h-40 w-full object-contain" />
-          <button type="button" popoverTarget={id} popoverTargetAction="hide" aria-label={`Close details for ${name}`} className="absolute top-3 right-3 grid size-8 place-items-center rounded-full border border-line bg-background text-lg text-muted hover:text-ink">×</button>
+          <button type="button" popoverTarget={id} popoverTargetAction="hide" aria-label={`Close details for ${name}`} className="gear-popover-close absolute top-3 right-3 grid size-8 place-items-center rounded-full border border-line bg-background text-lg text-muted hover:text-ink">×</button>
         </div>
         <div className="flex flex-col gap-5 p-5">
           <div className="flex flex-col gap-2">

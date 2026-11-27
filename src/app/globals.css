@@ -195,6 +195,9 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-entity-art { width: 72px; height: 72px; flex: none; object-fit: cover; }
 .music-entity-close { position: absolute; top: 3px; right: 3px; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: var(--mute); font-size: 24px; }
 .music-entity-close:hover { color: var(--acc); }
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  .music-entity-close, .gear-popover-close { display: none; }
+}
 @keyframes music-card-arrive { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 .music-chart-tooltip[data-many="true"] .music-tooltip-label { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .music-day-column .music-day-bar { transition: height .48s cubic-bezier(.22,1,.36,1), opacity .18s, filter .18s; }
