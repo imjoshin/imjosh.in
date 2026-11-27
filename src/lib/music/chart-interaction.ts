@@ -1,6 +1,42 @@
 export const nearestChartIndex = (fraction: number, count: number) => Math.max(0, Math.min(count - 1, Math.round(fraction * (count - 1))));
 
 export interface MusicChartPoint { t: number; x: number; y: number }
+
+/** Light, shape-preserving curves through the observations, with separate paths across missing buckets. */
+export function musicLinePath(points: MusicChartPoint[], defined?: (point: MusicChartPoint) => boolean): string {
+  const paths: string[] = [];
+  let segment: MusicChartPoint[] = [];
+  const flush = () => {
+    if (!segment.length) return;
+    const slopes = segment.slice(1).map((point, i) => (point.y - segment[i].y) / (point.x - segment[i].x));
+    const tangents = segment.map((_, i) => {
+      if (i === 0) return slopes[0] || 0;
+      if (i === segment.length - 1) return slopes[i - 1] || 0;
+      const before = slopes[i - 1], after = slopes[i];
+      // A horizontal tangent at a turning point keeps peaks and zeroes from overshooting.
+      return before * after > 0 ? 2 / (1 / before + 1 / after) : 0;
+    });
+    paths.push(`M ${segment[0].x} ${segment[0].y}`);
+    for (let i = 1; i < segment.length; i++) {
+      const a = segment[i - 1], b = segment[i];
+      if (segment.length === 2) paths.push(`L ${b.x} ${b.y}`);
+      else {
+        const handle = (b.x - a.x) * .24;
+        paths.push(`C ${a.x + handle} ${a.y + handle * tangents[i - 1]} ${b.x - handle} ${b.y - handle * tangents[i]} ${b.x} ${b.y}`);
+      }
+    }
+    segment = [];
+  };
+  for (const point of points) {
+    if (defined && !defined(point)) { flush(); continue; }
+    // Collapsed vertices can occur while a period transition changes the plot's width.
+    if (segment.length && point.x <= segment.at(-1)!.x) flush();
+    segment.push(point);
+  }
+  flush();
+  return paths.join(" ");
+}
+
 /** Interpolate by the bucket's date, preserving every vertex when period boundaries change. */
 export function chartPointAt(points: MusicChartPoint[], t: number): MusicChartPoint {
   if (!points.length) return { t, x: 0, y: 0 };

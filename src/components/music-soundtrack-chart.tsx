@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { type MusicSoundtrackDataset, type SoundtrackMetric, type SoundtrackSeries } from "@/lib/music/types";
 import { MusicChartTooltip } from "./music-chart-tooltip";
-import { chartPointAt, nearestChartIndex, type MusicChartPoint } from "@/lib/music/chart-interaction";
+import { chartPointAt, musicLinePath, nearestChartIndex, type MusicChartPoint } from "@/lib/music/chart-interaction";
 import { MusicNumber, useMusicLineMotion, useMusicPresence } from "./music-motion";
 import { isMusicCardTarget } from "./music-entity-link";
 import { useMusicChartInteraction } from "./use-music-chart-interaction";
@@ -22,12 +22,7 @@ interface PointInput { clientX: number; clientY: number; target: EventTarget | n
 function SoundtrackLine({ item, phase, selectedTime, highlighted, dimmed, frames }: { item: PlotSeries; phase: "present" | "enter" | "exit"; selectedTime: number; highlighted: boolean; dimmed: boolean; frames: Map<string, MusicChartPoint[]> }) {
   const points = useMusicLineMotion(phase === "exit" ? [] : item.points, 290, phase === "enter");
   useLayoutEffect(() => { frames.set(item.key, points); return () => { frames.delete(item.key); }; }, [frames, item.key, points]);
-  let pen = false;
-  const path = points.map(point => {
-    if (!item.qualifying.has(point.t)) { pen = false; return ""; }
-    const command = pen ? "L " : "M "; pen = true;
-    return command + point.x + " " + point.y;
-  }).join(" ");
+  const path = musicLinePath(points, point => item.qualifying.has(point.t));
   const isolated = points.filter((point, i) => item.qualifying.has(point.t) && !item.qualifying.has(points[i - 1]?.t) && !item.qualifying.has(points[i + 1]?.t));
   const selected = chartPointAt(points, selectedTime);
   return <g className="music-series-presence" data-phase={phase} aria-hidden={phase === "exit" || undefined} pointerEvents={phase === "exit" ? "none" : undefined}>

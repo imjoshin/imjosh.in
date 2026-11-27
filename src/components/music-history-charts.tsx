@@ -2,7 +2,7 @@
 
 import { useId, useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { MusicDataset } from "@/lib/music/types";
-import { chartPointAt } from "@/lib/music/chart-interaction";
+import { chartPointAt, musicLinePath } from "@/lib/music/chart-interaction";
 import { listeningChartBuckets } from "@/lib/music/listening-chart";
 import { MusicChartTooltip } from "./music-chart-tooltip";
 import { MusicNumber, useMusicLineMotion, useMusicPresence } from "./music-motion";
@@ -29,7 +29,7 @@ export function ListeningChart({ data }: { data: MusicDataset }) {
   const dots = useMusicPresence(daily || buckets.length <= 24 ? buckets.map(bucket => ({ key: bucket.key })) : []);
   const point = (date: string) => chartPointAt(points, dateTime(date));
   const selectedPoint = selected ? point(selected.key) : null;
-  const line = points.map((p, i) => `${i ? "L" : "M"} ${p.x},${p.y}`).join(" ");
+  const line = musicLinePath(points);
   function inspect(event: PointerEvent<SVGSVGElement>) {
     if (!buckets.length) return;
     const box = event.currentTarget.getBoundingClientRect();
