@@ -1321,36 +1321,6 @@ export const usesItems: UsesItem[] = [
     {
         "category": "audio",
         "subtype": "earbuds",
-        "make": "KZ",
-        "model": "ZST",
-        "description": "Wired in-ear monitors · Hybrid drivers",
-        "producer": "KZ",
-        "releaseYear": null,
-        "image": {
-            "src": "/gear/kz-zst.jpg",
-            "alt": "KZ ZST product view",
-            "sourceUrl": "https://cdn.shopify.com/s/files/1/0556/9055/9661/products/1_bc407ed6-a660-4c6e-9ddd-dd73ee4c8650.jpg?v=1630396024"
-        },
-        "specs": {
-            "Design": "Wired in-ear monitors",
-            "Drivers": "One balanced armature and one dynamic driver per earpiece",
-            "Connection": "3.5 mm plug",
-            "Cable": "Detachable cable",
-            "Microphone": "Without microphone"
-        },
-        "sources": [
-            {
-                "label": "Manufacturer product information",
-                "url": "https://www.kztws.com/products/zst"
-            }
-        ],
-        "acquireDate": "2018-06-11",
-        "active": false,
-        "doneDate": "2023-03-06"
-    },
-    {
-        "category": "audio",
-        "subtype": "earbuds",
         "make": "Google",
         "model": "Pixel Buds Pro",
         "description": "Wireless earbuds · Active noise cancellation",

@@ -4,6 +4,8 @@ Josh requested that mixers, lighting equipment, pads or mats, and monitor mounts
 
 Josh returned the LG 25UM57 25-inch monitor and requested its removal from the gear history. Do not restore it from the archived prototype records.
 
+Josh requested that the KZ ZST earphones be removed from the gear history. Do not restore the record or its product photo.
+
 Josh retired the LG UltraGear 34GP63A-B when the ASUS ROG Swift PG34WCDM arrived in September 2024. Preserve that replacement date rather than retiring the LG during the January 2026 upgrade.
 
 Josh acquired the Logitech MX Master 3S immediately after retiring the Razer Mamba Wireless in August 2024. Preserve that month as the replacement date without a gap.

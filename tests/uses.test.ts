@@ -237,7 +237,7 @@ test("over-ear headphones, earbuds and microphones each retain one active item t
   }
   const earbuds = (month: string) => usesAt(month).categories.find((category) => category.key === "audio")!.items.filter((item) => item.details.subtype === "earbuds").map((item) => item.name);
   assert.deepEqual(earbuds("2018-05"), ["Shure SE215-CL-UNI"]);
-  assert.deepEqual(earbuds("2018-06"), ["KZ ZST"]);
+  assert.deepEqual(earbuds("2018-06"), []);
   assert.deepEqual(earbuds("2023-03"), ["Google Pixel Buds Pro"]);
   const microphones = (month: string) => usesAt(month).categories.find((category) => category.key === "av")!.items.filter((item) => item.details.subtype === "microphone").map((item) => item.name);
   assert.deepEqual(microphones("2023-02"), []);
@@ -262,7 +262,7 @@ test("approved desk equipment has its own category without excluded household ge
   assert.ok(desk.every((item) => item.details.subtype !== "webcam"));
   assert.ok(desk.every((item) => item.details.subtype !== "mount"));
   const names = usesItems.map((item) => `${item.make} ${item.model}`).join("\n");
-  for (const excluded of ["DESK-V102EW", "MasterKeys", "Sonar", "K400", "Bnnwa", "EF-M 15-45mm"]) assert.ok(!names.includes(excluded), excluded);
+  for (const excluded of ["DESK-V102EW", "MasterKeys", "Sonar", "K400", "Bnnwa", "EF-M 15-45mm", "KZ ZST"]) assert.ok(!names.includes(excluded), excluded);
 });
 
 test("webcams replace their predecessors in AV on their purchase dates", () => {
