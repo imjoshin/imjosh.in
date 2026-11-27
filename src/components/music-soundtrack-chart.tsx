@@ -10,7 +10,7 @@ import { useMusicChartInteraction } from "./use-music-chart-interaction";
 import { MusicSoundtrackSongs, type SongSelection } from "./music-soundtrack-songs";
 
 const number = (value: number) => new Intl.NumberFormat("en-US").format(value);
-const metrics: SoundtrackMetric[] = ["genres", "artists", "albums"];
+const metrics: SoundtrackMetric[] = ["genres", "albums", "artists"];
 const colors = [
   "var(--acc)",
   "light-dark(#986c28, #dfc28c)",
