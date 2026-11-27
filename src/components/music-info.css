@@ -1,5 +1,5 @@
 .music-info-trigger, .music-info-close { display: inline-grid; flex: none; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid transparent; border-radius: 50%; color: var(--mute); cursor: pointer; transition: color .2s, background .2s, border-color .2s; }
-.music-info-trigger { margin: -8px 0 -8px 2px; vertical-align: middle; }
+.music-info-trigger { margin: -8px 0 -8px 2px; vertical-align: middle; translate: 0 -.125rem; }
 .music-info-trigger svg { width: 19px; height: 19px; }
 .music-info-trigger:hover, .music-info-close:hover { border-color: var(--line); background: var(--line); color: var(--ink); }
 .music-info-trigger:focus-visible, .music-info-close:focus-visible { outline: 2px solid var(--acc); outline-offset: 3px; }
