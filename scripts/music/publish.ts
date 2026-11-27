@@ -93,7 +93,26 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
   for (const [key, value] of Object.entries({ ...result.datasets, ...seasonal })) {
     await immutable(key, value);
   }
-  await immutable("entities", entities);
+  // Count the complete approved history, but send hover details only for displayed music.
+  const visible = new Set<string>();
+  function include(ref: MusicEntityRef) {
+    const key = musicEntityKey(ref.kind, ref.name, ref.artists);
+    if (visible.has(key)) return;
+    visible.add(key);
+    for (const name of ref.artists || []) include({ kind: "artist", name });
+    const entity = entities.entities[key];
+    if (entity?.album) include({ kind: "album", name: entity.album, artists: entity.albumArtists?.length ? entity.albumArtists : ref.artists });
+  }
+  for (const ref of favorites) include(ref);
+  for (const dataset of Object.values(result.datasets)) {
+    for (const [kind, ranked] of [["track", dataset.stats.topTracks], ["artist", dataset.stats.topArtists], ["album", dataset.stats.topAlbums]] as const) {
+      for (const item of ranked) include({ kind, ...item });
+    }
+  }
+  for (const dataset of Object.values(seasonal)) for (const metric of ["artists", "albums"] as const) {
+    for (const line of dataset.metrics[metric].series) include({ kind: metric === "artists" ? "artist" : "album", ...line });
+  }
+  await immutable("entities", { ...entities, entities: Object.fromEntries(Object.entries(entities.entities).filter(([key]) => visible.has(key))) });
   manifest.notes.push("Tracks with known kids genres and identified Disney music are excluded from all summaries. Unclassified genres remain unknown.", "Seasonal charts retain the union of each season's top five, with full per-season counts. Winter spans December through February and uses the January year.");
   await writeJson(publicStore, "manifest.json", manifest);
   return { listens: verifiedRows.length, datasets: Object.keys(manifest.files).length, manifest };
