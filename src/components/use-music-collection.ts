@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { readMusicCollection, type MusicCollection, type MusicJsonReader } from "@/lib/music/collection";
+import { cacheMusicSpotify, readCachedMusicSpotify } from "@/lib/music/spotify-cache";
 
 export function useMusicCollection(initial: MusicCollection, period: string) {
   const [collection, setCollection] = useState(initial), [loading, setLoading] = useState(false), [error, setError] = useState(false), [api, setApi] = useState(false);
@@ -13,6 +14,14 @@ export function useMusicCollection(initial: MusicCollection, period: string) {
     for (const [key, value] of [[`all/${initial.data?.period}`, initial.data], ["spotify", initial.spotify], [`all/soundtrack/${initial.soundtrack?.period}`, initial.soundtrack]] as const) if (value && initial.manifest?.files[key]) cache.current.set(initial.manifest.files[key], value);
   }
   const controller = useRef<AbortController | null>(null), generation = useRef(0);
+  useLayoutEffect(() => {
+    const spotify = readCachedMusicSpotify(initial.spotify);
+    if (spotify !== initial.spotify) {
+      latest.current = { ...latest.current, spotify };
+      setCollection(latest.current);
+    }
+    cacheMusicSpotify(spotify);
+  }, []);
   const refresh = useCallback(async () => {
     const token = ++generation.current;
     controller.current?.abort();
@@ -31,6 +40,7 @@ export function useMusicCollection(initial: MusicCollection, period: string) {
       const next = await readMusicCollection(read, selected, request.signal, cache.current!);
       if (token !== generation.current || selection.current !== selected) return;
       latest.current = next; setCollection(next); setError(false);
+      cacheMusicSpotify(next.spotify);
     } catch {
       if (token === generation.current && selection.current === selected) setError(true);
     } finally {
