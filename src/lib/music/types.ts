@@ -188,6 +188,16 @@ export interface SpotifySnapshot {
   playlists: { id: string; name: string; image: string | null; url: string; tracks: number }[];
 }
 
+export interface MusicRecentTrack {
+  id: string;
+  key: string;
+  name: string;
+  artists: string[];
+  album: string | null;
+  url: string | null;
+  image: string | null;
+}
+
 export interface MusicPlaybackSnapshot {
   version: 1;
   checkedAt: string;
@@ -195,5 +205,6 @@ export interface MusicPlaybackSnapshot {
   /** Legacy observations may include an expiry, which current playback ignores. */
   expiresAt?: string;
   artistImages?: { name: string; image: string | null }[];
+  recentTracks?: MusicRecentTrack[];
   track: { key: string; name: string; artists: string[]; album: string | null; url: string | null; image: string | null } | null;
 }

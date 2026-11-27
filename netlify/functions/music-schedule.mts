@@ -5,5 +5,5 @@ export default async () => {
   const response = await fetch(new URL("/.netlify/functions/music-update-background", process.env.URL), { method: "POST", headers: { Authorization: `Bearer ${process.env.MUSIC_JOB_SECRET}` }, signal: AbortSignal.timeout(20000) });
   if (!response.ok) throw new Error(`Music background job was not accepted (${response.status})`);
 };
-// Capture recent plays frequently; the worker refreshes the complete snapshots once per day.
-export const config: Config = { schedule: "* * * * *" };
+// Refresh history every ten minutes; complete Spotify snapshots still refresh daily.
+export const config: Config = { schedule: "*/10 * * * *" };

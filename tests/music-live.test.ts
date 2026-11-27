@@ -122,7 +122,7 @@ test("a refresh loads a complete collection, caches unchanged files, and rejects
   const reader: MusicJsonReader = async <T,>(file: string) => { calls.push(file); if (!payloads.has(file)) throw new Error("Missing dataset"); return payloads.get(file) as T; };
   const signal = new AbortController().signal;
   const initial = await readMusicCollection(reader, "30d", signal, cache);
-  assert.equal(initial.playback?.track?.name, "Song"); assert.equal(calls.length, 5);
+  assert.equal(calls.includes(names[3]), false); assert.equal(calls.length, 4);
   calls.length = 0;
   const again = await readMusicCollection(reader, "30d", signal, cache);
   assert.equal(again.data, initial.data); assert.deepEqual(calls, ["manifest.json"]);
@@ -133,6 +133,8 @@ test("a refresh loads a complete collection, caches unchanged files, and rejects
   payloads.set(names[5], { ...allTime.soundtrack, period: "30d" });
   await assert.rejects(readMusicCollection(reader, "all", signal, new Map()), /Soundtrack history does not match/);
   payloads.set("manifest.json", { ...manifest, files: { ...manifest.files, playback: "datasets/ffffffffffffffffffffffff.json" } });
+  await readMusicCollection(reader, "30d", signal, cache);
+  payloads.set("manifest.json", { ...manifest, files: { ...manifest.files, "all/30d": "datasets/ffffffffffffffffffffffff.json" } });
   await assert.rejects(readMusicCollection(reader, "30d", signal, cache), /Missing dataset/);
   assert.equal(initial.data?.period, "30d");
   const cancelled = new AbortController(); cancelled.abort();

@@ -12,6 +12,7 @@ import type { Listen } from "../src/lib/music/types.ts";
 import { deduplicate, digest } from "../src/lib/music/normalize.ts";
 import { generateArtistGenres, parseGenreOptions, pullArtistGenreInputs } from "./music/artist-genres.ts";
 import { ARTIST_IMAGES_FILE, mergeArtistImages, type ArtistImages } from "./music/artist-images.ts";
+import { savedMusicPlayback } from "./music/playback.ts";
 
 const args = process.argv.slice(2), command = args.shift();
 const flag = (name: string) => { const index = args.indexOf(name); return index >= 0 ? args[index + 1] : undefined; };
@@ -68,6 +69,8 @@ async function browserFiles() {
   const files = new Set(Object.values(manifest.files));
   for (const file of files) { const bytes = await localPublic.get(file); if (!bytes) throw new Error(`Missing local summary: ${file}`); await target.set(file, bytes); }
   await writeJson(target, "manifest.json", manifest);
+  const playback = await savedMusicPlayback(localPublic);
+  if (playback) await writeJson(target, "playback.json", playback);
   // Remove only obsolete generated payloads from the public mirror, never private originals.
   const datasetRoot = join(targetRoot, "datasets");
   for (const entry of await readdir(datasetRoot, { withFileTypes: true }).catch(() => [])) {

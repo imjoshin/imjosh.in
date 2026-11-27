@@ -17,7 +17,7 @@ export default async (request: Request) => {
   const store = blobStore(PRIVATE_STORE);
   try {
     const last = await readJson<{ fetchedAt: string }>(store, "state/spotify-full.json");
-    await collectSpotify(store, !last || last.fetchedAt.slice(0, 10) !== new Date().toISOString().slice(0, 10), 200);
+    await collectSpotify(store, !last || last.fetchedAt.slice(0, 10) !== new Date().toISOString().slice(0, 10), 200, false, { playback: false });
     const result = await publishMusic(store, blobStore(PUBLIC_STORE));
     await writeJson(store, "state/job.json", { ok: true, completedAt: new Date().toISOString(), listens: result.listens, datasets: result.datasets });
   } catch (error) {

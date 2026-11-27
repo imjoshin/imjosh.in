@@ -1,6 +1,7 @@
 import { aggregateMusic } from "../../src/lib/music/aggregate.ts";
 import { aggregateSoundtrackSongs, aggregateSoundtrack } from "../../src/lib/music/soundtrack.ts";
 import { aggregateArtistHistory } from "../../src/lib/music/artist-history.ts";
+import { publicSpotifyRecentTracks, recentTracksFromListens } from "../../src/lib/music/recent-tracks.ts";
 import { digest, musicTrack } from "../../src/lib/music/normalize.ts";
 import { allListens, readJson, writeJson, type MusicStore } from "./store.ts";
 import type { GenreIndex } from "./spotify.ts";
@@ -93,7 +94,9 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     const prior = await readJson<MusicPlaybackSnapshot>(publicStore, previous.files.playback);
     if (prior?.version === 1) playback = prior;
   }
+  playback = { ...playback, recentTracks: publicSpotifyRecentTracks(await readJson<SpotifyPlaybackSource>(privateStore, "state/spotify-last-tracks.json"), genres, now) ?? recentTracksFromListens(verifiedRows, now) };
   if (playback.track) favorites.push({ kind: "track", ...playback.track });
+  favorites.push(...playback.recentTracks!.map(track => ({ kind: "track" as const, ...track })));
   const entities = aggregateEntities(verifiedRows, favorites, entityMetadata, now);
   const artistHistory = aggregateArtistHistory(verifiedRows, now);
   for (const group of artistHistory.groups) for (const artist of group.artists) {

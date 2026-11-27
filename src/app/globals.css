@@ -201,6 +201,23 @@ html[data-pew-mode]:has(.home-page) :is(a, summary, .theme-toggle) { cursor: poi
 .music-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s cubic-bezier(.22,1,.36,1); }
 .music-album:hover img { transform: scale(1.035); }
 .music-album-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 24px 18px; }
+.music-last-tracks-viewport { --recent-gap: 18px; --recent-width: calc((100% - 5 * var(--recent-gap)) / 6); overflow-x: hidden; overflow-anchor: none; overscroll-behavior-x: contain; scrollbar-width: thin; scrollbar-color: var(--line) transparent; margin: -4px; padding: 4px; }
+.music-last-tracks-collection { min-width: 0; transition: height .48s cubic-bezier(.22,1,.36,1); }
+.music-last-tracks-list { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: var(--recent-width); gap: var(--recent-gap); }
+.music-last-track { min-width: 0; }
+.music-last-track[data-phase="enter"] { animation: music-last-track-arrive .48s cubic-bezier(.22,1,.36,1) both; }
+.music-last-track[data-phase="exit"] { animation: music-last-track-away .48s cubic-bezier(.22,1,.36,1) both; pointer-events: none; }
+.music-last-track-latest { position: absolute; left: 8px; bottom: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); font-size: 10px; font-weight: 600; }
+.music-last-tracks-swipe { display: none; }
+@keyframes music-last-track-arrive { from { opacity: 0; transform: translateX(calc(-100% - var(--recent-gap))); } to { opacity: 1; transform: translateX(0); } }
+@keyframes music-last-track-away { to { opacity: 0; transform: translateX(calc(100% + var(--recent-gap))); } }
+@media (max-width: 1023px) {
+  .music-last-tracks-viewport { --recent-width: calc((100% - 3 * var(--recent-gap)) / 4); overflow-x: auto; }
+  .music-last-tracks-swipe { display: block; }
+}
+@media (max-width: 600px) {
+  .music-last-tracks-viewport { --recent-gap: 14px; --recent-width: 42%; mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent); }
+}
 .music-album { min-width: 0; }
 .music-album-rank { position: absolute; bottom: 8px; left: 8px; border-radius: 999px; padding: 3px 9px; background: #0c0b12bb; color: #edebf5; font-size: 12px; backdrop-filter: blur(8px); }
 .music-number { display: inline-flex; align-items: baseline; font-variant-numeric: tabular-nums; white-space: nowrap; vertical-align: baseline; }

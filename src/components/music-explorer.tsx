@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { type MusicArtistHistoryDataset, type MusicDataset, type MusicEntityKind, type MusicManifest, type MusicSoundtrackDataset, type RankedMusic, type SpotifySnapshot } from "@/lib/music/types";
+import { type MusicArtistHistoryDataset, type MusicDataset, type MusicEntityKind, type MusicManifest, type MusicRecentTrack, type MusicSoundtrackDataset, type RankedMusic, type SpotifySnapshot } from "@/lib/music/types";
 import { MusicSwap } from "./music-swap";
 import { MusicSoundtrackChart } from "./music-soundtrack-chart";
 import { ListeningChart, WeekdayChart } from "./music-history-charts";
@@ -11,9 +11,11 @@ import { MusicNowPlaying } from "./music-now-playing";
 import { findMusicArtistPhoto, MusicArtistBackground } from "./music-artist-background";
 import { MusicPeriodFilter } from "./music-period-filter";
 import { useMusicCollection } from "./use-music-collection";
+import { useMusicPlayback } from "./use-music-playback";
 import { spotifyEntityUrl } from "@/lib/music/entity-links";
 import { musicPlaceholderStyle } from "@/lib/music/placeholder";
 import { MusicArtistHistory } from "./music-artist-history";
+import { MusicLastTracks } from "./music-last-tracks";
 
 const periodLabels: Record<string, string> = { all: "All time", "30d": "Last 30 days", "365d": "Last year" };
 const safeImage = (value: string | null) => value && /^https:\/\/(i\.scdn\.co|image-cdn[^/]*\.spotifycdn\.com)\//.test(value) ? value : undefined;
@@ -43,11 +45,12 @@ function Rotation({ items }: { items: RankedMusic[] }) {
   </article>)}</div></div>;
 }
 
-interface Props { initialManifest: MusicManifest | null; initialData: MusicDataset | null; initialSpotify: SpotifySnapshot | null; initialSoundtrack: MusicSoundtrackDataset | null; initialArtistHistory: MusicArtistHistoryDataset | null }
-export function MusicExplorer({ initialManifest, initialData, initialSpotify, initialSoundtrack, initialArtistHistory }: Props) {
+interface Props { initialManifest: MusicManifest | null; initialData: MusicDataset | null; initialSpotify: SpotifySnapshot | null; initialSoundtrack: MusicSoundtrackDataset | null; initialArtistHistory: MusicArtistHistoryDataset | null; initialRecentTracks: MusicRecentTrack[] }
+export function MusicExplorer({ initialManifest, initialData, initialSpotify, initialSoundtrack, initialArtistHistory, initialRecentTracks }: Props) {
   const [period, setPeriod] = useState("30d");
   const [tab, setTab] = useState<"tracks" | "artists" | "albums">("tracks");
-  const { manifest, data, spotify, soundtrack, artistHistory, playback, error, loading, api } = useMusicCollection({ manifest: initialManifest, data: initialData, spotify: initialSpotify, soundtrack: initialSoundtrack, artistHistory: initialArtistHistory, playback: null }, period);
+  const { manifest, data, spotify, soundtrack, artistHistory, error, loading, api } = useMusicCollection({ manifest: initialManifest, data: initialData, spotify: initialSpotify, soundtrack: initialSoundtrack, artistHistory: initialArtistHistory }, period);
+  const playback = useMusicPlayback();
   const [headerHeight, setHeaderHeight] = useState<number | null>(null);
   const historyHeading = useRef<HTMLDivElement>(null);
   const historyFilters = useRef<HTMLDivElement>(null);
@@ -103,7 +106,6 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
   }, []);
   const featureReady = Boolean(featured) || fallbackReady;
   const artistImages = [
-    ...(playback?.artistImages || []),
     ...Object.values(spotify?.ranges || {}).flatMap(range => range.artists),
     ...(stats?.topArtists || []),
   ];
@@ -121,6 +123,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
 
     {provider && <section aria-labelledby="music-lately-title"><div className="mb-5"><p className="music-label">The current rotation</p><h2 id="music-lately-title" className="mt-2 font-display text-[42px] leading-none">Heavy <em className="text-accent">rotation.</em></h2></div><Rotation items={provider.tracks} /><p className="mt-4 text-[13px] text-muted">Spotify’s affinity rankings.</p></section>}
 
+    <MusicLastTracks tracks={playback?.recentTracks ?? initialRecentTracks} />
     <MusicArtistHistory data={artistHistory} />
     <section aria-labelledby="music-history-title" className="music-history flex min-w-0 flex-col gap-6"><div ref={historyHeading}><p className="music-label">The bigger picture</p><h2 id="music-history-title" className="mt-2 font-display text-[42px] leading-none">Listening <em className="text-accent">history.</em></h2></div><div ref={historyFilters} className="music-history-filters" data-stuck={filtersStuck || undefined} role="group" aria-label="Filter listening history" style={headerHeight === null ? undefined : { "--music-header-offset": `${headerHeight}px` } as CSSProperties}><MusicPeriodFilter period={period} periods={manifest?.periods || ["all", "30d", "365d"]} onChange={filter} /></div>
       <div className="flex w-full min-w-0 flex-col gap-6"><div aria-live="polite" className={error || !loading && !stats?.plays ? "text-[13px] text-muted" : "sr-only"}>{loading ? "Loading listening history…" : error ? "The latest update is unavailable. Showing the saved collection." : stats?.plays ? `Showing listening history for ${periodLabels[current?.period || period] || period}.` : "Historical imports are being collected. The archive will grow as new plays arrive."}</div>
@@ -134,6 +137,6 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
     </section>
     {spotify?.playlists.length ? <section aria-labelledby="music-playlists-title"><p className="music-label">Mixtapes, more or less</p><h2 id="music-playlists-title" className="mt-2 font-display text-[42px]">In the <em className="text-accent">collection.</em></h2><div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{spotify.playlists.slice(0, 9).map(p => <a key={p.id} className="panel flex items-center gap-4 rounded-[18px] p-4 hover:border-accent" href={p.url} target="_blank" rel="noopener noreferrer"><span className="music-playlist-icon" aria-hidden="true">♫</span><span className="min-w-0"><span className="block truncate font-medium">{p.name}</span><span className="mt-1 block text-[13px] text-muted"><MusicNumber value={p.tracks} /> tracks · Spotify</span></span><span className="sr-only"> (opens in a new tab)</span></a>)}</div></section> : null}
     <noscript><p className="panel rounded-[20px] p-5">This is the saved music collection. Enable JavaScript to explore other periods.</p></noscript>
-    <MusicNowPlaying snapshot={playback} artistImages={artistImages} />
+    <MusicNowPlaying snapshot={playback} artistImages={[...artistImages, ...(playback?.artistImages || [])]} />
   </MusicHoverProvider>;
 }

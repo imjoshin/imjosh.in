@@ -1,29 +1,24 @@
 import { readJson, writeJson, saveListens, type MusicStore } from "./store.ts";
-import type { SpotifyCredentials } from "./auth.ts";
 import { spotifyListen, clean } from "../../src/lib/music/normalize.ts";
 import { isKidsGenre } from "../../src/lib/music/genres.ts";
 import type { RankedMusic, SpotifySnapshot } from "../../src/lib/music/types.ts";
 import savedArtistGenres from "../../content/artist_genres.json" with { type: "json" };
 import { artistGenreKey, parseArtistGenreCatalog, resolveArtistGenres } from "../../src/lib/music/artist-genres.ts";
 import { createSpotifyRequester } from "./spotify-request.ts";
+import { spotifyAccessToken } from "./spotify-token.ts";
 import { ARTIST_IMAGES_FILE, collectArtistImages, rememberArtistImages } from "./artist-images.ts";
 
 type Row = Record<string, any>;
 export interface GenreEntry { genres: string[]; provider: string; fetchedAt: string; artistId: string | null }
 export type GenreIndex = Record<string, GenreEntry>;
 
-export async function collectSpotify(store: MusicStore, full = false, genreBudget = 10000, backfill = false) {
-  const credentials = await readJson<SpotifyCredentials>(store, "secrets/spotify.json");
-  if (!credentials) throw new Error("Spotify is not connected. Run npm run music:auth -- --client-id YOUR_CLIENT_ID");
-  const response = await fetch("https://accounts.spotify.com/api/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: credentials.refreshToken, client_id: credentials.clientId }), signal: AbortSignal.timeout(30000) });
-  const token = await response.json();
-  if (!response.ok || !token.access_token) throw new Error(`Spotify token refresh failed (${response.status}). Reconnect with music:auth.`);
-  if (token.refresh_token) await writeJson(store, "secrets/spotify.json", { ...credentials, refreshToken: token.refresh_token, refreshTokenExpiresAt: token.refresh_token_expires_in ? new Date(Date.now() + token.refresh_token_expires_in * 1000).toISOString() : credentials.refreshTokenExpiresAt });
+export async function collectSpotify(store: MusicStore, full = false, genreBudget = 10000, backfill = false, options: { playback?: boolean; fetch?: typeof fetch } = {}) {
+  const token = await spotifyAccessToken(store, options);
   const fetchedAt = new Date().toISOString(), runId = fetchedAt.replace(/[:.]/g, "-");
   const genreIndex = await readJson<GenreIndex>(store, "catalog/genres.json") || {};
   const artists = new Map<string, Row>();
   const tracks = new Map<string, Row>();
-  const { request, stats } = await createSpotifyRequester(store, token.access_token, fetchedAt);
+  const { request, stats } = await createSpotifyRequester(store, token, fetchedAt, options);
   const observedArtists: Row[] = [];
   function remember(t: Row) {
     if (!t?.id) return; tracks.set(t.id, t);
@@ -35,14 +30,17 @@ export async function collectSpotify(store: MusicStore, full = false, genreBudge
     while (next) { if (visited.has(next)) throw new Error("Spotify pagination repeated a page"); visited.add(next); const page = await request(next); if (!page) break; const value = nested ? page.data[nested] : page.data; const items = value?.items || []; rows.push(...items); next = value?.next || null; }
     return rows;
   }
-  const playback = await request("me/player");
-  await writeJson(store, "state/spotify-playback.json", { checkedAt: new Date().toISOString(), data: playback?.data || null });
-  if (playback?.data.item) remember(playback.data.item);
+  if (options.playback !== false) {
+    const playback = await request("me/player");
+    await writeJson(store, "state/spotify-playback.json", { checkedAt: new Date().toISOString(), data: playback?.data || null });
+    if (playback?.data.item) remember(playback.data.item);
+  }
   const last = await readJson<{ latest: string | null }>(store, "state/spotify-recent.json");
   let recentPath: string | null = "me/player/recently-played?limit=50", latest: string | null = null, oldest: string | null = null, returned = 0;
   const seenRecent = new Set<string>();
   while (recentPath) {
     const recent = await request(recentPath); if (!recent) break;
+    if (!returned) await writeJson(store, "state/spotify-last-tracks.json", { checkedAt: fetchedAt, data: recent.data });
     const rows: Row[] = recent.data.items || [];
     const normalized = rows.map(row => spotifyListen(row, recent.rawRef)).filter((l): l is NonNullable<typeof l> => !!l);
     const fresh = normalized.filter(l => !seenRecent.has(l.id)); if (!fresh.length) break;
@@ -59,7 +57,7 @@ export async function collectSpotify(store: MusicStore, full = false, genreBudge
   let snapshot: SpotifySnapshot | null = null;
   if (full) {
     snapshot = { generatedAt: fetchedAt, ranges: {}, playlists: [] };
-    for (const endpoint of ["me", "me/player/currently-playing", "me/player/devices", "me/player/queue"]) {
+    for (const endpoint of ["me", ...(options.playback === false ? [] : ["me/player/currently-playing"]), "me/player/devices", "me/player/queue"]) {
       const result = await request(endpoint);
       if (result) { remember(result.data.item || result.data.currently_playing); for (const t of result.data.queue || []) remember(t); }
     }

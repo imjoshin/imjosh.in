@@ -13,6 +13,7 @@ export interface MusicStore {
   get(key: string): Promise<Uint8Array | null>;
   set(key: string, value: Uint8Array): Promise<void>;
   list(prefix: string): Promise<string[]>;
+  acquireLock?(key: string, leaseMs: number): Promise<(() => Promise<void>) | null>;
   filePath?(key: string): string;
   setFile?(key: string, filename: string): Promise<void>;
   getStream?(key: string): Promise<ReadableStream<Uint8Array> | null>;
@@ -39,6 +40,13 @@ export function localStore(root = resolve(".music")): MusicStore {
 export function blobStore(name: string, credentials?: { siteID: string; token: string }): MusicStore {
   const store = getStore({ name, ...credentials, consistency: "strong" });
   return {
+    async acquireLock(key, leaseMs) {
+      const prior = await store.getWithMetadata(key, { type: "json" });
+      if (prior && (prior.data as { expiresAt: number }).expiresAt > Date.now()) return null;
+      const claim = await store.setJSON(key, { expiresAt: Date.now() + leaseMs }, prior?.etag ? { onlyIfMatch: prior.etag } : { onlyIfNew: true });
+      if (!claim.modified) return null;
+      return async () => { if (claim.etag) await store.setJSON(key, { expiresAt: 0 }, { onlyIfMatch: claim.etag }); };
+    },
     async setFile(key, filename) { await store.set(key, await openAsBlob(filename)); },
     async getStream(key) { return await store.get(key, { type: "stream" }) as ReadableStream<Uint8Array> | null; },
     async get(key) { const data = await store.get(key, { type: "arrayBuffer" }); return data ? new Uint8Array(data) : null; },

@@ -109,7 +109,17 @@ export function useMusicListMotion<T extends { key: string }>(items: T[], paddin
   }, [rows]);
   useLayoutEffect(() => {
     if (!root.current) return;
-    const measure = () => setHeight(root.current!.getBoundingClientRect().height + padding);
+    let width = root.current.getBoundingClientRect().width;
+    const measure = () => {
+      const bounds = root.current!.getBoundingClientRect();
+      if (Math.abs(bounds.width - width) > .5) {
+        for (const animation of animations.current.values()) animation.cancel();
+        animations.current.clear();
+        for (const [key, node] of nodes.current) if (node.dataset.phase !== "exit") boxes.current.set(key, { top: node.offsetTop, left: node.offsetLeft, width: node.offsetWidth });
+        width = bounds.width;
+      }
+      setHeight(bounds.height + padding);
+    };
     measure(); const observer = new ResizeObserver(measure); observer.observe(root.current);
     return () => observer.disconnect();
   }, [padding]);
