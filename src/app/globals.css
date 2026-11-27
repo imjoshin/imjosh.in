@@ -422,7 +422,7 @@ input.music-year-slider { appearance: none; display: block; width: 100%; height:
 }
 .theme-icon-disc {
   transform-origin: 12px 12px;
-  transform: scale(calc(1 + var(--theme-icon-dark) * .2));
+  transform: scale(calc(1 + var(--theme-icon-dark) * .55));
   transition: transform .5s cubic-bezier(.34, 1.56, .64, 1);
 }
 .theme-icon-bite {
@@ -434,12 +434,6 @@ input.music-year-slider { appearance: none; display: block; width: 100%; height:
   transform-origin: 12px 12px;
   transform: rotate(calc(var(--theme-icon-dark) * -45deg)) scale(calc(1 - var(--theme-icon-dark) * .4));
   transition: opacity .2s, transform .55s cubic-bezier(.34, 1.56, .64, 1);
-}
-.theme-icon-stars {
-  opacity: var(--theme-icon-dark);
-  transform-origin: 19px 5px;
-  transform: scale(calc(.4 + var(--theme-icon-dark) * .6));
-  transition: opacity .25s .1s, transform .65s cubic-bezier(.34, 1.8, .64, 1);
 }
 .theme-toggle-light { display: none; }
 :root[data-theme="dark"] .theme-toggle { --theme-icon-dark: 1; }

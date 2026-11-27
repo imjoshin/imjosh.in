@@ -56,12 +56,12 @@ function ThemeToggle() {
   }
 
   return (
-    <button type="button" className="theme-toggle desktop-nav-link relative inline-flex h-11 w-11 shrink-0 items-center justify-center text-muted hover:text-ink" title="Switch color theme" onClick={toggleTheme}>
-      <svg className="theme-icon" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <button type="button" className="theme-toggle relative inline-flex h-11 w-11 shrink-0 items-center justify-center text-muted hover:text-ink" title="Switch color theme" onClick={toggleTheme}>
+      <svg className="theme-icon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <defs>
           <mask id={maskId}>
             <rect x="-12" y="-12" width="48" height="48" fill="white" />
-            <circle className="theme-icon-bite" cx="24" cy="0" r="9" fill="black" stroke="none" />
+            <circle className="theme-icon-bite" cx="24" cy="0" r="8" fill="black" stroke="none" />
           </mask>
         </defs>
         <g className="theme-icon-rays">
@@ -69,9 +69,6 @@ function ThemeToggle() {
         </g>
         <g mask={`url(#${maskId})`}>
           <circle className="theme-icon-disc" cx="12" cy="12" r="5.5" fill="currentColor" stroke="none" />
-        </g>
-        <g className="theme-icon-stars">
-          <path d="M19 2v4m-2-2h4M22 9v2m-1-1h2" />
         </g>
       </svg>
       <span className="theme-toggle-light sr-only">Switch to light mode</span>
