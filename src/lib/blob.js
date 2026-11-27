@@ -47,7 +47,8 @@ void main(){vec2 uv=(gl_FragCoord.xy*2./uR-1.)*vec2(uAspect,1.);
  float k=dot(n,vec3(.4,.7,.3))*.9+fr*.8+uT*.05;
  vec3 ir=vec3(.44,.4,.96)+vec3(.32,.27,.04)*cos(6.2831*(k+vec3(0.,.22,.5)));
  float hz=smoothstep(-.04,.04,r.y);
- vec3 lo=mix(vec3(.07,.06,.12),vec3(.02,.02,.06),uDark);
+ // White reflected floor in light mode; retain the dark-mode indigo floor.
+ vec3 lo=mix(vec3(1.),vec3(.02,.02,.06),uDark);
  vec3 hi=mix(vec3(.96,.95,1.),vec3(.62,.56,.95),uDark);
  vec3 env=mix(lo+.28*smoothstep(-.7,-.05,r.y)*vec3(.8,.8,1.),hi,hz)+.45*smoothstep(.7,1.,r.y);
  vec3 col=mix(env,env*ir*1.5,.6);
