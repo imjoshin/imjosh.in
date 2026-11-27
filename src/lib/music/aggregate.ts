@@ -2,6 +2,7 @@ import type { Listen, MusicDataset, MusicManifest, MusicPlatform, MusicStats, Ra
 import { aggregationListens } from "./normalize.ts";
 import { isExcludedMusic } from "./genres.ts";
 import { musicEntityKey } from "./entity-links.ts";
+import { listeningTimeCalendar } from "./listening-time.ts";
 
 export const MUSIC_TIMEZONE = "America/New_York";
 export const publicMusicListens = (input: Listen[], now: Date) => aggregationListens(input).filter(l => l.media === "music" && !l.privateSession && !isExcludedMusic(l.track) && Date.parse(l.playedAt) <= now.getTime());
@@ -36,6 +37,8 @@ export function aggregateMusic(input: Listen[], now = new Date(), timezone = MUS
       const months = new Map<string, { month: string; plays: number; msPlayed: number }>();
       const days = new Map<string, { date: string; plays: number; msPlayed: number }>(period === "30d" && rows.length ? dayKeys.map(date => [date, { date, plays: 0, msPlayed: 0 }]) : []);
       const stats: MusicStats = { plays: rows.length, artists: 0, tracks: 0, msPlayed: 0, durationKnown: 0, genreUnknown: 0, firstListen: null, lastListen: null, topTracks: [], topArtists: [], topAlbums: [], months: [], weekdays: Array(7).fill(0), hours: Array(24).fill(0), platforms: {} };
+      const time = listeningTimeCalendar(period, now, rows[0] ? dateParts.get(rows[0].id)!.date : null, timezone);
+      stats.listeningTime = time;
       const add = (map: Map<string, RankedMusic>, key: string, name: string, l: Listen) => { const item = map.get(key) || { key, name, artists: l.track.artists, image: l.track.image, url: l.track.url, plays: 0, msPlayed: 0 }; item.plays++; item.msPlayed += l.msPlayed || 0; item.image ||= l.track.image; item.url ||= l.track.url; map.set(key, item); };
       for (const l of rows) {
         const p = dateParts.get(l.id)!;
@@ -47,6 +50,12 @@ export function aggregateMusic(input: Listen[], now = new Date(), timezone = MUS
         stats.platforms[l.platform] = (stats.platforms[l.platform] || 0) + 1;
         stats.weekdays[p.weekday]++;
         stats.hours[p.hour]++;
+        if (l.msPlayed !== null) {
+          time.weekdaysMsPlayed[p.weekday] += l.msPlayed;
+          time.hoursMsPlayed[p.hour] += l.msPlayed;
+          time.weekdaysDurationKnown[p.weekday]++;
+          time.hoursDurationKnown[p.hour]++;
+        }
         add(tracks, l.track.key, l.track.title, l);
         for (const name of l.track.artists) add(artists, name.toLocaleLowerCase("en-US"), name, l);
         if (l.track.album) {

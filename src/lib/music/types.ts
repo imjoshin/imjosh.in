@@ -70,6 +70,17 @@ export interface MusicEntityDataset {
   entities: Record<string, MusicEntity>;
 }
 
+export interface MusicListeningTime {
+  startDate: string;
+  endDate: string;
+  days: number;
+  weekdayDays: number[];
+  weekdaysMsPlayed: number[];
+  hoursMsPlayed: number[];
+  weekdaysDurationKnown: number[];
+  hoursDurationKnown: number[];
+}
+
 export interface MusicStats {
   plays: number;
   artists: number;
@@ -87,6 +98,8 @@ export interface MusicStats {
   days?: { date: string; plays: number; msPlayed: number }[];
   weekdays: number[];
   hours: number[];
+  /** Measured duration and calendar-day denominators; absent in older summaries. */
+  listeningTime?: MusicListeningTime;
   platforms: Partial<Record<MusicPlatform, number>>;
 }
 

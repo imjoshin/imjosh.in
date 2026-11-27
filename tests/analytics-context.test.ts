@@ -48,3 +48,14 @@ test("input methods and recording artists distinguish otherwise identical item n
   assert.equal(one.method, "keyboard");
   for (const rank of ["", "0", "-1", "2.5", "NaN", "Infinity"]) assert.equal(analyticsContext(node({ "data-analytics-item-rank": rank })).item_rank, undefined);
 });
+
+test("average-time tooltips inherit their chart, displayed period, hour, and input method", () => {
+  const chart = node({ "data-analytics-section": "hourly", "data-analytics-chart": "hourly", "data-analytics-metric": "average_listening_time", "data-analytics-period": "30d" });
+  const surface = node({ "data-analytics-method": "keyboard" }, chart);
+  const tooltip = node({ "data-analytics-inspect": "chart", "data-analytics-bucket": "09", "data-analytics-item-group": "chart_tooltip" }, surface);
+  assert.deepEqual(analyticsContext(tooltip), { section: "hourly", chart: "hourly", metric: "average_listening_time", period: "30d", bucket: "09", item_group: "chart_tooltip", method: "keyboard" });
+  assert.notDeepEqual(analyticsContext(tooltip), analyticsContext(node({ "data-analytics-bucket": "10" }, surface)));
+  const weekday = node({ "data-analytics-section": "weekday", "data-analytics-chart": "weekday", "data-analytics-metric": "average_listening_time", "data-analytics-period": "365d" });
+  assert.equal(analyticsContext(node({ "data-analytics-bucket": "Monday" }, weekday)).chart, "weekday");
+  assert.equal(analyticsContext(node({ "data-analytics-bucket": "Monday" }, weekday)).period, "365d");
+});

@@ -345,6 +345,16 @@ input.music-year-slider { appearance: none; display: block; width: 100%; height:
 .music-chart-surface[data-inspecting="true"] .music-day-column:not([data-active]) .music-day-bar { opacity: .28; }
 .music-day-column[data-active] .music-day-bar { filter: brightness(1.2); }
 .music-day-column[data-active] > span:last-child { color: var(--acc); }
+.music-hourly-rows { display: grid; flex: 1; grid-template-rows: repeat(24, minmax(28px, 1fr)); }
+.music-hour-row { display: grid; width: 100%; min-width: 0; min-height: 28px; grid-template-columns: 3.25rem minmax(0, 1fr) 5rem; align-items: center; gap: 12px; border-radius: 5px; text-align: left; }
+.music-hour-label { color: var(--mute); font-size: 12px; font-variant-numeric: tabular-nums; }
+.music-hour-track { display: block; height: 10px; border-left: 1px solid var(--line); }
+.music-hour-bar { display: block; height: 100%; border-radius: 0 4px 4px 0; background: color-mix(in srgb, var(--acc) 48%, transparent); transition: width .48s cubic-bezier(.22,1,.36,1), background-color .18s, opacity .18s; }
+.music-hour-row[data-peak] .music-hour-bar { background: var(--acc); }
+.music-hour-row:is(:hover, [data-active]) { background: color-mix(in srgb, var(--acc) 6%, transparent); }
+.music-hour-row[data-active] .music-hour-label { color: var(--acc); }
+.music-hour-row[data-active] .music-hour-bar { background: var(--acc); }
+.music-hourly-rows[data-inspecting] .music-hour-row:not([data-active]) .music-hour-bar { opacity: .45; }
 @keyframes music-tooltip-appear { from { opacity: 0; } to { opacity: 1; } }
 .music-ranking-scroll { --music-ranking-row-height: 73px; max-height: calc(10 * var(--music-ranking-row-height)); margin-inline: -6px; padding-inline: 6px; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; overflow-anchor: none; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
 .music-ranking-scroll > .music-collection { margin-block: 0; padding-block: 0; }

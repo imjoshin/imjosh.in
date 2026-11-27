@@ -6,7 +6,7 @@ import { MusicArtists, MusicLink } from "./music-entity-link";
 
 const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
-export interface ChartTooltipRow { key: string; label: string; value: number; detail?: string; color?: string; entity?: MusicEntityRef; artists?: string[]; onSelect?: () => void }
+export interface ChartTooltipRow { key: string; label: string; value: number; formattedValue?: string; detail?: string; color?: string; entity?: MusicEntityRef; artists?: string[]; onSelect?: () => void }
 type TooltipSide = "top" | "bottom" | "left" | "right";
 
 export function MusicChartTooltip({ id, title, rows, x = 50, placement = "top", preferTop = false, secondary, notice, onCardClose, analyticsBucket }: { analyticsBucket?: string; id: string; title: string; rows: ChartTooltipRow[]; x?: number; placement?: "top" | "bottom"; preferTop?: boolean; secondary?: string; notice?: ReactNode; onCardClose?: () => void }) {
@@ -58,7 +58,7 @@ export function MusicChartTooltip({ id, title, rows, x = 50, placement = "top", 
     {rows.length ? <ul className="space-y-2">{rows.slice(0, limit).map((row, index) => <li data-analytics-item-rank={index + 1} key={row.key} className="flex items-start gap-2 text-[13px]">
       {row.color && <span className="music-series-dot mt-1" style={{ background: row.color }} />}
       <span className="min-w-0 flex-1 break-words"><span className="music-tooltip-label">{row.entity ? <MusicLink entity={row.entity} onCardClose={onCardClose}>{row.label}</MusicLink> : row.onSelect ? <button type="button" className="text-left hover:text-accent" onClick={row.onSelect}>{row.label}</button> : row.label}</span>{row.detail && <span className="mt-0.5 block truncate text-[12px] text-muted">{row.artists ? <MusicArtists names={row.artists} onCardClose={onCardClose} /> : row.detail}</span>}{row.entity && row.onSelect && <button type="button" className="mt-1 block text-accent underline underline-offset-2" aria-label={`Show songs for ${row.label}`} onClick={row.onSelect}>View songs</button>}</span>
-      <span className="shrink-0 whitespace-nowrap font-medium tabular-nums">{number.format(row.value)} <span className="font-normal text-muted">{row.value === 1 ? "play" : "plays"}</span></span>
+      <span className="shrink-0 whitespace-nowrap font-medium tabular-nums">{row.formattedValue ?? <>{number.format(row.value)} <span className="font-normal text-muted">{row.value === 1 ? "play" : "plays"}</span></>}</span>
     </li>)}</ul> : !notice && <p className="text-[13px] text-muted">No entries for this period.</p>}
     {rows.length > limit && <p className="mt-2 text-[12px] text-muted">{limit} of {rows.length} series. Choose a legend entry for details.</p>}
     {secondary && <p className="mt-2 text-[12px] text-muted">{secondary}</p>}
