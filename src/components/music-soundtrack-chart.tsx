@@ -6,6 +6,7 @@ import { MusicChartTooltip } from "./music-chart-tooltip";
 import { hasMissingMusicHistory, musicHistoryGap } from "@/lib/music/history-gap";
 import { MusicHistoryGapBand, MusicHistoryGapNotice } from "./music-history-gap";
 import { chartPointAt, musicLinePath, nearestChartIndex, type MusicChartPoint } from "@/lib/music/chart-interaction";
+import { soundtrackChartSeries } from "@/lib/music/soundtrack-chart";
 import { MusicNumber, useMusicLineMotion, useMusicPresence } from "./music-motion";
 import { isMusicCardTarget } from "./music-entity-link";
 import { trackEvent } from "@/lib/analytics";
@@ -32,21 +33,19 @@ const dash = (index: number) => {
 };
 const total = (series: SoundtrackSeries) => series.plays.reduce((a, b) => a + b, 0);
 const bucketTime = (key: string) => Date.parse(key + (key.length === 4 ? "-01-01" : key.length === 7 ? "-01" : "") + "T12:00:00Z");
-interface PlotSeries { key: string; source: SoundtrackSeries; points: MusicChartPoint[]; index: number; qualifying: Set<number> }
+interface PlotSeries { key: string; source: SoundtrackSeries; points: MusicChartPoint[]; index: number }
 interface Inspection { keys: string[]; x: number }
 interface PointInput { clientX: number; clientY: number; target: EventTarget | null }
 
 function SoundtrackLine({ item, phase, selectedTime, highlighted, dimmed, frames }: { item: PlotSeries; phase: "present" | "enter" | "exit"; selectedTime: number; highlighted: boolean; dimmed: boolean; frames: Map<string, MusicChartPoint[]> }) {
   const points = useMusicLineMotion(phase === "exit" ? [] : item.points, 290, phase === "enter");
   useLayoutEffect(() => { frames.set(item.key, points); return () => { frames.delete(item.key); }; }, [frames, item.key, points]);
-  const path = musicLinePath(points, point => item.qualifying.has(point.t));
-  const isolated = points.filter((point, i) => item.qualifying.has(point.t) && !item.qualifying.has(points[i - 1]?.t) && !item.qualifying.has(points[i + 1]?.t));
+  const path = musicLinePath(points);
   const selected = chartPointAt(points, selectedTime);
   return <g className="music-series-presence" data-phase={phase} aria-hidden={phase === "exit" || undefined} pointerEvents={phase === "exit" ? "none" : undefined}>
     <g className="music-soundtrack-line" data-key={item.source.key} style={{ opacity: dimmed ? .13 : 1 }}>
       <path className="music-soundtrack-path cursor-pointer" d={path} stroke={color(item.index)} strokeWidth={highlighted ? 3.5 : 2} strokeDasharray={dash(item.index)} strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      {isolated.map(point => <circle key={point.t} cx={point.x} cy={point.y} r="3" fill={color(item.index)} className="cursor-pointer" />)}
-      {item.qualifying.has(selectedTime) && <circle cx={selected.x} cy={selected.y} r={highlighted ? 5 : 3} fill={color(item.index)} stroke="var(--bg)" strokeWidth="1.5" className="cursor-pointer" />}
+      {points.length > 0 && <circle cx={selected.x} cy={selected.y} r={highlighted ? 5 : 3} fill={color(item.index)} stroke="var(--bg)" strokeWidth="1.5" className="cursor-pointer" />}
     </g>
   </g>;
 }
@@ -85,14 +84,12 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
 
   const coordinates = { left: 56, right: plotWidth - 16, top: 24, bottom: 290 };
   const minimum = data?.minimumPlays ?? (period === "30d" ? 1 : 11);
-  // With no play cutoff, zero is an observed count rather than a missing point.
-  const pointMinimum = minimum === 1 ? 0 : minimum;
   const buckets = data?.buckets || [];
   const gap = musicHistoryGap(buckets.map(bucket => bucket.key));
   const periodName = granularity;
   const chartName = granularity === "day" ? "Daily" : granularity === "month" ? "Monthly" : "Yearly";
   const rangeLabel = data?.period === "all" ? "All time" : data?.period === "30d" ? "Last 30 days" : data?.period === "365d" ? "Last year" : data?.period || period;
-  const series = (data?.metrics[metric].series || []).filter(line => line.plays.some(plays => plays >= minimum)).map(line => ({ ...line, plays: line.plays.map(plays => plays >= minimum ? plays : 0) })).sort((a, b) => total(b) - total(a) || a.key.localeCompare(b.key));
+  const series = soundtrackChartSeries(data?.metrics[metric].series || [], buckets.length, minimum);
   const selectedIndex = Math.max(0, selectedBucket ? buckets.findIndex(s => s.key === selectedBucket) : buckets.length - 1);
   const highlightKeys = (hovered ? [hovered] : inspection?.keys.length ? inspection.keys : pinned ? [pinned] : []).filter(key => series.some(line => line.key === key));
   const maximum = Math.max(1, ...series.flatMap(s => s.plays));
@@ -104,12 +101,11 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
   const plotted = useMusicPresence(series.map((source, index) => ({
     key: granularity + ":" + metric + ":" + source.key, source, index,
     points: source.plays.map((plays, i) => ({ t: bucketTime(buckets[i].key), x: x(i), y: y(plays) })),
-    qualifying: new Set(source.plays.flatMap((plays, i) => plays >= pointMinimum ? [bucketTime(buckets[i].key)] : [])),
   })));
   const frames = useRef(new Map<string, MusicChartPoint[]>());
-  const leaders = [...series].filter(line => line.plays[selectedIndex] >= pointMinimum).sort((a, b) => b.plays[selectedIndex] - a.plays[selectedIndex] || a.key.localeCompare(b.key)).slice(0, 5);
+  const leaders = [...series].sort((a, b) => b.plays[selectedIndex] - a.plays[selectedIndex] || a.key.localeCompare(b.key)).slice(0, 5);
   const legend = series;
-  const tooltipSeries = (inspection?.keys.length ? series.filter(line => inspection.keys.includes(line.key)) : leaders).filter(line => line.plays[selectedIndex] >= pointMinimum);
+  const tooltipSeries = inspection?.keys.length ? series.filter(line => inspection.keys.includes(line.key)) : leaders;
 
   function hit(event: PointInput, forced?: string) {
     if (!buckets.length || !svg.current) return null;
@@ -119,8 +115,8 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
     if (px < coordinates.left - 8 || px > coordinates.right + 8 || py < coordinates.top - 8 || py > coordinates.bottom + 8) return null;
     const index = nearestChartIndex((px - coordinates.left) / (coordinates.right - coordinates.left), buckets.length);
     const key = forced || (event.target instanceof Element ? event.target.closest(".music-soundtrack-line")?.getAttribute("data-key") : null);
-    const known = key ? series.find(line => line.key === key && line.plays[index] >= pointMinimum) : null;
-    const distances = series.filter(line => line.plays[index] >= pointMinimum).map(line => ({
+    const known = key ? series.find(line => line.key === key) : null;
+    const distances = series.map(line => ({
       line, distance: Math.abs((frames.current.get(granularity + ":" + metric + ":" + line.key) ? chartPointAt(frames.current.get(granularity + ":" + metric + ":" + line.key)!, bucketTime(buckets[index].key)).y : y(line.plays[index])) - py),
     }));
     const nearest = Math.min(...distances.map(item => item.distance));
@@ -192,7 +188,7 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
             <p id={id + "-chart-help"} className="sr-only">Use Left and Right to explore {periodName}s, Up and Down to highlight lines, Enter to open songs for the selected line, and Escape to clear the selection.</p>
             <svg ref={svg} viewBox={"0 0 " + plotWidth + " 350"} preserveAspectRatio="none" className="music-soundtrack-svg" role="img" aria-labelledby={id + "-chart-title " + id + "-chart-description"} onPointerMove={interaction.onPointerMove} onPointerDown={interaction.onPointerDown} onPointerUp={interaction.onPointerUp} onPointerCancel={interaction.onPointerCancel}>
               <title id={id + "-chart-title"}>{chartName + " top " + metric + ", " + rangeLabel}</title>
-              <desc id={id + "-chart-description"}>{series.length + " series selected from each " + periodName + "'s top five. " + (minimum > 1 ? "Only totals with at least " + minimum + " plays appear. Lower-volume periods appear as gaps. " : "Days without recorded plays appear at zero. ") + "Select a line or legend entry to view its songs."}</desc>
+              <desc id={id + "-chart-description"}>{series.length + " series selected from each " + periodName + "'s top five. " + (minimum > 1 ? "Only totals with at least " + minimum + " plays appear. Lower-volume periods appear at zero. " : "Days without recorded plays appear at zero. ") + "Select a line or legend entry to view its songs."}</desc>
               <MusicHistoryGapBand range={gap} left={coordinates.left} right={coordinates.right} top={coordinates.top} bottom={coordinates.bottom} active={!!inspection && !!buckets[selectedIndex] && hasMissingMusicHistory(buckets[selectedIndex].key)} />
               {Array.from({ length: Math.round(ceiling / step) + 1 }, (_, i) => i * step).map(value => <g key={value} pointerEvents="none"><line x1={coordinates.left} x2={coordinates.right} y1={y(value)} y2={y(value)} stroke="var(--line)" strokeDasharray="3 6" /><text x={coordinates.left - 8} y={y(value) + 4} textAnchor="end" fill="var(--mute)" fontSize="13">{number(value)}</text></g>)}
               {buckets.map((bucket, i) => <g key={bucket.key} pointerEvents="none">{(i === buckets.length - 1 || i % labelStride === 0 && (i === 0 || x(buckets.length - 1) - x(i) >= 90)) && <text x={x(i)} y="319" textAnchor={i === 0 && buckets.length > 1 ? "start" : i === buckets.length - 1 && buckets.length > 1 ? "end" : "middle"} fill="var(--mute)" fontSize="13">{granularity === "year" ? bucket.label : bucket.label.replace(/,? \d{4}$/, "")}<tspan x={x(i)} dy="17">{granularity === "year" ? "" : bucket.key.slice(0, 4)}</tspan></text>}</g>)}
