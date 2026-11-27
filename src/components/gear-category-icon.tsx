@@ -14,6 +14,7 @@ const paths: Record<GearIconCategory, ReactNode> = {
   phone: <><rect x="6" y="2" width="12" height="20" rx="2.5" /><path d="M10 5h4M11 19h2" /></>,
   desk: <><path d="M3 9h18M5 9v12M19 9v12M5 16h14" /><rect x="7" y="3" width="10" height="6" rx="1" /></>,
   audio: <><path d="M4 14v-3a8 8 0 0 1 16 0v3" /><rect x="3" y="12" width="4" height="8" rx="2" /><rect x="17" y="12" width="4" height="8" rx="2" /></>,
+  av: <><rect x="3" y="4" width="18" height="12" rx="3" /><circle cx="12" cy="10" r="3" /><path d="M12 16v4M7 20h10" /></>,
   microphone: <><rect x="8" y="2" width="8" height="13" rx="4" /><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8" /></>,
   console: <><path d="M7 7h10a3 3 0 0 1 2.9 2.2l2 7.5a2.5 2.5 0 0 1-4.2 2.4L15 16H9l-2.7 3.1a2.5 2.5 0 0 1-4.2-2.4l2-7.5A3 3 0 0 1 7 7Z" /><path d="M7.5 10v5M5 12.5h5" /><circle cx="16" cy="11" r=".75" fill="currentColor" stroke="none" /><circle cx="18.5" cy="13.5" r=".75" fill="currentColor" stroke="none" /></>,
 };

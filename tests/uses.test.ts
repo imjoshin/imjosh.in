@@ -220,25 +220,44 @@ test("over-ear headphones, earbuds and microphones each retain one active item t
   assert.deepEqual(earbuds("2018-05"), ["Shure SE215-CL-UNI"]);
   assert.deepEqual(earbuds("2018-06"), ["KZ ZST"]);
   assert.deepEqual(earbuds("2023-03"), ["Google Pixel Buds Pro"]);
-  const microphones = (month: string) => usesAt(month).categories.find((category) => category.key === "audio")!.items.filter((item) => item.details.subtype === "microphone").map((item) => item.name);
+  const microphones = (month: string) => usesAt(month).categories.find((category) => category.key === "av")!.items.filter((item) => item.details.subtype === "microphone").map((item) => item.name);
   assert.deepEqual(microphones("2023-02"), ["Zalman ZM-MIC1"]);
   assert.deepEqual(microphones("2023-03"), ["Shure MV7"]);
 });
 
-test("the approved display order includes microphones in Audio", () => {
-  assert.deepEqual(categories.map(([, label]) => label), ["Desktop", "Monitors", "Keyboard", "Mouse", "Laptop", "Phone", "Camera", "Lenses", "Desk", "Audio", "Consoles"]);
+test("the approved display order groups microphones and webcams in AV", () => {
+  assert.deepEqual(categories.map(([, label]) => label), ["Desktop", "Monitors", "Keyboard", "Mouse", "Laptop", "Phone", "Camera", "Lenses", "Desk", "Audio", "AV", "Consoles"]);
   const audio = usesAt("2026-11").categories.find((category) => category.key === "audio")!;
-  assert.deepEqual(audio.items.map((item) => item.name).sort(), ["Google Pixel Buds Pro", "Sennheiser HD 4.50 BTNC", "Shure MV7"].sort());
-  assert.equal(audio.items.find((item) => item.name === "Shure MV7")!.details.category, "microphone");
+  assert.deepEqual(audio.items.map((item) => item.name).sort(), ["Google Pixel Buds Pro", "Sennheiser HD 4.50 BTNC"].sort());
+  const av = usesAt("2026-11").categories.find((category) => category.key === "av")!;
+  assert.deepEqual(av.items.map((item) => item.name).sort(), ["Logitech Brio 4K", "Shure MV7"].sort());
+  assert.equal(av.items.find((item) => item.name === "Shure MV7")!.details.category, "microphone");
+  assert.equal(av.items.find((item) => item.name === "Logitech Brio 4K")!.details.category, "desk");
+  assert.equal(usesAt("2014-01").categories.find((category) => category.key === "av")!.hasHistory, false);
+  assert.equal(usesAt("2014-02").categories.find((category) => category.key === "av")!.hasHistory, true);
 });
 
 test("approved desk equipment has its own category without excluded household gear", () => {
   const desk = usesAt("2026-11").categories.find((category) => category.key === "desk")!.items;
   assert.ok(desk.some((item) => item.name === "VIVO DESK-V102E"));
-  assert.ok(desk.some((item) => item.name === "Logitech Brio 4K"));
+  assert.ok(desk.every((item) => item.details.subtype !== "webcam"));
   assert.ok(desk.some((item) => item.name === "VIVO STAND-V257R"));
   const names = usesItems.map((item) => `${item.make} ${item.model}`).join("\n");
   for (const excluded of ["DESK-V102EW", "MasterKeys", "Sonar", "K400", "Bnnwa", "EF-M 15-45mm"]) assert.ok(!names.includes(excluded), excluded);
+});
+
+test("webcams replace their predecessors in AV on their purchase dates", () => {
+  const webcams = (month: string) => usesAt(month).categories.find((category) => category.key === "av")!.items.filter((item) => item.details.subtype === "webcam").map((item) => item.name);
+  assert.deepEqual(webcams("2017-10"), []);
+  assert.deepEqual(webcams("2017-11"), ["HAVIT HV-N5086"]);
+  assert.deepEqual(webcams("2020-06"), ["HAVIT HV-N5086"]);
+  assert.deepEqual(webcams("2020-07"), ["NexiGo N930AF"]);
+  assert.deepEqual(webcams("2022-08"), ["NexiGo N930AF"]);
+  assert.deepEqual(webcams("2022-09"), ["Logitech Brio 4K"]);
+  const changes = (month: string) => usesAt(month).changes.filter((event) => event.item.subtype === "webcam").map((event) => [event.date, event.op, event.item.make]);
+  assert.deepEqual(changes("2020-07"), [["2020-07-20", "-", "HAVIT"], ["2020-07-20", "+", "NexiGo"]]);
+  assert.deepEqual(changes("2022-09"), [["2022-09-12", "-", "NexiGo"], ["2022-09-12", "+", "Logitech"]]);
+  for (let position = monthIndex("2017-11"); position <= monthIndex("2026-11"); position++) assert.equal(webcams(monthAt(position)).length, 1, monthAt(position));
 });
 
 test("the black BEKANT corner desk is replaced by the VIVO frame in July 2020", () => {

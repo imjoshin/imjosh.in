@@ -5,7 +5,7 @@ export const timelineStartYear = Math.min(...usesItems.map((item) => Number(item
 export const categories = [
   ["desktop", "Desktop"], ["monitor", "Monitors"], ["keyboard", "Keyboard"], ["mouse", "Mouse"],
   ["laptop", "Laptop"], ["phone", "Phone"], ["camera", "Camera"], ["lens", "Lenses"],
-  ["desk", "Desk"], ["audio", "Audio"], ["console", "Consoles"],
+  ["desk", "Desk"], ["audio", "Audio"], ["av", "AV"], ["console", "Consoles"],
 ] as const;
 
 export type GearCategory = (typeof categories)[number][0];
@@ -14,7 +14,7 @@ export type GearEvent = { date: string; op: "+" | "-"; category: GearCategory; i
 export function itemCategory(item: UsesItem): GearCategory {
   if (item.category === "desktop") return item.subtype === "computer" || item.subtype === "peripheral" ? "desktop" : item.subtype;
   if (item.category === "camera") return item.subtype === "lens" ? "lens" : "camera";
-  if (item.category === "microphone") return "audio";
+  if (item.category === "microphone" || (item.category === "desk" && item.subtype === "webcam")) return "av";
   return item.category;
 }
 

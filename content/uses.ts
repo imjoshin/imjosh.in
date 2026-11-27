@@ -1534,6 +1534,82 @@ export const usesItems: UsesItem[] = [
     {
         "category": "desk",
         "subtype": "webcam",
+        "make": "HAVIT",
+        "model": "HV-N5086",
+        "description": "VGA webcam · Integrated USB microphone",
+        "producer": "HAVIT",
+        "releaseYear": null,
+        "image": {
+            "src": "/gear/havit-hv-n5086.jpg",
+            "alt": "HAVIT HV-N5086 webcam product view",
+            "sourceUrl": "https://www.computervillage.com.bd/image/cache/catalog/products_2025/hv-n5086-01-500x500-550x550.jpg"
+        },
+        "specs": {
+            "Video": "640 × 480 (VGA) recommended",
+            "Frame rate": "Up to 30fps at VGA",
+            "Connection": "USB 2.0, compatible with USB 1.1",
+            "Microphone": "Integrated USB microphone",
+            "Lighting": "Three adjustable LEDs",
+            "Power": "5V via USB",
+            "Mount": "Folding monitor clip"
+        },
+        "sources": [
+            {
+                "label": "Original HAVIT HV-N5086 user manual",
+                "url": "https://images-na.ssl-images-amazon.com/images/I/61TQF7ituQL.pdf"
+            },
+            {
+                "label": "Exact-model product photo reference",
+                "url": "https://www.computervillage.com.bd/havit-hv-n5086-webcam"
+            }
+        ],
+        "acquireDate": "2017-11-28",
+        "active": false,
+        "doneDate": "2020-07-20"
+    },
+    {
+        "category": "desk",
+        "subtype": "webcam",
+        "make": "NexiGo",
+        "model": "N930AF",
+        "description": "1080p webcam · Autofocus and privacy cover",
+        "producer": "NexiGo",
+        "releaseYear": null,
+        "image": {
+            "src": "/gear/nexigo-n930af.jpg",
+            "alt": "NexiGo N930AF autofocus webcam with its privacy cover",
+            "sourceUrl": "https://cdn.shopify.com/s/files/1/0081/8207/1377/products/N930AF.jpg?v=1629178422&width=960"
+        },
+        "specs": {
+            "Video": "1920 × 1080 at 30fps",
+            "Focus": "Autofocus",
+            "Field of view": "74 degrees diagonal",
+            "Sensor": "1/2.7-inch 2MP CMOS",
+            "Microphone": "Built-in noise-reducing microphone",
+            "Connection": "USB plug and play",
+            "Privacy": "Included privacy cover"
+        },
+        "sources": [
+            {
+                "label": "NexiGo N930AF technical information",
+                "url": "https://www.nexigo.com/pages/n930af-technical-information"
+            },
+            {
+                "label": "Manufacturer model and product-listing reference",
+                "url": "https://www.nexigo.com/pages/comparison-table"
+            },
+            {
+                "label": "Purchased model product listing",
+                "url": "https://www.amazon.com/dp/B08931JJLV"
+            }
+        ],
+        "acquireDate": "2020-07-20",
+        "active": false,
+        "doneDate": "2022-09-12"
+    },
+    {
+        "category": "desk",
+        "subtype": "webcam",
         "make": "Logitech",
         "model": "Brio 4K",
         "description": "4K webcam · Autofocus and HDR",
