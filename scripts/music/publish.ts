@@ -76,7 +76,7 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     spotify.playlists = [];
     await immutable("spotify", spotify);
   }
-  const playback = publicSpotifyPlayback(await readJson<SpotifyPlaybackSource>(privateStore, "state/spotify-playback.json"), name => genres[name.toLowerCase()]?.genres || [], key => [...genreByTrack.get(key) || []], key => disneyTracks.has(key), now);
+  const playback = publicSpotifyPlayback(await readJson<SpotifyPlaybackSource>(privateStore, "state/spotify-playback.json"), now);
   if (playback.track) favorites.push({ kind: "track", ...playback.track });
   await immutable("playback", playback);
   const entities = aggregateEntities(verifiedRows, favorites, entityMetadata, now);
