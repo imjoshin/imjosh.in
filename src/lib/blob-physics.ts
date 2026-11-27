@@ -299,16 +299,18 @@ export class BlobSimulation {
     const hit = this.raycast(from, direction, Math.hypot(...direction));
     if (!hit) return [];
     const [x, y, z] = hit.point;
-    return this.burstParticle(hit.owner, [4 * x / (4 - z), 4 * y / (4 - z)], strength);
+    return this.burstParticle(hit.owner, [4 * x / (4 - z), 4 * y / (4 - z)], strength, true);
   }
 
-  private burstParticle(hit: number, point: Point, strength = 1): number[] {
+  private burstParticle(hit: number, point: Point, strength = 1, splitHitOnly = false): number[] {
+    const target = this.particles[hit];
     const connected = this.connectedTo(hit);
-    // Attached roots separate as whole blobs. One root may split into smaller pieces.
+    // Clicks separate attached roots whole; pellets also split only the hit particle.
     const attachedRoots = new Set(connected.map((particle) => particle.root)).size > 1;
     const affected: number[] = [];
     for (const particle of connected) {
-      const child = attachedRoots ? null : this.split(particle);
+      const canSplit = splitHitOnly ? particle === target : !attachedRoots;
+      const child = canSplit ? this.split(particle) : null;
       if (child) {
         const angle = particle.id * 2.4 + .7;
         const spread: Vector = [Math.cos(angle) * this.scale, Math.sin(angle) * this.scale, .15 * this.scale];

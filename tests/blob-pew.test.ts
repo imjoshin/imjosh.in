@@ -101,6 +101,45 @@ test("the first blob absorbs a pellet and protects a separate blob behind it", (
   assert.equal(simulation.particles.filter((particle) => particle.root === 1).length, 2);
 });
 
+test("a pew impact splits the hit root while pushing its attached chain apart", () => {
+  const { simulation, pew } = fixture([[-.75, 0, 0], [0, 0, 0], [.75, 0, 0], [3, 0, 0]]);
+  const before = structuredClone(simulation.particles);
+  pew.start();
+  pew.stop();
+  advance(pew, .6);
+  assert.equal(pew.pellets.length, 0);
+  assert.equal(simulation.particles.length, 5);
+  simulation.roots.forEach((root, i) => {
+    const pieces = simulation.particles.filter((particle) => particle.root === i);
+    assert.equal(pieces.length, i === 1 ? 2 : 1);
+    assert.ok(Math.abs(pieces.reduce((sum, particle) => sum + particle.volume, 0) - root.volume) < 1e-10);
+    assert.ok(Math.abs(pieces.reduce((sum, particle) => sum + particle.displayVolume, 0) - root.volume) < 1e-10);
+    for (const piece of pieces) {
+      assert.deepEqual(piece.position, before[i].position);
+      assert.deepEqual(piece.velocity, before[i].velocity);
+      assert.equal(piece.volume, i === 1 ? root.volume / 2 : root.volume);
+      if (i < 3) assert.ok(Math.hypot(...piece.impulse) > 0);
+    }
+  });
+  assert.deepEqual(simulation.particles[3], before[3]);
+});
+
+test("a pellet splits only the hit fragment when same-root pieces are attached", () => {
+  const { simulation } = fixture();
+  simulation.burstAt([0, 0]);
+  simulation.particles.forEach((particle, i) => {
+    particle.position = i === 0 ? [.55, 0, 0] : [0, 0, 0];
+    particle.displayVolume = particle.volume;
+    particle.impulse = [0, 0, 0];
+  });
+  const neighborVolume = simulation.particles[0].volume;
+  assert.deepEqual(simulation.burstAlong([0, 0, 2], [0, 0, -1]), [1, 2, 0]);
+  assert.equal(simulation.particles[0].volume, neighborVolume);
+  assert.equal(simulation.particles[1].volume, neighborVolume / 2);
+  assert.equal(simulation.particles[2].volume, neighborVolume / 2);
+  assert.ok(simulation.particles.every((particle) => Math.hypot(...particle.impulse) > 0));
+});
+
 test("a swept flight hits a bridge and does not burst surfaces beyond the traveled segment", () => {
   const { simulation } = fixture();
   assert.deepEqual(simulation.burstAlong([0, 0, 4], [0, 0, 3]), []);
@@ -109,7 +148,10 @@ test("a swept flight hits a bridge and does not burst surfaces beyond the travel
   const two = new BlobSimulation({ count: 2 });
   two.particles[0].position = [-two.roots[0].radius - .1, 0, 0];
   two.particles[1].position = [two.roots[1].radius + .1, 0, 0];
-  assert.deepEqual(two.burstAlong([0, 0, 1], [0, 0, -1]), [0, 1]);
+  assert.deepEqual(two.burstAlong([0, 0, 1], [0, 0, -1]), [0, 2, 1]);
+  assert.equal(two.particles[0].volume, two.roots[0].volume / 2);
+  assert.equal(two.particles[1].volume, two.roots[1].volume);
+  assert.equal(two.particles[2].volume, two.roots[0].volume / 2);
 });
 
 test("a swept pellet pushes minimum-size fragments without tunneling or splitting again", () => {
