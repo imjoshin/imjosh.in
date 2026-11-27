@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { type MusicDataset, type MusicEntityKind, type MusicManifest, type MusicSoundtrackDataset, type RankedMusic, type SpotifySnapshot } from "@/lib/music/types";
+import { type MusicArtistHistoryDataset, type MusicDataset, type MusicEntityKind, type MusicManifest, type MusicSoundtrackDataset, type RankedMusic, type SpotifySnapshot } from "@/lib/music/types";
 import { MusicSwap } from "./music-swap";
 import { MusicSoundtrackChart } from "./music-soundtrack-chart";
 import { ListeningChart, WeekdayChart } from "./music-history-charts";
@@ -13,6 +13,7 @@ import { MusicPeriodFilter } from "./music-period-filter";
 import { useMusicCollection } from "./use-music-collection";
 import { spotifyEntityUrl } from "@/lib/music/entity-links";
 import { musicPlaceholderStyle } from "@/lib/music/placeholder";
+import { MusicArtistHistory } from "./music-artist-history";
 
 const periodLabels: Record<string, string> = { all: "All time", "30d": "Last 30 days", "365d": "Last year" };
 const safeImage = (value: string | null) => value && /^https:\/\/(i\.scdn\.co|image-cdn[^/]*\.spotifycdn\.com)\//.test(value) ? value : undefined;
@@ -42,11 +43,11 @@ function Rotation({ items }: { items: RankedMusic[] }) {
   </article>)}</div></div>;
 }
 
-interface Props { initialManifest: MusicManifest | null; initialData: MusicDataset | null; initialSpotify: SpotifySnapshot | null; initialSoundtrack: MusicSoundtrackDataset | null }
-export function MusicExplorer({ initialManifest, initialData, initialSpotify, initialSoundtrack }: Props) {
+interface Props { initialManifest: MusicManifest | null; initialData: MusicDataset | null; initialSpotify: SpotifySnapshot | null; initialSoundtrack: MusicSoundtrackDataset | null; initialArtistHistory: MusicArtistHistoryDataset | null }
+export function MusicExplorer({ initialManifest, initialData, initialSpotify, initialSoundtrack, initialArtistHistory }: Props) {
   const [period, setPeriod] = useState("30d");
   const [tab, setTab] = useState<"tracks" | "artists" | "albums">("tracks");
-  const { manifest, data, spotify, soundtrack, playback, error, loading, api } = useMusicCollection({ manifest: initialManifest, data: initialData, spotify: initialSpotify, soundtrack: initialSoundtrack, playback: null }, period);
+  const { manifest, data, spotify, soundtrack, artistHistory, playback, error, loading, api } = useMusicCollection({ manifest: initialManifest, data: initialData, spotify: initialSpotify, soundtrack: initialSoundtrack, artistHistory: initialArtistHistory, playback: null }, period);
   const [headerHeight, setHeaderHeight] = useState<number | null>(null);
   const historyHeading = useRef<HTMLDivElement>(null);
   const historyFilters = useRef<HTMLDivElement>(null);
@@ -120,6 +121,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
 
     {provider && <section aria-labelledby="music-lately-title"><div className="mb-5"><p className="music-label">The current rotation</p><h2 id="music-lately-title" className="mt-2 font-display text-[42px] leading-none">Heavy <em className="text-accent">rotation.</em></h2></div><Rotation items={provider.tracks} /><p className="mt-4 text-[13px] text-muted">Spotify’s affinity rankings.</p></section>}
 
+    <MusicArtistHistory data={artistHistory} />
     <section aria-labelledby="music-history-title" className="music-history flex min-w-0 flex-col gap-6"><div ref={historyHeading}><p className="music-label">The bigger picture</p><h2 id="music-history-title" className="mt-2 font-display text-[42px] leading-none">Listening <em className="text-accent">history.</em></h2></div><div ref={historyFilters} className="music-history-filters" data-stuck={filtersStuck || undefined} role="group" aria-label="Filter listening history" style={headerHeight === null ? undefined : { "--music-header-offset": `${headerHeight}px` } as CSSProperties}><MusicPeriodFilter period={period} periods={manifest?.periods || ["all", "30d", "365d"]} onChange={filter} /></div>
       <div className="flex w-full min-w-0 flex-col gap-6"><div aria-live="polite" className={error || !loading && !stats?.plays ? "text-[13px] text-muted" : "sr-only"}>{loading ? "Loading listening history…" : error ? "The latest update is unavailable. Showing the saved collection." : stats?.plays ? `Showing listening history for ${periodLabels[current?.period || period] || period}.` : "Historical imports are being collected. The archive will grow as new plays arrive."}</div>
       <div aria-busy={loading} className="flex flex-col gap-5">

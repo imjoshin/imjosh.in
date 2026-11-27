@@ -1,5 +1,6 @@
 import { aggregateMusic } from "../../src/lib/music/aggregate.ts";
 import { aggregateSoundtrackSongs, aggregateSoundtrack } from "../../src/lib/music/soundtrack.ts";
+import { aggregateArtistHistory } from "../../src/lib/music/artist-history.ts";
 import { digest, musicTrack } from "../../src/lib/music/normalize.ts";
 import { allListens, readJson, writeJson, type MusicStore } from "./store.ts";
 import type { GenreIndex } from "./spotify.ts";
@@ -94,6 +95,13 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
   }
   if (playback.track) favorites.push({ kind: "track", ...playback.track });
   const entities = aggregateEntities(verifiedRows, favorites, entityMetadata, now);
+  const artistHistory = aggregateArtistHistory(verifiedRows, now);
+  for (const group of artistHistory.groups) for (const artist of group.artists) {
+    const entity = entities.entities[musicEntityKey("artist", artist.name)];
+    artist.url = entity?.url || null;
+    artist.image = entity?.image || null;
+  }
+  await immutable("artist-history", artistHistory);
   // Playback artwork belongs to the current artist, independent of any period's top 100.
   playback = { ...playback, artistImages: (playback.track?.artists || []).map(name => ({ name, image: entities.entities[musicEntityKey("artist", name)]?.image || null })) };
   await immutable("playback", playback);
@@ -146,6 +154,7 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     if (entity?.album) include({ kind: "album", name: entity.album, artists: entity.albumArtists?.length ? entity.albumArtists : ref.artists });
   }
   for (const ref of favorites) include(ref);
+  for (const group of artistHistory.groups) for (const artist of group.artists) include({ kind: "artist", name: artist.name });
   for (const dataset of Object.values(result.datasets)) {
     for (const [kind, ranked] of [["track", dataset.stats.topTracks], ["artist", dataset.stats.topArtists], ["album", dataset.stats.topAlbums]] as const) {
       for (const item of ranked) include({ kind, ...item });

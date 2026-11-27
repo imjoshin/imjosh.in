@@ -7,7 +7,7 @@ import { publishMusic } from "../scripts/music/publish.ts";
 import { readJson, saveListens, writeJson, type MusicStore } from "../scripts/music/store.ts";
 import { musicTrack } from "../src/lib/music/normalize.ts";
 import { musicEntityKey } from "../src/lib/music/entity-links.ts";
-import type { Listen, MusicDataset, MusicEntityDataset, MusicPlaybackSnapshot, MusicSoundtrackDataset, SpotifySnapshot } from "../src/lib/music/types.ts";
+import type { Listen, MusicArtistHistoryDataset, MusicDataset, MusicEntityDataset, MusicPlaybackSnapshot, MusicSoundtrackDataset, SpotifySnapshot } from "../src/lib/music/types.ts";
 
 const now = new Date("2026-11-27T15:00:00Z"), artistId = "a".repeat(22);
 const photo = (name: string) => `https://i.scdn.co/image/${name}`;
@@ -139,6 +139,8 @@ test("publication uses Spotify photos first and saved photos throughout rankings
     const { manifest } = await publishMusic(store, published, now);
     const history = (await readJson<MusicDataset>(published, manifest.files["all/all"]))!;
     assert.equal(history.stats.topArtists[0].image, expected);
+    const artistHistory = (await readJson<MusicArtistHistoryDataset>(published, manifest.files["artist-history"]))!;
+    assert.equal(artistHistory.groups[0].artists[0].image, expected);
     const entities = (await readJson<MusicEntityDataset>(published, manifest.files.entities))!;
     assert.equal(entities.entities[musicEntityKey("artist", "Artist")].image, expected);
     assert.equal(entities.entities[musicEntityKey("artist", "Playing")].image, photo("playing"));

@@ -99,6 +99,33 @@ export interface MusicDataset {
   stats: MusicStats;
 }
 
+export interface MusicArtistSeason {
+  key: string;
+  label: string;
+  plays: number;
+}
+export interface MusicHistoryArtist {
+  key: string;
+  name: string;
+  plays: number;
+  topSeasons: number;
+  seasonPlays: number[];
+  url?: string | null;
+  image?: string | null;
+}
+export interface MusicArtistHistoryDataset {
+  version: 1;
+  generatedAt: string;
+  timezone: string;
+  period: "all";
+  platform: "all";
+  startYear: number | null;
+  endYear: number;
+  recentSeasons: number;
+  buckets: MusicArtistSeason[];
+  groups: { key: "all-time" | "recent" | "past"; artists: MusicHistoryArtist[] }[];
+}
+
 export interface MusicManifest {
   version: 1;
   generatedAt: string;

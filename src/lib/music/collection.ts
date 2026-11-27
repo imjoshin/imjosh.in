@@ -1,6 +1,6 @@
-import type { MusicDataset, MusicManifest, MusicPlaybackSnapshot, MusicSoundtrackDataset, SpotifySnapshot } from "./types.ts";
+import type { MusicArtistHistoryDataset, MusicDataset, MusicManifest, MusicPlaybackSnapshot, MusicSoundtrackDataset, SpotifySnapshot } from "./types.ts";
 
-export interface MusicCollection { manifest: MusicManifest | null; data: MusicDataset | null; spotify: SpotifySnapshot | null; soundtrack: MusicSoundtrackDataset | null; playback: MusicPlaybackSnapshot | null }
+export interface MusicCollection { manifest: MusicManifest | null; data: MusicDataset | null; spotify: SpotifySnapshot | null; soundtrack: MusicSoundtrackDataset | null; playback: MusicPlaybackSnapshot | null; artistHistory: MusicArtistHistoryDataset | null }
 export type MusicJsonReader = <T>(file: string, signal: AbortSignal) => Promise<T>;
 /** Load a complete revision before replacing the saved view. Only changed immutable files are downloaded. */
 export async function readMusicCollection(read: MusicJsonReader, period: string, signal: AbortSignal, cache: Map<string, unknown>, savedManifest?: MusicManifest | null): Promise<MusicCollection> {
@@ -19,11 +19,12 @@ export async function readMusicCollection(read: MusicJsonReader, period: string,
     while (cache.size > 32) cache.delete(cache.keys().next().value!);
     return value;
   }
-  const [data, spotify, soundtrack, playback] = await Promise.all([load<MusicDataset>(file), load<SpotifySnapshot>(manifest.files.spotify), load<MusicSoundtrackDataset>(manifest.files[`all/soundtrack/${selected}`]), load<MusicPlaybackSnapshot>(manifest.files.playback)]);
+  const [data, spotify, soundtrack, playback, artistHistory] = await Promise.all([load<MusicDataset>(file), load<SpotifySnapshot>(manifest.files.spotify), load<MusicSoundtrackDataset>(manifest.files[`all/soundtrack/${selected}`]), load<MusicPlaybackSnapshot>(manifest.files.playback), load<MusicArtistHistoryDataset>(manifest.files["artist-history"])]);
   if (data?.version !== 1 || data.period !== selected || data.platform !== "all") throw new Error("Listening history does not match the selected period");
   if (soundtrack && (soundtrack.version !== 1 || soundtrack.period !== selected || soundtrack.platform !== "all")) throw new Error("Soundtrack history does not match the selected period");
+  if (artistHistory && (artistHistory.version !== 1 || artistHistory.period !== "all" || artistHistory.platform !== "all" || !Array.isArray(artistHistory.buckets) || !Array.isArray(artistHistory.groups))) throw new Error("Unsupported artist history");
   if (signal.aborted) throw signal.reason;
-  return { manifest, data, spotify, soundtrack, playback };
+  return { manifest, data, spotify, soundtrack, playback, artistHistory };
 }
 
 export function currentMusicPlayback(snapshot: MusicPlaybackSnapshot | null, previous: MusicPlaybackSnapshot["track"] = null): MusicPlaybackSnapshot["track"] {

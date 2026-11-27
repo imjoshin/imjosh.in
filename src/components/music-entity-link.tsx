@@ -15,6 +15,7 @@ interface HoverContext {
   leave: () => void;
   closeOwner: (id: string) => void;
   updateDetails: (id: string, details?: MusicEntity) => void;
+  dismiss: () => void;
 }
 const Context = createContext<HoverContext | null>(null);
 const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
@@ -99,7 +100,7 @@ export function MusicHoverProvider({ file, api, resetKey, children }: { file?: s
     document.addEventListener("pointerdown", outside, true); document.addEventListener("keydown", escape, true);
     return () => { document.removeEventListener("pointerdown", outside, true); document.removeEventListener("keydown", escape, true); };
   }, [active, close, restore]);
-  const context = useMemo(() => ({ activeId: active?.id || null, cardId: id, data, show, leave, closeOwner, updateDetails }), [active?.id, id, data, show, leave, closeOwner, updateDetails]);
+  const context = useMemo(() => ({ activeId: active?.id || null, cardId: id, data, show, leave, closeOwner, updateDetails, dismiss: close }), [active?.id, id, data, show, leave, closeOwner, updateDetails, close]);
   const ref = entity || active?.entity;
   const lookupUrl = (value: MusicEntityRef) => spotifyEntityUrl(data?.entities[musicEntityKey(value.kind, value.name, value.artists)] || value);
   return <Context value={context}>{children}{active && ref && createPortal(<div ref={card} id={id} role="dialog" aria-label={`${ref.name} ${ref.kind} details`} tabIndex={-1} className="music-entity-card" data-ready={position.ready || undefined} style={{ left: position.left, top: position.top }} onPointerEnter={cancel} onPointerLeave={leave} onFocus={cancel} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) leave(); }}>
@@ -114,6 +115,8 @@ export function MusicHoverProvider({ file, api, resetKey, children }: { file?: s
     <div className="mt-5 flex items-center justify-between gap-4 border-t border-line pt-4 text-[12px]"><span className="text-muted">Recorded listening history</span><a className="text-accent underline underline-offset-4" href={lookupUrl(ref)} target="_blank" rel="noopener noreferrer">{directSpotifyUrl(ref.url, ref.kind) ? "Open in Spotify" : "Find on Spotify"} ↗<span className="sr-only"> (opens in a new tab)</span></a></div>
   </div>, document.body)}</Context>;
 }
+
+export function useDismissMusicHover() { return useContext(Context)?.dismiss; }
 
 export function MusicLink({ entity, details: fallback, children, className = "", onCardClose }: { entity: MusicEntityRef; details?: MusicEntity; children?: ReactNode; className?: string; onCardClose?: () => void }) {
   const context = useContext(Context), id = useId();

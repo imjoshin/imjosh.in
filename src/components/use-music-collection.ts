@@ -11,7 +11,7 @@ export function useMusicCollection(initial: MusicCollection, period: string) {
   const cache = useRef<Map<string, unknown> | null>(null);
   if (!cache.current) {
     cache.current = new Map();
-    for (const [key, value] of [[`all/${initial.data?.period}`, initial.data], ["spotify", initial.spotify], [`all/soundtrack/${initial.soundtrack?.period}`, initial.soundtrack]] as const) if (value && initial.manifest?.files[key]) cache.current.set(initial.manifest.files[key], value);
+    for (const [key, value] of [[`all/${initial.data?.period}`, initial.data], ["spotify", initial.spotify], [`all/soundtrack/${initial.soundtrack?.period}`, initial.soundtrack], ["artist-history", initial.artistHistory]] as const) if (value && initial.manifest?.files[key]) cache.current.set(initial.manifest.files[key], value);
   }
   const controller = useRef<AbortController | null>(null), generation = useRef(0);
   useLayoutEffect(() => {
