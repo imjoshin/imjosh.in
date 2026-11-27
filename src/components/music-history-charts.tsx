@@ -43,7 +43,7 @@ export function ListeningChart({ data }: { data: MusicDataset }) {
     const next = event.key === "ArrowLeft" ? Math.max(0, current - 1) : event.key === "ArrowRight" ? Math.min(buckets.length - 1, current + 1) : event.key === "Home" ? 0 : event.key === "End" ? buckets.length - 1 : event.key === "Escape" ? null : undefined;
     if (next !== undefined) { event.preventDefault(); setActive(next === null ? null : buckets[next].key); }
   }
-  return <figure className="panel rounded-[24px] p-5 sm:p-7">
+  return <figure className="music-history-chart panel rounded-[24px] p-5 sm:p-7">
     <figcaption className="flex items-start justify-between gap-4"><div><p className="music-label">The listening curve</p><h2 className="mt-2 font-display text-[36px] leading-none">A little more <em className="text-accent">volume.</em></h2></div><span className="pt-1 text-[13px] text-muted">{daily ? "Plays per day" : "Recorded plays"}</span></figcaption>
     <div ref={interaction.ref} className="music-chart-surface mt-7" role="group" tabIndex={0} aria-label={`${daily ? "Daily" : "Monthly"} listening chart`} aria-describedby={`${helpId}${selected ? ` ${tooltipId}` : ""}`} onBlur={() => setActive(null)} onKeyDown={key} onPointerLeave={event => { if (event.pointerType !== "touch" && document.activeElement !== event.currentTarget) setActive(null); }}>
       <p id={helpId} className="sr-only">Use Left and Right to explore {daily ? "days" : "months"}, Home and End to jump, and Escape to dismiss details.</p>
@@ -70,7 +70,7 @@ export function WeekdayChart({ data }: { data: MusicDataset }) {
     const next = event.key === "ArrowLeft" ? (index + 6) % 7 : event.key === "ArrowRight" ? (index + 1) % 7 : event.key === "Home" ? 0 : event.key === "End" ? 6 : undefined;
     if (next !== undefined) { event.preventDefault(); event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>("button")[next]?.focus(); setActive(next); }
   };
-  return <figure className="panel flex flex-col rounded-[24px] p-5 sm:p-7">
+  return <figure className="music-history-chart panel flex flex-col rounded-[24px] p-5 sm:p-7">
     <figcaption><p className="music-label">A weekly rhythm</p><h2 className="mt-2 font-display text-[36px] leading-none">Day by <em className="text-accent">day.</em></h2></figcaption>
     <div ref={interaction.ref} className="music-chart-surface mt-8 flex min-h-40 flex-1 items-end gap-3" role="group" aria-label="Listening by weekday" data-inspecting={active !== null || undefined} onPointerDown={interaction.onPointerDown} onPointerCancel={interaction.onPointerCancel} onPointerLeave={event => { if (event.pointerType !== "touch" && !event.currentTarget.contains(document.activeElement)) setActive(null); }}>
       {weekdays.map((day, i) => <button key={day} type="button" className="music-day-column flex min-h-40 min-w-0 flex-1 flex-col items-stretch justify-end gap-3 rounded-md text-center" data-active={active === i || undefined} onPointerEnter={event => { if (event.pointerType !== "touch") setActive(i); }} onBlur={() => setActive(null)} onClick={() => setActive(i)} onKeyDown={event => select(event, i)} aria-label={`${day}: ${number(data.stats.weekdays[i])} recorded plays`} aria-describedby={active === i ? tooltipId : undefined}>

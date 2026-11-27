@@ -221,6 +221,8 @@ input.music-year-slider { appearance: none; display: block; width: 100%; height:
 @media print { .music-history-filters { position: static; } }
 .music-stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .music-day-bar { min-height: 2px; border-radius: 5px 5px 0 0; background: linear-gradient(to top, color-mix(in srgb, var(--acc) 35%, transparent), var(--acc)); }
+/* Blurred panels create stacking contexts. Raise the open chart above neighboring panels. */
+.music-history-chart:has(.music-chart-tooltip) { position: relative; z-index: 2; }
 .music-chart-surface { position: relative; min-width: 0; border-radius: 12px; touch-action: pan-y; }
 .music-chart-surface > svg { cursor: crosshair; }
 .music-chart-tooltip { position: absolute; z-index: 10; width: 260px; max-width: calc(100dvw - 24px); visibility: hidden; pointer-events: none; animation: music-tooltip-appear .14s ease-out; }
