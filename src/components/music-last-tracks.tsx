@@ -9,10 +9,9 @@ import { useMusicListMotion } from "./music-motion";
 function RecentTrackStrip({ tracks }: { tracks: MusicRecentTrack[] }) {
   const motion = useMusicListMotion(tracks.map(track => ({ key: track.id, track })), 0);
   return <div className="music-last-tracks-viewport" role="region" aria-label="Recent Spotify tracks, newest first" tabIndex={0}>
-    <div className="music-last-tracks-collection" style={motion.containerStyle}><ol ref={motion.setRoot} className="music-last-tracks-list">{motion.rows.map(({ item: { key, track }, phase }, index) => <li ref={motion.bind(key)} key={key} className="music-last-track" data-phase={phase} aria-hidden={phase === "exit" || undefined} inert={phase === "exit" || undefined} style={phase === "exit" ? motion.exitStyle(key) : undefined}>
+    <div className="music-last-tracks-collection" style={motion.containerStyle}><ol ref={motion.setRoot} className="music-last-tracks-list">{motion.rows.map(({ item: { key, track }, phase }) => <li ref={motion.bind(key)} key={key} className="music-last-track" data-phase={phase} aria-hidden={phase === "exit" || undefined} inert={phase === "exit" || undefined} style={phase === "exit" ? motion.exitStyle(key) : undefined}>
       <MusicLink entity={{ kind: "track", ...track }} className="relative block rounded-[14px]">
         <span className="music-cover block aspect-square w-full rounded-[14px]" style={musicPlaceholderStyle(track.name)}>{spotifyImage(track.image) ? <img src={spotifyImage(track.image)} width="180" height="180" alt="" /> : <span aria-hidden="true">♫</span>}</span>
-        {index === 0 && <span className="music-last-track-latest">Latest</span>}
       </MusicLink>
       <h3 className="mt-3 truncate text-[14px] font-medium"><MusicLink entity={{ kind: "track", ...track }}>{track.name}</MusicLink></h3>
       <p className="mt-1 truncate text-[13px] text-muted"><MusicArtists names={track.artists} /></p>

@@ -207,7 +207,6 @@ html[data-pew-mode]:has(.home-page) :is(a, summary, .theme-toggle) { cursor: poi
 .music-last-track { min-width: 0; }
 .music-last-track[data-phase="enter"] { animation: music-last-track-arrive .48s cubic-bezier(.22,1,.36,1) both; }
 .music-last-track[data-phase="exit"] { animation: music-last-track-away .48s cubic-bezier(.22,1,.36,1) both; pointer-events: none; }
-.music-last-track-latest { position: absolute; left: 8px; bottom: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 9px; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); font-size: 10px; font-weight: 600; }
 .music-last-tracks-swipe { display: none; }
 @keyframes music-last-track-arrive { from { opacity: 0; transform: translateX(calc(-100% - var(--recent-gap))); } to { opacity: 1; transform: translateX(0); } }
 @keyframes music-last-track-away { to { opacity: 0; transform: translateX(calc(100% + var(--recent-gap))); } }
