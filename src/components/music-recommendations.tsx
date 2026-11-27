@@ -27,6 +27,5 @@ export function MusicRecommendations({ data }: { data: MusicRecommendationsDatas
   return <section id="artist-picks" aria-labelledby="music-picks-title" className="music-picks">
     <div className="music-picks-heading"><div><p className="music-label">A few personal recommendations</p><h2 id="music-picks-title">Artists I think you<br className="music-picks-title-break" /> should <em>check out.</em></h2></div><p>My top five from the last six months.<br />One all-time favorite. Two recent favorites.</p></div>
     {artists.length ? <div className="music-picks-grid">{artists.map(artist => <ArtistCard key={artist.key} artist={artist} />)}</div> : <p className="panel rounded-[20px] p-6 text-muted">A few recommendations are on the way as the listening collection updates.</p>}
-    <p className="music-picks-footnote">Each artist’s most-played song of all time, then their top two from the last six months, without repeats.</p>
   </section>;
 }

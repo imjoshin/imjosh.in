@@ -24,7 +24,6 @@
 .music-pick-song-name { overflow-wrap: anywhere; font-weight: 500; }
 .music-pick-song-name:hover { color: var(--acc); }
 .music-pick-song-plays { color: var(--mute); font-size: 11px; line-height: 1.4; }
-.music-picks-footnote { margin-top: 16px; font-size: 12px; color: var(--mute); }
 
 /* Let the lead portrait absorb spare height, keeping the songs at the card's bottom. */
 .music-pick:first-child { grid-row: span 2; display: flex; flex-direction: column; padding: 10px; }

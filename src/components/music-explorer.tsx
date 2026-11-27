@@ -113,7 +113,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
   const artistPhoto = findMusicArtistPhoto(featured?.artists[0], artistImages);
   const rankings = stats ? tab === "artists" ? stats.topArtists : tab === "albums" ? stats.topAlbums : stats.topTracks : [];
   return <MusicHoverProvider file={manifest?.files.entities} api={api} resetKey={`${period}:${tab}`}>
-    <div className="flex flex-col justify-between gap-7 sm:flex-row sm:items-end"><div><p className="music-label mb-5">My music, through time</p><h1 className="page-title">On <em>repeat.</em></h1><p className="mt-6 max-w-[42ch] text-[18px] leading-relaxed text-muted">The songs that stick around. A listening history, one obsession at a time.</p></div><a className="pill w-fit" href="https://open.spotify.com/user/1271912429" target="_blank" rel="noopener noreferrer">Find me on Spotify<span className="sr-only"> (opens in a new tab)</span></a></div>
+    <div className="flex flex-col justify-between gap-7 sm:flex-row sm:items-end"><div><p className="music-label mb-5">For the record</p><h1 className="page-title">My music, through <em>time</em></h1><p className="mt-6 max-w-[42ch] text-[18px] leading-relaxed text-muted">The songs that stick around. A listening history, one obsession at a time.</p></div><a className="pill w-fit" href="https://open.spotify.com/user/1271912429" target="_blank" rel="noopener noreferrer">Find me on Spotify<span className="sr-only"> (opens in a new tab)</span></a></div>
 
     {/* Mount fresh swap content when data beats the grace period, without animating an unseen fallback. */}
     <section key={featureReady ? "ready" : "pending"} data-pending={!featureReady || undefined} className="music-feature panel relative grid min-h-[340px] overflow-hidden rounded-[28px] md:grid-cols-[1.05fr_1fr]" aria-label="Featured music">
@@ -124,7 +124,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
 
     <MusicRecommendations data={recommendations} />
 
-    {provider && <section aria-labelledby="music-lately-title"><div className="mb-5"><p className="music-label">The current rotation</p><h2 id="music-lately-title" className="mt-2 font-display text-[42px] leading-none">Heavy <em className="text-accent">rotation.</em></h2></div><Rotation items={provider.tracks} /><p className="mt-4 text-[13px] text-muted">Spotify’s affinity rankings.</p></section>}
+    {provider && <section aria-labelledby="music-lately-title"><div className="mb-5"><p className="music-label">The current mix</p><h2 id="music-lately-title" className="mt-2 font-display text-[42px] leading-none">Heavy <em className="text-accent">rotation.</em></h2></div><Rotation items={provider.tracks} /><p className="mt-4 text-[13px] text-muted">Spotify’s affinity rankings.</p></section>}
 
     <MusicLastTracks tracks={playback?.recentTracks ?? initialRecentTracks} />
     <MusicArtistHistory data={artistHistory} />
