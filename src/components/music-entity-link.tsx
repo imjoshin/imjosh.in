@@ -2,10 +2,10 @@
 
 import { createContext, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import type { MusicEntityDataset, MusicEntityRef } from "@/lib/music/types";
+import type { MusicEntity, MusicEntityDataset, MusicEntityRef } from "@/lib/music/types";
 import { directSpotifyUrl, musicEntityKey, spotifyEntityUrl, spotifyImage } from "@/lib/music/entity-links";
 
-interface Active { id: string; entity: MusicEntityRef; anchor: HTMLAnchorElement; focus: boolean; dismissed?: () => void }
+interface Active { id: string; entity: MusicEntityRef; details?: MusicEntity; anchor: HTMLAnchorElement; focus: boolean; dismissed?: () => void }
 interface HoverContext {
   activeId: string | null;
   cardId: string;
@@ -13,6 +13,7 @@ interface HoverContext {
   show: (value: Active, delayed?: boolean) => void;
   leave: () => void;
   closeOwner: (id: string) => void;
+  updateDetails: (id: string, details?: MusicEntity) => void;
 }
 const Context = createContext<HoverContext | null>(null);
 const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
@@ -38,6 +39,9 @@ export function MusicHoverProvider({ file, api, resetKey, children }: { file?: s
   }, [cancel]);
   const leave = useCallback(() => { cancel(); timer.current = setTimeout(() => { if (document.activeElement !== current.current?.anchor && !card.current?.contains(document.activeElement)) close(); }, 180); }, [cancel, close]);
   const closeOwner = useCallback((owner: string) => { if (current.current?.id === owner) close(); }, [close]);
+  const updateDetails = useCallback((owner: string, details?: MusicEntity) => {
+    setActive(value => value?.id === owner && value.details !== details ? { ...value, details } : value);
+  }, []);
   const restore = useCallback((anchor: HTMLAnchorElement) => { if (document.activeElement !== anchor) suppressFocus.current = anchor; close(); anchor.focus({ preventScroll: true }); }, [close]);
   useEffect(() => { close(); }, [resetKey, close]);
   useEffect(() => () => cancel(), [cancel]);
@@ -62,7 +66,7 @@ export function MusicHoverProvider({ file, api, resetKey, children }: { file?: s
     request.then(value => { if (!cancelled) setData(value); }).catch(() => { cache.current.delete(file); if (!cancelled) setFailed(true); });
     return () => { cancelled = true; };
   }, [active?.id, file, api]);
-  const entity = active ? data?.entities[musicEntityKey(active.entity.kind, active.entity.name, active.entity.artists)] : undefined;
+  const entity = active ? active.details || data?.entities[musicEntityKey(active.entity.kind, active.entity.name, active.entity.artists)] : undefined;
   useLayoutEffect(() => {
     if (!active || !card.current) return;
     const reposition = () => {
@@ -94,7 +98,7 @@ export function MusicHoverProvider({ file, api, resetKey, children }: { file?: s
     document.addEventListener("pointerdown", outside, true); document.addEventListener("keydown", escape, true);
     return () => { document.removeEventListener("pointerdown", outside, true); document.removeEventListener("keydown", escape, true); };
   }, [active, close, restore]);
-  const context = useMemo(() => ({ activeId: active?.id || null, cardId: id, data, show, leave, closeOwner }), [active?.id, id, data, show, leave, closeOwner]);
+  const context = useMemo(() => ({ activeId: active?.id || null, cardId: id, data, show, leave, closeOwner, updateDetails }), [active?.id, id, data, show, leave, closeOwner, updateDetails]);
   const ref = entity || active?.entity;
   const lookupUrl = (value: MusicEntityRef) => spotifyEntityUrl(data?.entities[musicEntityKey(value.kind, value.name, value.artists)] || value);
   return <Context value={context}>{children}{active && ref && createPortal(<div ref={card} id={id} role="dialog" aria-label={`${ref.name} ${ref.kind} details`} tabIndex={-1} className="music-entity-card" data-ready={position.ready || undefined} style={{ left: position.left, top: position.top }} onPointerEnter={cancel} onPointerLeave={leave} onFocus={cancel} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) leave(); }}>
@@ -110,14 +114,16 @@ export function MusicHoverProvider({ file, api, resetKey, children }: { file?: s
   </div>, document.body)}</Context>;
 }
 
-export function MusicLink({ entity, children, className = "", onCardClose }: { entity: MusicEntityRef; children?: ReactNode; className?: string; onCardClose?: () => void }) {
+export function MusicLink({ entity, details: fallback, children, className = "", onCardClose }: { entity: MusicEntityRef; details?: MusicEntity; children?: ReactNode; className?: string; onCardClose?: () => void }) {
   const context = useContext(Context), id = useId();
   const pointer = useRef({ touch: false, wasOpen: false });
   const closeOwner = context?.closeOwner;
   useEffect(() => () => closeOwner?.(id), [closeOwner, id]);
-  const details = context?.data?.entities[musicEntityKey(entity.kind, entity.name, entity.artists)];
+  const details = fallback || context?.data?.entities[musicEntityKey(entity.kind, entity.name, entity.artists)];
   const active = context?.activeId === id;
-  const open = (anchor: HTMLAnchorElement, delayed = false, focus = false) => context?.show({ id, entity, anchor, focus, dismissed: onCardClose }, delayed);
+  const updateDetails = context?.updateDetails;
+  useEffect(() => { if (active) updateDetails?.(id, fallback); }, [active, updateDetails, id, fallback]);
+  const open = (anchor: HTMLAnchorElement, delayed = false, focus = false) => context?.show({ id, entity, details: fallback, anchor, focus, dismissed: onCardClose }, delayed);
   return <a href={spotifyEntityUrl(details || entity)} target="_blank" rel="noopener noreferrer" className={`music-entity-link ${className}`} aria-label={`${entity.name} on Spotify (opens in a new tab)`} aria-haspopup="dialog" aria-expanded={active} aria-controls={active ? context?.cardId : undefined} onPointerEnter={event => { if (event.pointerType !== "touch") open(event.currentTarget, true); }} onPointerLeave={event => { if (event.pointerType !== "touch") context?.leave(); }} onPointerDown={event => { pointer.current = { touch: event.pointerType === "touch", wasOpen: active }; }} onFocus={event => { if (!pointer.current.touch) open(event.currentTarget); }} onBlur={() => context?.leave()} onClick={event => { if (pointer.current.touch && !pointer.current.wasOpen) { event.preventDefault(); open(event.currentTarget); } pointer.current.touch = false; }} onKeyDown={event => { if (event.key === "ArrowDown") { event.preventDefault(); event.stopPropagation(); open(event.currentTarget, false, true); } }}>
     {children || entity.name}<span className="sr-only"> on Spotify (opens in a new tab)</span>
   </a>;
@@ -125,6 +131,6 @@ export function MusicLink({ entity, children, className = "", onCardClose }: { e
 
 export const isMusicCardTarget = (target: EventTarget | null) => target instanceof Element && !!target.closest(".music-entity-card");
 
-export function MusicArtists({ names, className = "", onCardClose }: { names: string[]; className?: string; onCardClose?: () => void }) {
-  return <span className={className}>{names.map((name, index) => <span key={`${name}:${index}`}>{index > 0 && ", "}<MusicLink entity={{ kind: "artist", name }} onCardClose={onCardClose}>{name}</MusicLink></span>)}</span>;
+export function MusicArtists({ names, details, className = "", onCardClose }: { names: string[]; details?: Record<string, MusicEntity>; className?: string; onCardClose?: () => void }) {
+  return <span className={className}>{names.map((name, index) => <span key={`${name}:${index}`}>{index > 0 && ", "}<MusicLink entity={{ kind: "artist", name }} details={details?.[musicEntityKey("artist", name)]} onCardClose={onCardClose}>{name}</MusicLink></span>)}</span>;
 }

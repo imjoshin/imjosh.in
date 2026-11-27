@@ -100,9 +100,9 @@ test("Disney credits and soundtrack albums are excluded without altering private
   for (const track of disney) assert.ok(isDisneyMusic(track));
   assert.equal(isDisneyMusic(musicTrack("Coco", ["O.T. Genasis"], { album: "Coco" })), false);
   assert.equal(isDisneyMusic(musicTrack("Cold", ["An Artist"], { album: "Frozen Dreams" })), false);
-  const rows = [listen(), ...disney.map((track, i) => listen({ id: `disney-${i}`, track }))];
+  const rows = [...Array.from({ length: 11 }, (_, i) => listen({ id: `allowed-${i}` })), ...disney.map((track, i) => listen({ id: `disney-${i}`, track }))];
   const before = JSON.stringify(rows);
-  for (const data of Object.values(aggregateMusic(rows, now).datasets)) assert.equal(data.stats.plays, 1);
+  for (const data of Object.values(aggregateMusic(rows, now).datasets)) assert.equal(data.stats.plays, 11);
   const seasons = aggregateSeasons(rows, now)["all/seasons"];
   assert.deepEqual(seasons.metrics.artists.series.map(s => s.name), ["An Artist"]);
   assert.equal(JSON.stringify(rows), before);
@@ -114,10 +114,10 @@ test("seasons use Eastern boundaries and December belongs to the following winte
   assert.equal(musicSeason(new Date("2025-03-01T04:59:59Z")).label, "2025 Winter");
   assert.equal(musicSeason(new Date("2025-03-01T05:00:00Z")).label, "2025 Spring");
   assert.equal(musicSeason(new Date("2025-06-01T04:00:00Z")).label, "2025 Summer");
-  const rows = [listen({ id: "fall", playedAt: "2024-09-01T12:00:00Z" }), listen({ id: "spring", playedAt: "2025-03-01T12:00:00Z" })];
+  const rows = ["2024-09-01T12:00:00Z", "2025-03-01T12:00:00Z"].flatMap((playedAt, season) => Array.from({ length: 11 }, (_, i) => listen({ id: season + ":" + i, playedAt })));
   const result = aggregateSeasons(rows, now)["all/seasons"];
   assert.deepEqual(result.seasons.map(s => s.label), ["2024 Fall", "2025 Winter", "2025 Spring"]);
-  assert.deepEqual(result.metrics.artists.series[0].plays, [1, 0, 1]);
+  assert.deepEqual(result.metrics.artists.series[0].plays, [11, 0, 11]);
 });
 
 test("seasonal charts select the union of EACH season's top five and preserve every selected timeline", () => {
@@ -125,7 +125,7 @@ test("seasonal charts select the union of EACH season's top five and preserve ev
   const rows: Listen[] = [];
   const add = (season: number, name: string, times: number) => { for (let i = 0; i < times; i++) rows.push(listen({ id: `${season}-${name}-${i}`, playedAt: `${dates[season]}-15T12:00:00Z`, track: musicTrack(name, [name, name], { album: name, genres: [name, name.toUpperCase(), ` ${name} `] }) })); };
   for (let season = 0; season < dates.length; season++) {
-    for (let winner = 0; winner < 5; winner++) add(season, `winner-${season}-${winner}`, 10);
+    for (let winner = 0; winner < 5; winner++) add(season, `winner-${season}-${winner}`, 12);
     add(season, "never-a-seasonal-leader", 3);
     if (season) add(season, "winner-0-0", 1);
   }
@@ -141,10 +141,10 @@ test("seasonal charts select the union of EACH season's top five and preserve ev
     const data = datasets["all/seasons"].metrics[metric];
     assert.equal(data.series.length, 40, metric);
     assert.ok(!data.series.some(s => s.name === "never-a-seasonal-leader"));
-    assert.deepEqual(data.series.find(s => s.name === "winner-0-0")!.plays, [11, 1, 1, 1, 1, 1, 1, 1]);
+    assert.deepEqual(data.series.find(s => s.name === "winner-0-0")!.plays, [13, 0, 0, 0, 0, 0, 0, 0]);
     assert.equal(data.unclassifiedPlays, 1);
-    assert.equal(datasets["spotify/seasons"].metrics[metric].series.find(s => s.name === "winner-0-0")!.plays[0], 10);
-    assert.equal(datasets["google-play-music/seasons"].metrics[metric].series.length, 1);
+    assert.equal(datasets["spotify/seasons"].metrics[metric].series.find(s => s.name === "winner-0-0")!.plays[0], 12);
+    assert.equal(datasets["google-play-music/seasons"].metrics[metric].series.length, 0);
   }
   assert.equal(datasets["all/seasons"].seasons.length, 8);
   assert.equal(aggregateSeasons([], now)["all/seasons"].metrics.genres.series.length, 0);
@@ -168,7 +168,7 @@ test("ZIP import preserves unsupported data and original bytes, reports malforme
     const text = JSON.stringify(data); for (const secret of ["PRIVATE-IP", "PRIVATE-NAME", "rawRef", "private/source", "2026-06-02T15:03:00"]) assert.equal(text.includes(secret), false);
   }
   const seasonal = await readJson<MusicSeasonalDataset>(publicStore, manifest.files["all/seasons"]);
-  assert.equal(seasonal!.metrics.genres.series[0].name, "indie rock");
+  assert.deepEqual(seasonal!.metrics.genres.series, []);
   // Updating only genre metadata must remove historical plays and provider rankings too.
   await writeJson(store, "catalog/genres.json", { "an artist": { genres: ["children's music"], provider: "test", fetchedAt: now.toISOString(), artistId: null } });
   await writeJson(store, "public/spotify.json", { generatedAt: now.toISOString(), ranges: { short_term: { tracks: [{ key: "song", name: "A Song", artists: ["An Artist"] }], artists: [{ key: "artist", name: "An Artist", artists: [] }] } }, playlists: [] });

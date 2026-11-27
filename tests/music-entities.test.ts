@@ -6,7 +6,7 @@ import { musicTrack, spotifyListen } from "../src/lib/music/normalize.ts";
 import { aggregateMusic } from "../src/lib/music/aggregate.ts";
 import { aggregateSeasons } from "../src/lib/music/seasons.ts";
 import type { Listen } from "../src/lib/music/types.ts";
-import type { MusicDataset, MusicEntityDataset, MusicManifest, MusicSeasonalDataset } from "../src/lib/music/types.ts";
+import type { MusicDataset, MusicEntityDataset, MusicGenreSongsDataset, MusicManifest, MusicSeasonalDataset } from "../src/lib/music/types.ts";
 import { publishMusic } from "../scripts/music/publish.ts";
 import { readJson, saveListens, writeJson, type MusicStore } from "../scripts/music/store.ts";
 
@@ -34,11 +34,11 @@ test("entity totals join platforms, deduplicate credits, and use Eastern calenda
 });
 
 test("album totals combine guest tracks using actual album artists across rankings, seasons, and hover cards", () => {
-  const rows = [event("solo", "2026-11-24T12:00:00Z"), event("guest", "2026-11-25T12:00:00Z", ["Artist", "Guest"])];
+  const rows = [...Array.from({ length: 11 }, (_, i) => event("solo-" + i, "2026-11-24T12:00:00Z")), event("guest", "2026-11-25T12:00:00Z", ["Artist", "Guest"])];
   const album = aggregateEntities(rows, [], [], now).entities[musicEntityKey("album", "Album", ["Artist"])];
-  assert.equal(album.plays, 2); assert.equal(album.tracks, 2);
+  assert.equal(album.plays, 12); assert.equal(album.tracks, 2);
   assert.equal(aggregateMusic(rows, now).datasets["all/all"].stats.topAlbums.length, 1);
-  assert.deepEqual(aggregateSeasons(rows, now)["all/seasons"].metrics.albums.series[0].plays, [2]);
+  assert.deepEqual(aggregateSeasons(rows, now)["all/seasons"].metrics.albums.series[0].plays, [12]);
 });
 
 test("affinity metadata supplies zero-recorded-history cards without publishing the private library", () => {
@@ -62,13 +62,16 @@ test("Spotify links use the right entity type, validate destinations, and search
   assert.equal(decodeURIComponent(fallback.pathname), '/search/album:"A & B / Deluxe" artist:"Artist"');
 });
 
-test("publication supplies direct entity links to rankings and seasonal tables while whitelisting hover metadata", async () => {
+test("publication supplies direct links and lazy genre song details while whitelisting metadata", async () => {
   const memory = (): MusicStore => {
     const values = new Map<string, Uint8Array>();
     return { async get(key) { return values.get(key) || null; }, async set(key, value) { values.set(key, value); }, async list(prefix) { return [...values.keys()].filter(key => key.startsWith(prefix)); } };
   };
   const privateStore = memory(), publicStore = memory();
-  await saveListens(privateStore, [event("one", "2026-11-25T12:00:00Z")]);
+  await saveListens(privateStore, Array.from({ length: 11 }, (_, i) => {
+    const row = event("one-" + i, "2026-11-25T12:00:00Z");
+    row.track.genres = ["indie"]; return row;
+  }));
   const artistId = "aaaaaaaaaaaaaaaaaaaaaa", albumId = "bbbbbbbbbbbbbbbbbbbbbb", trackId = "cccccccccccccccccccccc";
   await writeJson(privateStore, "catalog/spotify-tracks.json.gz", { [trackId]: { id: trackId, name: "Song", artists: [{ id: artistId, name: "Artist" }], album: { id: albumId, name: "Album", artists: [{ id: artistId, name: "Artist" }] }, privateField: "PRIVATE-CATALOG-FIELD" } });
   await publishMusic(privateStore, publicStore, now);
@@ -82,6 +85,14 @@ test("publication supplies direct entity links to rankings and seasonal tables w
   const entities = (await readJson<MusicEntityDataset>(publicStore, manifest.files.entities))!;
   assert.equal(Object.values(entities.entities).length, 3);
   assert.equal(JSON.stringify(entities).includes("PRIVATE-CATALOG-FIELD"), false);
+  const songFile = seasonal.genreFiles!.indie;
+  assert.ok(Object.values(manifest.files).includes(songFile));
+  const songs = (await readJson<MusicGenreSongsDataset>(publicStore, songFile))!;
+  assert.equal(songs.tracks[0].plays, 11);
+  assert.equal(songs.entities[songs.tracks[0].key].plays, 11);
+  assert.equal(songs.entities[musicEntityKey("artist", "Artist")].plays, 11);
+  assert.equal(JSON.stringify(songs).includes("PRIVATE-CATALOG-FIELD"), false);
+  assert.equal(JSON.stringify(songs).includes("PRIVATE-RAW"), false);
 });
 
 test("public hover downloads cover displayed music while totals retain history outside the rankings", async () => {

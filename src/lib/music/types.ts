@@ -129,6 +129,22 @@ export interface MusicSeasonalDataset {
   platform: MusicPlatform | "all";
   seasons: MusicSeason[];
   metrics: Record<SeasonalMetric, SeasonalMetricData>;
+  minimumPlays?: number;
+  genreFiles?: Record<string, string>;
+}
+
+export interface MusicGenreSongCounts {
+  key: string;
+  plays: number;
+  seasons: Record<string, number>;
+}
+
+export interface MusicGenreSongsDataset {
+  version: 1;
+  generatedAt: string;
+  genre: string;
+  tracks: MusicGenreSongCounts[];
+  entities: Record<string, MusicEntity>;
 }
 
 export interface SpotifySnapshot {

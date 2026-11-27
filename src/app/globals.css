@@ -229,18 +229,21 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-swap[data-phase="in"] > .music-swap-content { animation: music-arrive .44s cubic-bezier(.22,1,.36,1) both; }
 .music-record-label .music-swap-content { width: 100%; height: 100%; display: grid; place-items: center; }
 .music-tabs button { transition: color .2s, background-color .2s; }
-.music-season-layout { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 24px; }
-.music-season-inspector { border-left: 1px solid var(--line); padding-left: 24px; }
+.music-season-layout { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0px); column-gap: 0; height: 376px; isolation: isolate; transition: grid-template-columns .36s cubic-bezier(.22,1,.36,1), column-gap .36s cubic-bezier(.22,1,.36,1); }
+.music-season-layout[data-expanded] { grid-template-columns: minmax(0, 1fr) minmax(0, 320px); column-gap: 20px; }
+.music-season-plot { height: 376px; }
+.music-season-svg { display: block; width: 100%; height: 350px; }
+.music-season-songs { min-width: 0; height: 376px; max-height: calc(100dvh - var(--music-song-offset, 100px) - 16px); overflow: hidden; scroll-margin-top: var(--music-song-offset, 100px); scroll-margin-bottom: 16px; animation: music-fade-in .2s ease both; }
+.music-season-songs-inner { display: flex; flex-direction: column; width: 320px; height: 100%; border-left: 1px solid var(--line); padding-left: 20px; }
+.music-season-song-list { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 4px; }
+.music-season-song { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); content-visibility: auto; contain-intrinsic-size: auto 44px; }
+.music-season-song:last-child { border-bottom: 0; }
 .music-season-line { transition: opacity .22s; }
 .music-season-path { transition: stroke-width .2s; }
 .music-series-dot { width: 8px; height: 8px; flex: none; border-radius: 50%; }
 .music-season-legend { display: flex; flex-wrap: wrap; gap: 8px; max-height: 220px; overflow-y: auto; padding: 3px; scrollbar-width: thin; }
 .music-season-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; max-width: 100%; border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 13px; text-align: left; transition: background-color .2s, border-color .2s; }
 .music-season-chip:is(:hover, :focus-within, [data-highlighted]) { background: color-mix(in srgb, var(--acc) 9%, transparent); border-color: var(--acc); }
-.music-season-table { min-width: 100%; border-collapse: collapse; text-align: right; white-space: nowrap; }
-.music-season-table :is(th, td) { padding: 10px 14px; border-bottom: 1px solid var(--line); }
-.music-season-table th { font-weight: 500; }
-.music-season-table th:first-child { position: sticky; left: 0; text-align: left; background: var(--bg); max-width: 250px; overflow: hidden; text-overflow: ellipsis; }
 @keyframes music-away { to { opacity: 0; transform: translateY(-7px); filter: blur(2px); } }
 @keyframes music-arrive { from { opacity: 0; transform: translateY(14px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
 @keyframes music-item-arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
@@ -248,12 +251,11 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 @keyframes music-fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes music-fade-out { to { opacity: 0; } }
 @media (max-width: 760px) {
-  .music-season-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
-  .music-season-inspector { border-left: 0; border-top: 1px solid var(--line); padding: 20px 0 0; }
-  .music-season-inspector ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .music-season-inspector ol > li { margin: 0; }
-  .music-season-svg { min-height: 210px; }
+  .music-season-layout, .music-season-layout[data-expanded] { grid-template-columns: minmax(0, 1fr); column-gap: 0; }
+  .music-season-songs { position: absolute; inset-block: 0; right: 0; z-index: 8; width: min(100%, 320px); height: 100%; animation: music-season-reveal .25s cubic-bezier(.22,1,.36,1) both; }
+  .music-season-songs-inner { width: 100%; border: 1px solid var(--line); border-radius: 18px; padding: 16px; background: color-mix(in srgb, var(--bg) 97%, transparent); backdrop-filter: blur(18px); }
 }
+@keyframes music-season-reveal { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
 @media (max-width: 1023px) {
   .music-album-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }

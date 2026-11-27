@@ -1,8 +1,9 @@
-import type { Listen, MusicSeason, MusicSeasonalDataset, SeasonalMetric, SeasonalMetricData, SeasonalSeries } from "./types.ts";
+import type { Listen, MusicGenreSongCounts, MusicSeason, MusicSeasonalDataset, SeasonalMetric, SeasonalMetricData, SeasonalSeries } from "./types.ts";
 import { MUSIC_TIMEZONE, publicMusicListens } from "./aggregate.ts";
 import { musicEntityKey } from "./entity-links.ts";
 
 const names = ["Winter", "Spring", "Summer", "Fall"];
+export const MINIMUM_SEASONAL_PLAYS = 11;
 const textKey = (value: string) => value.normalize("NFKC").trim().replace(/\s+/g, " ").toLocaleLowerCase("en-US");
 const seasonAt = (index: number): MusicSeason => ({ key: `${Math.floor(index / 4)}-${names[index % 4].toLowerCase()}`, label: `${Math.floor(index / 4)} ${names[index % 4]}` });
 
@@ -44,14 +45,39 @@ export function aggregateSeasons(input: Listen[], now = new Date(), timezone = M
         }
       }
       const selected = new Set<string>();
-      // Rank independently in EVERY season, then retain the union and its complete timelines.
+      // Low-volume seasons do not qualify for the chart, even for an otherwise popular series.
+      for (const series of all.values()) series.plays = series.plays.map(plays => plays >= MINIMUM_SEASONAL_PLAYS ? plays : 0);
+      // Rank independently in EVERY qualifying season, then retain the union.
       for (let season = 0; season < seasons.length; season++) {
         const leaders = [...all.values()].filter(s => s.plays[season] > 0).sort((a, b) => b.plays[season] - a.plays[season] || a.key.localeCompare(b.key)).slice(0, 5);
         for (const series of leaders) selected.add(series.key);
       }
       metrics[metric] = { series: [...all.values()].filter(s => selected.has(s.key)).sort((a, b) => a.key.localeCompare(b.key)), classifiedPlays, unclassifiedPlays: rows.length - classifiedPlays };
     }
-    datasets[`${platform}/seasons`] = { version: 1, generatedAt: now.toISOString(), timezone, platform, seasons, metrics };
+    datasets[`${platform}/seasons`] = { version: 1, generatedAt: now.toISOString(), timezone, platform, seasons, metrics, minimumPlays: MINIMUM_SEASONAL_PLAYS };
   }
   return datasets;
+}
+
+/** Song lists include all approved plays for displayed genres, without the chart's volume cutoff. */
+export function aggregateGenreSongs(input: Listen[], seasonal: Record<string, MusicSeasonalDataset>, now = new Date(), timezone = MUSIC_TIMEZONE): Record<string, Record<string, MusicGenreSongCounts[]>> {
+  const formatter = new Intl.DateTimeFormat("en-US", { timeZone: timezone, year: "numeric", month: "numeric" });
+  const dated = publicMusicListens(input, now).map(listen => ({ listen, season: seasonWithFormatter(new Date(listen.playedAt), formatter).key }));
+  const result: Record<string, Record<string, MusicGenreSongCounts[]>> = {};
+  for (const [key, dataset] of Object.entries(seasonal)) {
+    const groups = new Map(dataset.metrics.genres.series.map(series => [series.key, new Map<string, MusicGenreSongCounts>()]));
+    for (const { listen, season } of dated) {
+      if (dataset.platform !== "all" && listen.platform !== dataset.platform) continue;
+      for (const genre of new Set(listen.track.genres.map(textKey))) {
+        if (!groups.has(genre)) continue;
+        const songs = groups.get(genre)!;
+        const trackKey = musicEntityKey("track", listen.track.title, listen.track.artists);
+        const song = songs.get(trackKey) || { key: trackKey, plays: 0, seasons: {} };
+        song.plays++; song.seasons[season] = (song.seasons[season] || 0) + 1;
+        songs.set(trackKey, song);
+      }
+    }
+    result[key] = Object.fromEntries([...groups].map(([genre, songs]) => [genre, [...songs.values()].sort((a, b) => b.plays - a.plays || a.key.localeCompare(b.key))]));
+  }
+  return result;
 }
