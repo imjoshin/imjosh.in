@@ -134,6 +134,17 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .page-title em { color: var(--acc); }
 .social-link:hover { color: var(--acc); }
 
+.resume-organization { text-decoration: underline; text-decoration-color: var(--line); text-decoration-thickness: 1px; text-underline-offset: .15em; }
+.resume-organization:hover { color: var(--acc); text-decoration-color: currentColor; }
+.resume-link-arrow { display: inline-block; margin-left: .3em; color: var(--mute); font-family: var(--font-sans); font-size: .48em; vertical-align: .25em; }
+.resume-organization:hover .resume-link-arrow { color: var(--acc); }
+.resume-roles { border-left: 1px solid var(--line); padding-left: 24px; }
+.resume-roles .resume-role { position: relative; padding-bottom: 28px; }
+.resume-roles .resume-role:last-child { padding-bottom: 0; }
+.resume-roles .resume-role::before { content: ""; position: absolute; top: 8px; left: -28px; width: 7px; height: 7px; border-radius: 50%; background: var(--acc); outline: 5px solid var(--panel); }
+.resume-highlights > li { position: relative; padding-left: 17px; }
+.resume-highlights > li::before { content: ""; position: absolute; top: .7em; left: 0; width: 4px; height: 4px; border-radius: 50%; background: var(--mute); }
+
 .music-label { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
 .music-feature { background: linear-gradient(125deg, var(--panel) 35%, color-mix(in srgb, var(--acc) 9%, var(--panel))); }
 .music-record-scene { min-height: 426px; padding: 48px 24px; position: relative; display: grid; place-items: center; isolation: isolate; }
@@ -380,9 +391,20 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
   canvas, .site-header, .site-footer, .print-actions, .skip-link { display: none !important; }
   .resume-page { padding: 0 !important; gap: 20px !important; max-width: none !important; }
   .resume-page .page-title { font-size: 54pt; }
-  .resume-page .experience-row { padding: 12px 18px; break-inside: avoid; grid-template-columns: 1fr 2fr; }
+  .resume-page .resume-heading { margin-bottom: 4px; }
+  .resume-page .experience-row { padding: 14px 18px; break-inside: avoid; grid-template-columns: 1fr 2fr; gap: 24px; }
   .resume-page .experience-company { font-size: 22pt; }
-  .resume-page .experience-description { font-size: 10pt; }
+  .resume-page .resume-role-title, .resume-page .resume-degree { font-size: 12pt; }
+  .resume-page .resume-role-dates { font-size: 9pt; }
+  .resume-page .experience-description { font-size: 9.5pt; line-height: 1.4; gap: 5px; }
+  .resume-page .resume-roles { padding-left: 18px; }
+  .resume-page .resume-roles .resume-role { padding-bottom: 18px; }
+  .resume-page .resume-roles .resume-role:last-child { padding-bottom: 0; }
+  .resume-page .resume-roles .resume-role::before { left: -22px; top: 5px; outline: none; }
+  .resume-page .resume-link-arrow { display: none; }
   .resume-page .resume-extra { break-inside: avoid; padding: 18px; }
+  .resume-page .resume-education .resume-extra { grid-template-columns: 1fr 2fr; }
+  .resume-page .resume-recommendations > div { grid-template-columns: 1fr 1fr; }
+  .resume-page .resume-recommendations blockquote { font-size: 19pt; }
   .panel { backdrop-filter: none; background: #fff; }
 }
