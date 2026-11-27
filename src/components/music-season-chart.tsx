@@ -176,7 +176,7 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
               {inspection && <line x1={x(selectedIndex)} x2={x(selectedIndex)} y1={coordinates.top} y2={coordinates.bottom} stroke="var(--ink)" opacity=".25" pointerEvents="none" />}
               {plotted.map(({ item, phase }) => <SeasonLine key={item.key} item={item} phase={phase} selectedTime={seasons[selectedIndex] ? seasonTime(seasons[selectedIndex].key) : 0} highlighted={highlightKeys.includes(item.source.key)} dimmed={highlightKeys.length > 0 && !highlightKeys.includes(item.source.key)} frames={frames.current} />)}
             </svg>
-            {inspection && <MusicChartTooltip id={id + "-tooltip"} title={seasons[selectedIndex]?.label || ""} x={inspection.x} placement={inspection.placement} onCardClose={() => setInspection(null)} rows={tooltipSeries.map(line => ({
+            {inspection && <MusicChartTooltip id={id + "-tooltip"} title={seasons[selectedIndex]?.label || ""} x={inspection.x} placement={inspection.placement} preferTop={!compact} onCardClose={() => setInspection(null)} rows={tooltipSeries.map(line => ({
               key: line.key, label: line.name, entity: metric === "genres" ? undefined : { kind: metric === "artists" ? "artist" : "album", name: line.name, artists: line.artists, url: line.url },
               artists: line.artists, detail: line.artists.join(", "), value: line.plays[selectedIndex] || 0, color: color(series.indexOf(line)),
               onSelect: () => openSongs(line.key, seasons[selectedIndex].key, interaction.ref.current),

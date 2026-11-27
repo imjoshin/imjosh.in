@@ -250,7 +250,7 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-swap[data-phase="in"] > .music-swap-content { animation: music-arrive .44s cubic-bezier(.22,1,.36,1) both; }
 .music-record-label .music-swap-content { width: 100%; height: 100%; display: grid; place-items: center; }
 .music-tabs button { transition: color .2s, background-color .2s; }
-.music-season-layout { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0px); column-gap: 0; height: 376px; isolation: isolate; transition: grid-template-columns .36s cubic-bezier(.22,1,.36,1), column-gap .36s cubic-bezier(.22,1,.36,1); }
+.music-season-layout { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0px); column-gap: 0; height: 376px; isolation: isolate; transition: grid-template-columns .36s cubic-bezier(.22,1,.36,1), column-gap .36s cubic-bezier(.22,1,.36,1); }
 .music-season-layout[data-expanded] { grid-template-columns: minmax(0, 1fr) minmax(0, 320px); column-gap: 20px; }
 .music-season-plot { height: 376px; }
 .music-season-svg { display: block; width: 100%; height: 350px; }

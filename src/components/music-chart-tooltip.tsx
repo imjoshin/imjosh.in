@@ -9,7 +9,7 @@ const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 export interface ChartTooltipRow { key: string; label: string; value: number; detail?: string; color?: string; entity?: MusicEntityRef; artists?: string[]; onSelect?: () => void }
 type TooltipSide = "top" | "bottom" | "left" | "right";
 
-export function MusicChartTooltip({ id, title, rows, x = 50, placement = "top", secondary, onCardClose }: { id: string; title: string; rows: ChartTooltipRow[]; x?: number; placement?: "top" | "bottom"; secondary?: string; onCardClose?: () => void }) {
+export function MusicChartTooltip({ id, title, rows, x = 50, placement = "top", preferTop = false, secondary, onCardClose }: { id: string; title: string; rows: ChartTooltipRow[]; x?: number; placement?: "top" | "bottom"; preferTop?: boolean; secondary?: string; onCardClose?: () => void }) {
   const limit = rows.some(row => row.detail) ? 4 : 6;
   const linked = rows.some(row => row.entity || row.onSelect);
   const popup = useRef<HTMLDivElement>(null), content = useRef<HTMLDivElement>(null);
@@ -30,13 +30,13 @@ export function MusicChartTooltip({ id, title, rows, x = 50, placement = "top", 
       const gap = 12, width = box.width, naturalHeight = body.scrollHeight + 2;
       let maxHeight = Math.max(1, bottomEdge - topEdge);
       let side: TooltipSide;
-      // Prefer the sides so the entire plot stays available for pointer inspection.
-      if (x < 50 && bounds.left - gap - width >= leftEdge) side = "left";
-      else if (bounds.right + gap + width <= rightEdge) side = "right";
-      else if (bounds.left - gap - width >= leftEdge) side = "left";
+      // Top-first charts only fall below when the card cannot fit above the plot.
+      if (!preferTop && x < 50 && bounds.left - gap - width >= leftEdge) side = "left";
+      else if (!preferTop && bounds.right + gap + width <= rightEdge) side = "right";
+      else if (!preferTop && bounds.left - gap - width >= leftEdge) side = "left";
       else {
         const above = bounds.top - gap - topEdge, below = bottomEdge - bounds.bottom - gap;
-        side = placement === "top" && above >= naturalHeight ? "top" : placement === "bottom" && below >= naturalHeight ? "bottom" : above >= below ? "top" : "bottom";
+        side = preferTop ? above >= naturalHeight ? "top" : "bottom" : placement === "top" && above >= naturalHeight ? "top" : placement === "bottom" && below >= naturalHeight ? "bottom" : above >= below ? "top" : "bottom";
         maxHeight = Math.min(maxHeight, Math.max(120, side === "top" ? above : below));
       }
       const height = Math.min(naturalHeight, maxHeight);
@@ -51,7 +51,7 @@ export function MusicChartTooltip({ id, title, rows, x = 50, placement = "top", 
     addEventListener("scroll", reposition, true); addEventListener("resize", reposition);
     window.visualViewport?.addEventListener("resize", reposition); window.visualViewport?.addEventListener("scroll", reposition);
     return () => { observer.disconnect(); removeEventListener("scroll", reposition, true); removeEventListener("resize", reposition); window.visualViewport?.removeEventListener("resize", reposition); window.visualViewport?.removeEventListener("scroll", reposition); };
-  }, [x, placement, title, secondary, rows]);
+  }, [x, placement, preferTop, title, secondary, rows]);
   return <div ref={popup} id={id} role={linked ? "group" : "tooltip"} aria-label={linked ? `${title} listening details` : undefined} aria-live="polite" aria-atomic="true" className="music-chart-tooltip" data-linked={linked || undefined} data-ready={position.ready || undefined} data-side={position.side} data-many={rows.length > 1 || undefined} style={{ left: position.left, top: position.top, "--chart-tooltip-max-height": `${position.maxHeight}px` } as CSSProperties}>
     <div ref={content} className="music-chart-tooltip-content">
     <p className="mb-2 text-[13px] font-medium text-accent">{title}</p>
