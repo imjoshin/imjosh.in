@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { type MusicSoundtrackDataset, type SoundtrackMetric, type SoundtrackSeries } from "@/lib/music/types";
 import { MusicChartTooltip } from "./music-chart-tooltip";
+import { hasMissingMusicHistory, musicHistoryGap } from "@/lib/music/history-gap";
+import { MusicHistoryGapBand, MusicHistoryGapNotice } from "./music-history-gap";
 import { chartPointAt, musicLinePath, nearestChartIndex, type MusicChartPoint } from "@/lib/music/chart-interaction";
 import { MusicNumber, useMusicLineMotion, useMusicPresence } from "./music-motion";
 import { isMusicCardTarget } from "./music-entity-link";
@@ -86,6 +88,7 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
   // With no play cutoff, zero is an observed count rather than a missing point.
   const pointMinimum = minimum === 1 ? 0 : minimum;
   const buckets = data?.buckets || [];
+  const gap = musicHistoryGap(buckets.map(bucket => bucket.key));
   const periodName = granularity;
   const chartName = granularity === "day" ? "Daily" : granularity === "month" ? "Monthly" : "Yearly";
   const rangeLabel = data?.period === "all" ? "All time" : data?.period === "30d" ? "Last 30 days" : data?.period === "365d" ? "Last year" : data?.period || period;
@@ -190,12 +193,13 @@ export function MusicSoundtrackChart({ data, period, api = false, loading = fals
             <svg ref={svg} viewBox={"0 0 " + plotWidth + " 350"} preserveAspectRatio="none" className="music-soundtrack-svg" role="img" aria-labelledby={id + "-chart-title " + id + "-chart-description"} onPointerMove={interaction.onPointerMove} onPointerDown={interaction.onPointerDown} onPointerUp={interaction.onPointerUp} onPointerCancel={interaction.onPointerCancel}>
               <title id={id + "-chart-title"}>{chartName + " top " + metric + ", " + rangeLabel}</title>
               <desc id={id + "-chart-description"}>{series.length + " series selected from each " + periodName + "'s top five. " + (minimum > 1 ? "Only totals with at least " + minimum + " plays appear. Lower-volume periods appear as gaps. " : "Days without recorded plays appear at zero. ") + "Select a line or legend entry to view its songs."}</desc>
+              <MusicHistoryGapBand range={gap} left={coordinates.left} right={coordinates.right} top={coordinates.top} bottom={coordinates.bottom} active={!!inspection && !!buckets[selectedIndex] && hasMissingMusicHistory(buckets[selectedIndex].key)} />
               {Array.from({ length: Math.round(ceiling / step) + 1 }, (_, i) => i * step).map(value => <g key={value} pointerEvents="none"><line x1={coordinates.left} x2={coordinates.right} y1={y(value)} y2={y(value)} stroke="var(--line)" strokeDasharray="3 6" /><text x={coordinates.left - 8} y={y(value) + 4} textAnchor="end" fill="var(--mute)" fontSize="13">{number(value)}</text></g>)}
               {buckets.map((bucket, i) => <g key={bucket.key} pointerEvents="none">{(i === buckets.length - 1 || i % labelStride === 0 && (i === 0 || x(buckets.length - 1) - x(i) >= 90)) && <text x={x(i)} y="319" textAnchor={i === 0 && buckets.length > 1 ? "start" : i === buckets.length - 1 && buckets.length > 1 ? "end" : "middle"} fill="var(--mute)" fontSize="13">{granularity === "year" ? bucket.label : bucket.label.replace(/,? \d{4}$/, "")}<tspan x={x(i)} dy="17">{granularity === "year" ? "" : bucket.key.slice(0, 4)}</tspan></text>}</g>)}
               {inspection && <line x1={x(selectedIndex)} x2={x(selectedIndex)} y1={coordinates.top} y2={coordinates.bottom} stroke="var(--ink)" opacity=".25" pointerEvents="none" />}
               {plotted.map(({ item, phase }) => <SoundtrackLine key={item.key} item={item} phase={phase} selectedTime={buckets[selectedIndex] ? bucketTime(buckets[selectedIndex].key) : 0} highlighted={highlightKeys.includes(item.source.key)} dimmed={highlightKeys.length > 0 && !highlightKeys.includes(item.source.key)} frames={frames.current} />)}
             </svg>
-            {inspection && <MusicChartTooltip analyticsBucket={buckets[selectedIndex]?.key} id={id + "-tooltip"} title={buckets[selectedIndex]?.label || ""} x={inspection.x} preferTop onCardClose={() => setInspection(null)} rows={tooltipSeries.map(line => ({
+            {inspection && <MusicChartTooltip analyticsBucket={buckets[selectedIndex]?.key} id={id + "-tooltip"} title={buckets[selectedIndex]?.label || ""} x={inspection.x} preferTop onCardClose={() => setInspection(null)} notice={buckets[selectedIndex] && hasMissingMusicHistory(buckets[selectedIndex].key) ? <MusicHistoryGapNotice /> : undefined} rows={tooltipSeries.map(line => ({
               key: line.key, label: line.name, entity: metric === "genres" ? undefined : { kind: metric === "artists" ? "artist" : "album", name: line.name, artists: line.artists, url: line.url },
               artists: line.artists, detail: line.artists.join(", "), value: line.plays[selectedIndex] || 0, color: color(series.indexOf(line)),
               onSelect: () => openSongs(line.key, buckets[selectedIndex].key, interaction.ref.current),

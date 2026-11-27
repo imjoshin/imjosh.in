@@ -4,7 +4,9 @@ import { useId, useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { MusicDataset } from "@/lib/music/types";
 import { chartPointAt, musicLinePath } from "@/lib/music/chart-interaction";
 import { listeningChartBuckets } from "@/lib/music/listening-chart";
+import { hasMissingMusicHistory, musicHistoryGap } from "@/lib/music/history-gap";
 import { MusicChartTooltip } from "./music-chart-tooltip";
+import { MusicHistoryGapBand, MusicHistoryGapNotice } from "./music-history-gap";
 import { useMusicLineMotion, useMusicPresence } from "./music-motion";
 import { useMusicChartInteraction } from "./use-music-chart-interaction";
 
@@ -19,6 +21,7 @@ export function ListeningChart({ data }: { data: MusicDataset }) {
   const [active, setActive] = useState<string | null>(null);
   const daily = data.period === "30d";
   const buckets = listeningChartBuckets(data);
+  const gap = musicHistoryGap(buckets.map(bucket => bucket.key));
   const label = daily ? dayLabel : monthLabel;
   const index = active === null || !buckets.length ? null : Math.max(0, buckets.findIndex(bucket => bucket.key === active));
   const selected = index === null ? null : buckets[index];
@@ -48,11 +51,12 @@ export function ListeningChart({ data }: { data: MusicDataset }) {
       <p id={helpId} className="sr-only">Use Left and Right to explore {daily ? "days" : "months"}, Home and End to jump, and Escape to dismiss details.</p>
       <svg viewBox="0 0 600 190" role="img" aria-label={`Recorded listening by ${daily ? "day" : "month"}. ${buckets.map(bucket => `${label(bucket.key)}: ${bucket.plays}`).join(". ")}`} className="w-full overflow-visible" onPointerMove={interaction.onPointerMove} onPointerDown={interaction.onPointerDown} onPointerUp={interaction.onPointerUp} onPointerCancel={interaction.onPointerCancel}>
         <defs><linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop stopColor="var(--acc)" stopOpacity=".3" /><stop offset="1" stopColor="var(--acc)" stopOpacity="0" /></linearGradient></defs>
+        <MusicHistoryGapBand range={gap} left={12} right={588} top={12} bottom={180} active={!!selected && hasMissingMusicHistory(selected.key)} />
         {[24, 95, 166].map(value => <line key={value} x1="12" x2="588" y1={value} y2={value} stroke="var(--line)" strokeDasharray="3 6" />)}
         {line && <><path d={`${line} L ${points.at(-1)!.x},180 L ${points[0].x},180 Z`} fill={`url(#${id})`} /><path d={line} fill="none" stroke="var(--acc)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />{dots.map(({ item, phase }) => <circle key={item.key} className="music-point" data-phase={phase} cx={point(item.key).x} cy={point(item.key).y} r="3.5" fill="var(--bg)" stroke="var(--acc)" strokeWidth="2" />)}</>}
         {selectedPoint && <g aria-hidden="true"><line x1={selectedPoint.x} x2={selectedPoint.x} y1="12" y2="180" stroke="var(--acc)" strokeDasharray="3 5" opacity=".6" /><circle cx={selectedPoint.x} cy={selectedPoint.y} r="10" fill="var(--acc)" opacity=".15" /><circle cx={selectedPoint.x} cy={selectedPoint.y} r="5" fill="var(--bg)" stroke="var(--acc)" strokeWidth="2.5" /></g>}
       </svg>
-      {selected && selectedPoint && <MusicChartTooltip analyticsBucket={selected.key} id={tooltipId} title={label(selected.key)} rows={[{ key: selected.key, label: "Recorded plays", value: selected.plays }]} x={selectedPoint.x / 6} preferTop secondary={share(selected.plays, data.stats.plays)} />}
+      {selected && selectedPoint && <MusicChartTooltip analyticsBucket={selected.key} id={tooltipId} title={label(selected.key)} rows={[{ key: selected.key, label: "Recorded plays", value: selected.plays }]} x={selectedPoint.x / 6} preferTop secondary={share(selected.plays, data.stats.plays)} notice={hasMissingMusicHistory(selected.key) ? <MusicHistoryGapNotice /> : undefined} />}
     </div>
     <div className="mt-1 flex justify-between text-[13px] text-muted"><span>{buckets[0] ? label(buckets[0].key) : daily ? "Daily history is on its way" : "History is on its way"}</span><span>{buckets.length > 1 ? label(buckets.at(-1)!.key) : ""}</span></div>
   </figure>;

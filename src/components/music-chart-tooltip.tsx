@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { MusicEntityRef } from "@/lib/music/types";
 import { MusicArtists, MusicLink } from "./music-entity-link";
 
@@ -9,7 +9,7 @@ const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 export interface ChartTooltipRow { key: string; label: string; value: number; detail?: string; color?: string; entity?: MusicEntityRef; artists?: string[]; onSelect?: () => void }
 type TooltipSide = "top" | "bottom" | "left" | "right";
 
-export function MusicChartTooltip({ id, title, rows, x = 50, placement = "top", preferTop = false, secondary, onCardClose, analyticsBucket }: { analyticsBucket?: string; id: string; title: string; rows: ChartTooltipRow[]; x?: number; placement?: "top" | "bottom"; preferTop?: boolean; secondary?: string; onCardClose?: () => void }) {
+export function MusicChartTooltip({ id, title, rows, x = 50, placement = "top", preferTop = false, secondary, notice, onCardClose, analyticsBucket }: { analyticsBucket?: string; id: string; title: string; rows: ChartTooltipRow[]; x?: number; placement?: "top" | "bottom"; preferTop?: boolean; secondary?: string; notice?: ReactNode; onCardClose?: () => void }) {
   const limit = rows.some(row => row.detail) ? 4 : 6;
   const linked = rows.some(row => row.entity || row.onSelect);
   const popup = useRef<HTMLDivElement>(null), content = useRef<HTMLDivElement>(null);
@@ -51,7 +51,7 @@ export function MusicChartTooltip({ id, title, rows, x = 50, placement = "top", 
     addEventListener("scroll", reposition, true); addEventListener("resize", reposition);
     window.visualViewport?.addEventListener("resize", reposition); window.visualViewport?.addEventListener("scroll", reposition);
     return () => { observer.disconnect(); removeEventListener("scroll", reposition, true); removeEventListener("resize", reposition); window.visualViewport?.removeEventListener("resize", reposition); window.visualViewport?.removeEventListener("scroll", reposition); };
-  }, [x, placement, preferTop, title, secondary, rows]);
+  }, [x, placement, preferTop, title, secondary, rows, notice]);
   return <div data-analytics-inspect="chart" data-analytics-bucket={analyticsBucket} data-analytics-item-group="chart_tooltip" ref={popup} id={id} role={linked ? "group" : "tooltip"} aria-label={linked ? `${title} listening details` : undefined} aria-live="polite" aria-atomic="true" className="music-chart-tooltip" data-linked={linked || undefined} data-ready={position.ready || undefined} data-side={position.side} data-many={rows.length > 1 || undefined} style={{ left: position.left, top: position.top, "--chart-tooltip-max-height": `${position.maxHeight}px` } as CSSProperties}>
     <div ref={content} className="music-chart-tooltip-content">
     <p className="mb-2 text-[13px] font-medium text-accent">{title}</p>
@@ -59,9 +59,10 @@ export function MusicChartTooltip({ id, title, rows, x = 50, placement = "top", 
       {row.color && <span className="music-series-dot mt-1" style={{ background: row.color }} />}
       <span className="min-w-0 flex-1 break-words"><span className="music-tooltip-label">{row.entity ? <MusicLink entity={row.entity} onCardClose={onCardClose}>{row.label}</MusicLink> : row.onSelect ? <button type="button" className="text-left hover:text-accent" onClick={row.onSelect}>{row.label}</button> : row.label}</span>{row.detail && <span className="mt-0.5 block truncate text-[12px] text-muted">{row.artists ? <MusicArtists names={row.artists} onCardClose={onCardClose} /> : row.detail}</span>}{row.entity && row.onSelect && <button type="button" className="mt-1 block text-accent underline underline-offset-2" aria-label={`Show songs for ${row.label}`} onClick={row.onSelect}>View songs</button>}</span>
       <span className="shrink-0 whitespace-nowrap font-medium tabular-nums">{number.format(row.value)} <span className="font-normal text-muted">{row.value === 1 ? "play" : "plays"}</span></span>
-    </li>)}</ul> : <p className="text-[13px] text-muted">No entries for this period.</p>}
+    </li>)}</ul> : !notice && <p className="text-[13px] text-muted">No entries for this period.</p>}
     {rows.length > limit && <p className="mt-2 text-[12px] text-muted">{limit} of {rows.length} series. Choose a legend entry for details.</p>}
     {secondary && <p className="mt-2 text-[12px] text-muted">{secondary}</p>}
+    {notice}
     </div>
   </div>;
 }

@@ -8,6 +8,8 @@ import { spotifyImage } from "@/lib/music/entity-links";
 import { musicPlaceholderStyle } from "@/lib/music/placeholder";
 import { MusicLink, useDismissMusicHover } from "./music-entity-link";
 import { analyticsContext, analyticsDataAttributes } from "@/lib/analytics-context";
+import { hasMissingMusicHistory, musicHistoryGap } from "@/lib/music/history-gap";
+import { MusicHistoryGapNotice } from "./music-history-gap";
 
 const groupLabels = { "all-time": "All time favorites", recent: "Recent interests", past: "A moment in time" };
 const number = new Intl.NumberFormat("en-US");
@@ -72,6 +74,7 @@ function ArtistHistoryTooltip({ active, data, id }: { active: Inspection; data: 
       <div className="min-w-0"><strong className="block truncate text-[14px] font-semibold leading-5">{active.artist.name}</strong><p className="mt-1 whitespace-nowrap text-[12px] leading-4 text-muted">{bucket.label}</p></div>
     </div>
     {bucket.plays ? <dl className="mt-3 grid grid-cols-2 gap-4"><div><dt>Recorded plays</dt><dd>{number.format(plays)}</dd></div><div><dt>Share of the season</dt><dd>{(plays / bucket.plays * 100).toFixed(1)}%</dd></div></dl> : <p className="mt-3 text-[12px] text-muted">No recorded history for this season.</p>}
+    {hasMissingMusicHistory(bucket.key) && <MusicHistoryGapNotice />}
   </div>, document.body);
 }
 
@@ -81,6 +84,7 @@ export function MusicArtistHistory({ data }: { data: MusicArtistHistoryDataset |
 
 function ArtistHistoryContent({ data }: { data: MusicArtistHistoryDataset }) {
   const [active, setActive] = useState<Inspection | null>(null);
+  const gap = musicHistoryGap(data.buckets.map(bucket => bucket.key), "cells");
   const touch = useRef<{ id: number; x: number; y: number } | null>(null), pointerType = useRef("");
   const dismissed = useRef<HTMLElement | null>(null);
   const dismissArtist = useDismissMusicHover(), tooltipId = useId(), headingId = useId();
@@ -121,6 +125,7 @@ function ArtistHistoryContent({ data }: { data: MusicArtistHistoryDataset }) {
     <div className="mb-6"><p className="music-label">Some favorites last a season. Others last years.</p><h2 id={headingId} className="mt-3 font-display text-[clamp(38px,4vw,46px)] leading-none tracking-[-.025em]">The long <em className="text-accent">haul.</em></h2><p className="mt-3 max-w-[74ch] text-[14px] leading-relaxed text-muted">Seasonal favorites across the whole listening history. Brighter cells mean a bigger share of that season.</p></div>
     <div className="music-artist-scroll" role="region" aria-label="All-time seasonal artist heatmap" tabIndex={0} onScroll={event => event.currentTarget.style.setProperty("--artist-scroll-left", `${event.currentTarget.scrollLeft}px`)}>
       <div className="music-artist-grid" style={{ "--artist-season-count": data.buckets.length } as CSSProperties}>
+        {gap && <div className="music-artist-gap-track" aria-hidden="true"><div className="music-history-gap music-artist-gap" data-active={!!active && hasMissingMusicHistory(data.buckets[active.index].key) || undefined} data-start={gap.startsHere || undefined} data-end={gap.endsHere || undefined} style={{ left: `${gap.start * 100}%`, width: `${(gap.end - gap.start) * 100}%` }} /></div>}
         <div className="music-artist-grid-row music-artist-axis"><span>Artist</span><ArtistHistoryYears buckets={data.buckets} /></div>
         {data.groups.filter(group => group.artists.length).map(group => <div key={group.key} data-analytics-item-group={group.key}>
           <h3 className="music-artist-group"><span>{groupLabels[group.key]}</span><span aria-hidden="true" /></h3>
