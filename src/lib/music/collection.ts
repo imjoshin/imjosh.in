@@ -25,7 +25,8 @@ export async function readMusicCollection(read: MusicJsonReader, period: string,
   return { manifest, data, spotify, seasons, playback };
 }
 
-export function currentMusicPlayback(snapshot: MusicPlaybackSnapshot | null, now: number) {
-  const checked = Date.parse(snapshot?.checkedAt || ""), expires = Date.parse(snapshot?.expiresAt || "");
-  return snapshot?.version === 1 && Number.isFinite(checked) && checked <= now + 5000 && now < Math.min(expires, checked + 90000) ? snapshot.track : null;
+export function currentMusicPlayback(snapshot: MusicPlaybackSnapshot | null, previous: MusicPlaybackSnapshot["track"] = null): MusicPlaybackSnapshot["track"] {
+  if (snapshot?.version !== 1) return previous;
+  if (snapshot.status === "stopped") return null;
+  return snapshot.track || previous;
 }

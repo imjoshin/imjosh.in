@@ -3,7 +3,7 @@ import { aggregateSeasons } from "../../src/lib/music/seasons.ts";
 import { digest, musicTrack } from "../../src/lib/music/normalize.ts";
 import { allListens, readJson, writeJson, type MusicStore } from "./store.ts";
 import type { GenreIndex } from "./spotify.ts";
-import type { MusicManifest, MusicTrack, SpotifySnapshot } from "../../src/lib/music/types.ts";
+import type { MusicManifest, MusicPlaybackSnapshot, MusicTrack, SpotifySnapshot } from "../../src/lib/music/types.ts";
 import { isKidsGenre, isDisneyMusic } from "../../src/lib/music/genres.ts";
 import { aggregateEntities, type MusicEntityMetadata } from "../../src/lib/music/entities.ts";
 import type { MusicEntityRef } from "../../src/lib/music/types.ts";
@@ -76,7 +76,11 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     spotify.playlists = [];
     await immutable("spotify", spotify);
   }
-  const playback = publicSpotifyPlayback(await readJson<SpotifyPlaybackSource>(privateStore, "state/spotify-playback.json"), now);
+  let playback = publicSpotifyPlayback(await readJson<SpotifyPlaybackSource>(privateStore, "state/spotify-playback.json"), now);
+  if (playback.status === "unknown" && previous?.files.playback && /^datasets\/[a-f0-9]{24}\.json$/.test(previous.files.playback)) {
+    const prior = await readJson<MusicPlaybackSnapshot>(publicStore, previous.files.playback);
+    if (prior?.version === 1) playback = prior;
+  }
   if (playback.track) favorites.push({ kind: "track", ...playback.track });
   await immutable("playback", playback);
   const entities = aggregateEntities(verifiedRows, favorites, entityMetadata, now);

@@ -19,7 +19,7 @@ const memory = (): MusicStore => {
 test("now playing requires explicit active music and omits private, paused, ad, podcast, and local playback", () => {
   const valid = source(), before = JSON.stringify(valid);
   const result = publicSpotifyPlayback(valid, now);
-  assert.equal(result.track?.name, "Song"); assert.equal(Date.parse(result.expiresAt) - now.getTime(), 90000);
+  assert.equal(result.track?.name, "Song"); assert.equal(result.status, "playing");
   for (const patch of [{ is_playing: false }, { currently_playing_type: "ad" }, { currently_playing_type: "episode" }, { device: { is_private_session: true } }, { device: {} }, { item: null }, { item: { ...valid.data!.item, is_local: true } }]) assert.equal(publicSpotifyPlayback({ ...valid, data: { ...valid.data, ...patch } }, now).track, null);
   assert.equal(publicSpotifyPlayback(null, now).track, null);
   assert.equal(publicSpotifyPlayback({ ...valid, data: {} }, now).track, null);
@@ -27,15 +27,26 @@ test("now playing requires explicit active music and omits private, paused, ad, 
   for (const secret of ["PRIVATE-DEVICE", "PRIVATE-NAME", "progress_ms", "duration_ms", "device"]) assert.equal(JSON.stringify(result).includes(secret), false);
 });
 
-test("now playing observations expire on track end or stale observations", () => {
+test("now playing ignores expiry, elapsed observation age, and estimated track end", () => {
   const valid = source();
-  assert.equal(publicSpotifyPlayback({ ...valid, checkedAt: "2026-11-26T19:58:29Z" }, now).track, null);
+  assert.equal(publicSpotifyPlayback({ ...valid, checkedAt: "2026-11-25T19:58:29Z" }, now).track?.name, "Song");
   assert.equal(publicSpotifyPlayback({ ...valid, checkedAt: "2026-11-26T20:01:00Z" }, now).track, null);
-  const ending = publicSpotifyPlayback({ ...valid, data: { ...valid.data, progress_ms: 198000 } }, now);
-  assert.equal(Date.parse(ending.expiresAt) - now.getTime(), 2000);
-  assert.equal(currentMusicPlayback(ending, now.getTime())?.name, "Song");
-  assert.equal(currentMusicPlayback(ending, now.getTime() + 2000), null);
-  assert.equal(currentMusicPlayback({ ...ending, expiresAt: "2030-01-01T00:00:00Z" }, now.getTime() + 90001), null);
+  const ending = publicSpotifyPlayback({ ...valid, data: { ...valid.data, progress_ms: 200000 } }, now);
+  assert.equal(ending.expiresAt, undefined);
+  assert.equal(currentMusicPlayback(ending)?.name, "Song");
+  assert.equal(currentMusicPlayback({ ...ending, checkedAt: "2020-01-01T00:00:00Z", expiresAt: "2020-01-01T00:00:01Z" })?.name, "Song");
+});
+
+test("now playing retains the song through unknown updates and clears on a confirmed stop", () => {
+  const active = publicSpotifyPlayback(source(), now), previous = currentMusicPlayback(active);
+  assert.ok(previous);
+  for (const snapshot of [null, { ...active, track: null, status: undefined }, publicSpotifyPlayback(null, now), publicSpotifyPlayback({ checkedAt: now.toISOString(), data: null }, now), publicSpotifyPlayback({ checkedAt: now.toISOString(), data: { is_playing: true } }, now)]) assert.equal(currentMusicPlayback(snapshot, previous), previous);
+  for (const data of [{}, { is_playing: false }, { ...source().data, device: { is_private_session: true } }]) {
+    const stopped = publicSpotifyPlayback({ checkedAt: now.toISOString(), data }, now);
+    assert.equal(stopped.status, "stopped"); assert.equal(currentMusicPlayback(stopped, previous), null);
+  }
+  const next = { ...active, track: { ...previous, key: "next", name: "Next song" } };
+  assert.equal(currentMusicPlayback(next, previous)?.name, "Next song");
 });
 
 test("publication shows kids and Disney playback while keeping history, charts, and rankings filtered", async () => {
@@ -53,7 +64,7 @@ test("publication shows kids and Disney playback while keeping history, charts, 
     const playback = await readJson<MusicPlaybackSnapshot>(publicStore, manifest.files.playback);
     assert.equal(playback?.track?.name, "Song");
     assert.equal(playback?.track?.album, listen.track.album);
-    assert.equal(currentMusicPlayback(playback, now.getTime())?.key, listen.track.key);
+    assert.equal(currentMusicPlayback(playback)?.key, listen.track.key);
     const history = await readJson<MusicDataset>(publicStore, manifest.files["all/all"]);
     assert.equal(history?.stats.plays, 0);
     assert.deepEqual(history?.stats.topTracks, []); assert.deepEqual(history?.stats.topArtists, []); assert.deepEqual(history?.stats.topAlbums, []);
@@ -81,6 +92,24 @@ test("unchanged summaries retain immutable filenames while the manifest and play
   assert.equal((await privateStore.list("listens/")).length, 0);
   const data = await readJson<{ stats: { plays: number } }>(publicStore, second.manifest.files["all/all"]);
   assert.equal(data!.stats.plays, 0);
+});
+
+test("publication keeps the last playback across unavailable updates until Spotify confirms a stop", async () => {
+  const privateStore = memory(), publicStore = memory();
+  await writeJson(privateStore, "state/spotify-playback.json", source());
+  const first = await publishMusic(privateStore, publicStore, now);
+  await writeJson(privateStore, "state/spotify-playback.json", { checkedAt: now.toISOString(), data: null });
+  const unknown = await publishMusic(privateStore, publicStore, new Date(now.getTime() + 3600000));
+  assert.equal(unknown.manifest.files.playback, first.manifest.files.playback);
+  const retained = await readJson<MusicPlaybackSnapshot>(publicStore, unknown.manifest.files.playback);
+  assert.equal(currentMusicPlayback(retained)?.name, "Song");
+  await writeJson(privateStore, "state/spotify-playback.json", { checkedAt: now.toISOString(), data: {} });
+  const stopped = await publishMusic(privateStore, publicStore, new Date(now.getTime() + 7200000));
+  const playback = await readJson<MusicPlaybackSnapshot>(publicStore, stopped.manifest.files.playback);
+  assert.equal(playback?.status, "stopped"); assert.equal(currentMusicPlayback(playback, retained!.track), null);
+  await writeJson(privateStore, "state/spotify-playback.json", null);
+  const unavailable = await publishMusic(privateStore, publicStore, new Date(now.getTime() + 10800000));
+  assert.equal(unavailable.manifest.files.playback, stopped.manifest.files.playback);
 });
 
 test("a refresh loads a complete collection, caches unchanged files, and rejects incomplete revisions", async () => {

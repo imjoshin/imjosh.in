@@ -140,6 +140,8 @@ export interface SpotifySnapshot {
 export interface MusicPlaybackSnapshot {
   version: 1;
   checkedAt: string;
-  expiresAt: string;
+  status?: "playing" | "stopped" | "unknown";
+  /** Legacy observations may include an expiry, which current playback ignores. */
+  expiresAt?: string;
   track: { key: string; name: string; artists: string[]; album: string | null; url: string | null; image: string | null } | null;
 }

@@ -18,9 +18,8 @@ export function MusicNowPlaying({ snapshot }: { snapshot: MusicPlaybackSnapshot 
     return () => { removeEventListener("resize", measure); viewport?.removeEventListener("resize", measure); viewport?.removeEventListener("scroll", measure); };
   }, []);
   useEffect(() => {
-    const playing = currentMusicPlayback(snapshot, Date.now());
-    // Keep the last eligible song visible between observations until the visitor dismisses it.
-    if (playing) setLastTrack(playing);
+    // Keep playback through unavailable updates; only a confirmed stop clears it.
+    setLastTrack(previous => currentMusicPlayback(snapshot, previous));
   }, [snapshot]);
   const track = dismissed ? null : lastTrack;
   const rows = useMusicPresence(track ? [track] : []);
