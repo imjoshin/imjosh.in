@@ -9,48 +9,52 @@ import { useMusicChartInteraction } from "./use-music-chart-interaction";
 
 const number = (value: number) => new Intl.NumberFormat("en-US").format(value);
 const monthLabel = (value: string) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}-01T12:00:00Z`));
+const dayLabel = (value: string) => new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T12:00:00Z`));
 const share = (plays: number, total: number) => `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }).format(total ? plays / total * 100 : 0)}% of this period`;
-const monthTime = (month: string) => { const [year, value] = month.split("-").map(Number); return year * 12 + value - 1; };
+const dateTime = (date: string) => Date.parse(`${date.length === 7 ? `${date}-01` : date}T12:00:00Z`) / 86400000;
 
 export function ListeningChart({ data }: { data: MusicDataset }) {
   const id = useId().replaceAll(":", ""), tooltipId = `${id}-tooltip`, helpId = `${id}-help`;
   const [active, setActive] = useState<string | null>(null);
   const months = data.stats.months;
-  const index = active === null || !months.length ? null : Math.max(0, months.findIndex(month => month.month === active));
-  const selected = index === null ? null : months[index];
+  const daily = data.period === "30d";
+  const buckets = daily ? (data.stats.days || []).map(day => ({ key: day.date, plays: day.plays })) : months.map(month => ({ key: month.month, plays: month.plays }));
+  const label = daily ? dayLabel : monthLabel;
+  const index = active === null || !buckets.length ? null : Math.max(0, buckets.findIndex(bucket => bucket.key === active));
+  const selected = index === null ? null : buckets[index];
   const interaction = useMusicChartInteraction(active !== null, () => setActive(null), inspect);
-  const maximum = Math.max(1, ...months.map(m => m.plays));
-  const points = useMusicLineMotion(months.map((month, i) => ({ t: monthTime(month.month), x: months.length === 1 ? 300 : 12 + i / (months.length - 1) * 576, y: 166 - month.plays / maximum * 142 })), 180);
-  const dots = useMusicPresence(months.length <= 24 ? months.map(month => ({ key: month.month })) : []);
-  const point = (month: string) => chartPointAt(points, monthTime(month));
-  const selectedPoint = selected ? point(selected.month) : null;
+  const maximum = Math.max(1, ...buckets.map(bucket => bucket.plays));
+  const points = useMusicLineMotion(buckets.map((bucket, i) => ({ t: dateTime(bucket.key), x: buckets.length === 1 ? 300 : 12 + i / (buckets.length - 1) * 576, y: 166 - bucket.plays / maximum * 142 })), 180);
+  const dots = useMusicPresence(daily || buckets.length <= 24 ? buckets.map(bucket => ({ key: bucket.key })) : []);
+  const point = (date: string) => chartPointAt(points, dateTime(date));
+  const selectedPoint = selected ? point(selected.key) : null;
   const line = points.map((p, i) => `${i ? "L" : "M"} ${p.x},${p.y}`).join(" ");
   function inspect(event: PointerEvent<SVGSVGElement>) {
-    if (!months.length) return;
+    if (!buckets.length) return;
     const box = event.currentTarget.getBoundingClientRect();
     const px = (event.clientX - box.left) / box.width * 600;
-    const nearest = months.reduce((best, month) => Math.abs(point(month.month).x - px) < Math.abs(point(best.month).x - px) ? month : best);
-    setActive(nearest.month);
+    const nearest = buckets.reduce((best, bucket) => Math.abs(point(bucket.key).x - px) < Math.abs(point(best.key).x - px) ? bucket : best);
+    setActive(nearest.key);
   }
   function key(event: KeyboardEvent<HTMLDivElement>) {
-    if (!months.length) return;
-    const current = index ?? months.length - 1;
-    const next = event.key === "ArrowLeft" ? Math.max(0, current - 1) : event.key === "ArrowRight" ? Math.min(months.length - 1, current + 1) : event.key === "Home" ? 0 : event.key === "End" ? months.length - 1 : event.key === "Escape" ? null : undefined;
-    if (next !== undefined) { event.preventDefault(); setActive(next === null ? null : months[next].month); }
+    if (!buckets.length) return;
+    const current = index ?? buckets.length - 1;
+    const next = event.key === "ArrowLeft" ? Math.max(0, current - 1) : event.key === "ArrowRight" ? Math.min(buckets.length - 1, current + 1) : event.key === "Home" ? 0 : event.key === "End" ? buckets.length - 1 : event.key === "Escape" ? null : undefined;
+    if (next !== undefined) { event.preventDefault(); setActive(next === null ? null : buckets[next].key); }
   }
   return <figure className="panel rounded-[24px] p-5 sm:p-7">
-    <figcaption className="flex items-start justify-between gap-4"><div><p className="music-label">The listening curve</p><h2 className="mt-2 font-display text-[36px] leading-none">A little more <em className="text-accent">volume.</em></h2></div><span className="pt-1 text-[13px] text-muted">Recorded plays</span></figcaption>
-    <div ref={interaction.ref} className="music-chart-surface mt-7" role="group" tabIndex={0} aria-label="Monthly listening chart" aria-describedby={`${helpId}${selected ? ` ${tooltipId}` : ""}`} onBlur={() => setActive(null)} onKeyDown={key} onPointerLeave={event => { if (event.pointerType !== "touch" && document.activeElement !== event.currentTarget) setActive(null); }}>
-      <p id={helpId} className="sr-only">Use Left and Right to explore months, Home and End to jump, and Escape to dismiss details.</p>
-      <svg viewBox="0 0 600 190" role="img" aria-label={`Recorded listening by month. ${months.map(m => `${monthLabel(m.month)}: ${m.plays}`).join(". ")}`} className="w-full overflow-visible" onPointerMove={interaction.onPointerMove} onPointerDown={interaction.onPointerDown} onPointerUp={interaction.onPointerUp} onPointerCancel={interaction.onPointerCancel}>
+    <figcaption className="flex items-start justify-between gap-4"><div><p className="music-label">The listening curve</p><h2 className="mt-2 font-display text-[36px] leading-none">A little more <em className="text-accent">volume.</em></h2></div><span className="pt-1 text-[13px] text-muted">{daily ? "Plays per day" : "Recorded plays"}</span></figcaption>
+    <div ref={interaction.ref} className="music-chart-surface mt-7" role="group" tabIndex={0} aria-label={`${daily ? "Daily" : "Monthly"} listening chart`} aria-describedby={`${helpId}${selected ? ` ${tooltipId}` : ""}`} onBlur={() => setActive(null)} onKeyDown={key} onPointerLeave={event => { if (event.pointerType !== "touch" && document.activeElement !== event.currentTarget) setActive(null); }}>
+      <p id={helpId} className="sr-only">Use Left and Right to explore {daily ? "days" : "months"}, Home and End to jump, and Escape to dismiss details.</p>
+      <svg viewBox="0 0 600 190" role="img" aria-label={`Recorded listening by ${daily ? "day" : "month"}. ${buckets.map(bucket => `${label(bucket.key)}: ${bucket.plays}`).join(". ")}`} className="w-full overflow-visible" onPointerMove={interaction.onPointerMove} onPointerDown={interaction.onPointerDown} onPointerUp={interaction.onPointerUp} onPointerCancel={interaction.onPointerCancel}>
         <defs><linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop stopColor="var(--acc)" stopOpacity=".3" /><stop offset="1" stopColor="var(--acc)" stopOpacity="0" /></linearGradient></defs>
         {[24, 95, 166].map(value => <line key={value} x1="12" x2="588" y1={value} y2={value} stroke="var(--line)" strokeDasharray="3 6" />)}
         {line && <><path d={`${line} L ${points.at(-1)!.x},180 L ${points[0].x},180 Z`} fill={`url(#${id})`} /><path d={line} fill="none" stroke="var(--acc)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />{dots.map(({ item, phase }) => <circle key={item.key} className="music-point" data-phase={phase} cx={point(item.key).x} cy={point(item.key).y} r="3.5" fill="var(--bg)" stroke="var(--acc)" strokeWidth="2" />)}</>}
         {selectedPoint && <g aria-hidden="true"><line x1={selectedPoint.x} x2={selectedPoint.x} y1="12" y2="180" stroke="var(--acc)" strokeDasharray="3 5" opacity=".6" /><circle cx={selectedPoint.x} cy={selectedPoint.y} r="10" fill="var(--acc)" opacity=".15" /><circle cx={selectedPoint.x} cy={selectedPoint.y} r="5" fill="var(--bg)" stroke="var(--acc)" strokeWidth="2.5" /></g>}
       </svg>
-      {selected && selectedPoint && <MusicChartTooltip id={tooltipId} title={monthLabel(selected.month)} rows={[{ key: selected.month, label: "Recorded plays", value: selected.plays }]} x={selectedPoint.x / 6} placement={selectedPoint.y < 95 ? "bottom" : "top"} secondary={share(selected.plays, data.stats.plays)} />}
+      {selected && selectedPoint && <MusicChartTooltip id={tooltipId} title={label(selected.key)} rows={[{ key: selected.key, label: "Recorded plays", value: selected.plays }]} x={selectedPoint.x / 6} placement={selectedPoint.y < 95 ? "bottom" : "top"} secondary={share(selected.plays, data.stats.plays)} />}
     </div>
-    <div className="mt-1 flex justify-between text-[13px] text-muted"><span>{months[0] ? monthLabel(months[0].month) : "History is on its way"}</span><span>{months.length > 1 ? monthLabel(months.at(-1)!.month) : ""}</span></div>
+    <div className="mt-1 flex justify-between text-[13px] text-muted"><span>{buckets[0] ? label(buckets[0].key) : daily ? "Daily history is on its way" : "History is on its way"}</span><span>{buckets.length > 1 ? label(buckets.at(-1)!.key) : ""}</span></div>
     <details className="mt-3 text-[13px] text-muted"><summary className="cursor-pointer">View monthly counts</summary><ul className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1">{months.map(m => <li key={m.month} className="flex justify-between gap-2"><span>{monthLabel(m.month)}</span><span><MusicNumber value={m.plays} /></span></li>)}</ul></details>
   </figure>;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { type MusicDataset, type MusicEntityKind, type MusicManifest, type MusicSeasonalDataset, type RankedMusic, type SpotifySnapshot } from "@/lib/music/types";
 import { MusicSwap } from "./music-swap";
 import { MusicSeasonChart } from "./music-season-chart";
@@ -45,6 +45,8 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
   const [tab, setTab] = useState<"tracks" | "artists" | "albums">("tracks");
   const { manifest, data, spotify, seasons, playback, error, loading, api } = useMusicCollection({ manifest: initialManifest, data: initialData, spotify: initialSpotify, seasons: initialSeasons, playback: null }, period);
   const [headerHeight, setHeaderHeight] = useState<number | null>(null);
+  const historyHeading = useRef<HTMLDivElement>(null);
+  const [filtersStuck, setFiltersStuck] = useState(false);
   useEffect(() => {
     const header = document.querySelector<HTMLElement>(".site-header");
     if (!header) return;
@@ -53,6 +55,15 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
     const observer = new ResizeObserver(measure); observer.observe(header);
     return () => observer.disconnect();
   }, []);
+  useEffect(() => {
+    const heading = historyHeading.current;
+    if (!heading || headerHeight === null) return;
+    const stickyTop = headerHeight + 12;
+    // The bar follows the heading with a 24px gap. Watch that fixed origin, not the moving sticky box.
+    const observer = new IntersectionObserver(([entry]) => setFiltersStuck(entry.boundingClientRect.bottom + 24 <= stickyTop), { rootMargin: `${24 - stickyTop}px 0px 0px 0px`, threshold: 0 });
+    observer.observe(heading);
+    return () => observer.disconnect();
+  }, [headerHeight]);
   useEffect(() => {
     const applyLocation = () => {
       const query = new URLSearchParams(location.search); setPeriod(query.get("period") || "30d");
@@ -84,7 +95,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
 
     {provider && <section aria-labelledby="music-lately-title"><div className="mb-5"><p className="music-label">The current rotation</p><h2 id="music-lately-title" className="mt-2 font-display text-[42px] leading-none">Heavy <em className="text-accent">rotation.</em></h2></div><Rotation items={provider.tracks} /><p className="mt-4 text-[13px] text-muted">Spotify’s affinity rankings.</p></section>}
 
-    <section aria-labelledby="music-history-title" className="music-history flex min-w-0 flex-col gap-6"><div><p className="music-label">The bigger picture</p><h2 id="music-history-title" className="mt-2 font-display text-[42px] leading-none">Listening <em className="text-accent">history.</em></h2></div><div className="music-history-filters" role="group" aria-label="Filter listening history" style={headerHeight === null ? undefined : { "--music-header-offset": `${headerHeight}px` } as CSSProperties}><MusicPeriodFilter period={period} periods={manifest?.periods || ["all", "30d", "365d"]} onChange={filter} /></div>
+    <section aria-labelledby="music-history-title" className="music-history flex min-w-0 flex-col gap-6"><div ref={historyHeading}><p className="music-label">The bigger picture</p><h2 id="music-history-title" className="mt-2 font-display text-[42px] leading-none">Listening <em className="text-accent">history.</em></h2></div><div className="music-history-filters" data-stuck={filtersStuck || undefined} role="group" aria-label="Filter listening history" style={headerHeight === null ? undefined : { "--music-header-offset": `${headerHeight}px` } as CSSProperties}><MusicPeriodFilter period={period} periods={manifest?.periods || ["all", "30d", "365d"]} onChange={filter} /></div>
       <div className="flex w-full min-w-0 flex-col gap-6"><div aria-live="polite" className={error || !loading && !stats?.plays ? "text-[13px] text-muted" : "sr-only"}>{loading ? "Loading listening history…" : error ? "The latest update is unavailable. Showing the saved collection." : stats?.plays ? `Showing listening history for ${periodLabels[current?.period || period] || period}.` : "Historical imports are being collected. The archive will grow as new plays arrive."}</div>
       {stats?.firstListen && stats.lastListen && <p className="text-[13px] text-muted">Available records: {dateLabel(stats.firstListen)} through {dateLabel(stats.lastListen)}.</p>}
       <div aria-busy={loading} className="flex flex-col gap-5">

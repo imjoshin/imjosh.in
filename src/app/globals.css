@@ -179,7 +179,8 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
   .music-now-playing-region { left: 0; right: 0; bottom: max(16px, env(safe-area-inset-bottom, 0px), var(--music-viewport-bottom, 0px)); width: 100%; }
   .music-now-playing { border-radius: 20px; padding: 18px 48px 18px max(18px, env(safe-area-inset-left)); }
 }
-.music-history-filters { --music-header-offset: 88px; position: sticky; top: calc(var(--music-header-offset) + 12px); z-index: 15; display: flex; align-items: center; gap: 28px; width: 100%; border: 1px solid var(--line); border-radius: 24px; padding: 16px 22px; background: var(--panel); backdrop-filter: blur(18px); }
+.music-history-filters { --music-header-offset: 88px; --music-filter-outset: 16px; position: sticky; top: calc(var(--music-header-offset) + 12px); z-index: 15; display: flex; align-items: center; gap: 28px; width: 100%; margin-inline: 0; border: 1px solid var(--line); border-radius: 24px; padding: 16px 22px; background: var(--panel); backdrop-filter: blur(18px); transition: width .3s cubic-bezier(.22,1,.36,1), margin-inline .3s cubic-bezier(.22,1,.36,1), box-shadow .3s; }
+.music-history-filters[data-stuck="true"] { width: calc(100% + var(--music-filter-outset) * 2); margin-inline: calc(-1 * var(--music-filter-outset)); box-shadow: 0 8px 28px #0002; }
 .music-period-presets { display: flex; flex: none; gap: 6px; }
 .music-period-presets button { min-height: 44px; border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; color: var(--mute); font-size: 14px; white-space: nowrap; transition: color .2s, background-color .2s, border-color .2s; }
 .music-period-presets button:hover { color: var(--ink); border-color: var(--mute); }
@@ -193,7 +194,7 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-year-slider::-moz-range-thumb { height: 18px; width: 18px; border: 1px solid color-mix(in srgb, var(--ink) 25%, transparent); border-radius: 50%; background: var(--music-year-thumb); box-shadow: 0 2px 8px #0002; transition: background-color .2s, box-shadow .2s; }
 .music-year-slider:focus-visible { outline-offset: 2px; border-radius: 6px; }
 @media (max-width: 767px) {
-  .music-history-filters { flex-direction: column; align-items: stretch; gap: 16px; padding: 16px; }
+  .music-history-filters { --music-filter-outset: 8px; flex-direction: column; align-items: stretch; gap: 16px; padding: 16px; }
   .music-period-presets { gap: 5px; }
   .music-period-presets button { flex: 1; padding-inline: 10px; }
   .music-year-filter { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; padding-top: 12px; }

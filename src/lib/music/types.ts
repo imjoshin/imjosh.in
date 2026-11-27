@@ -83,6 +83,8 @@ export interface MusicStats {
   topArtists: RankedMusic[];
   topAlbums: RankedMusic[];
   months: { month: string; plays: number; msPlayed: number }[];
+  /** Daily aggregates for the rolling 30-day view; absent in older summaries. */
+  days?: { date: string; plays: number; msPlayed: number }[];
   weekdays: number[];
   hours: number[];
   platforms: Partial<Record<MusicPlatform, number>>;

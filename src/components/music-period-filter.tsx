@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 
-const presets = [["all", "All time"], ["30d", "Last 30 days"], ["365d", "Last year"]] as const;
+const presets = [["30d", "Last 30 days"], ["365d", "Last year"], ["all", "All time"]] as const;
 
 export function MusicPeriodFilter({ period, periods, onChange }: { period: string; periods: string[]; onChange: (period: string, replace?: boolean) => void }) {
   const years = periods.filter(value => /^\d{4}$/.test(value)).sort((a, b) => Number(a) - Number(b));
