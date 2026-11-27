@@ -36,6 +36,8 @@ Track, album, and artist names use the shared `MusicLink` hover card, including 
 
 Hover totals are computed from the entire approved history. The browser receives details only for music referenced by public rankings, seasonal lines, affinity favorites, current playback, and their artist/album relationships. Private canonical events retain the full collection for future aggregations.
 
+The featured record and current rotation use Spotify’s short-term affinity ranking. The featured track stays above the six rotation cards, which show ranks 2 through 7 without a separate selector. The record spins slowly with extra vertical space, stopping for reduced motion. Rotation artwork uses two columns on mobile, three on tablets, and six on desktop.
+
 Known Spotify IDs link directly to the appropriate track, album, or artist; missing IDs use a Spotify search. Cards open on hover/focus, allow the pointer to enter the card, and dismiss with Escape or outside interaction. Close buttons appear in mobile and touch layouts and are hidden in desktop hover mode. Down Arrow moves keyboard focus into the card; a first touch previews it and the card's Spotify link opens the item. Floating cards are portaled outside clipped/animated lists, stay within the viewport, and follow the existing reduced-motion and theme preferences. The normal links remain useful without JavaScript.
 
 Use Node 24 and the existing linked Netlify project. Authorization Code with PKCE needs no client secret. Register `http://127.0.0.1:8888/callback/spotify` in the Spotify app, then:
