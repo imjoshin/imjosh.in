@@ -68,7 +68,7 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
     if (songs && !data?.metrics.genres.series.some(line => line.key === songs.genre)) { setSongs(null); setPinned(null); }
   }, [data, songs]);
 
-  const coordinates = { left: 42, right: plotWidth - 16, top: 24, bottom: 290 };
+  const coordinates = { left: 56, right: plotWidth - 16, top: 24, bottom: 290 };
   const minimum = data?.minimumPlays || 11;
   const seasons = data?.seasons || [];
   const series = (data?.metrics[metric].series || []).filter(line => line.plays.some(plays => plays >= minimum)).map(line => ({ ...line, plays: line.plays.map(plays => plays >= minimum ? plays : 0) }));
@@ -78,6 +78,7 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
   const step = Math.max(1, Math.ceil(maximum / 4 / 10 ** Math.floor(Math.log10(maximum / 4 || 1))) * 10 ** Math.floor(Math.log10(maximum / 4 || 1)));
   const ceiling = Math.ceil(maximum / step) * step;
   const x = (i: number) => seasons.length < 2 ? (coordinates.left + coordinates.right) / 2 : coordinates.left + i / (seasons.length - 1) * (coordinates.right - coordinates.left);
+  const labelStride = Math.max(1, Math.ceil(seasons.length / Math.max(2, Math.floor(plotWidth / 120))));
   const y = (plays: number) => coordinates.bottom - plays / ceiling * (coordinates.bottom - coordinates.top);
   const plotted = useMusicPresence(series.map((source, index) => ({
     key: metric + ":" + source.key, source, index,
@@ -159,8 +160,8 @@ export function MusicSeasonChart({ data, api = false, loading = false, error = f
             <svg ref={svg} viewBox={"0 0 " + plotWidth + " 350"} preserveAspectRatio="none" className="music-season-svg" role="img" aria-labelledby={id + "-chart-title " + id + "-chart-description"} onPointerMove={interaction.onPointerMove} onPointerDown={interaction.onPointerDown} onPointerUp={interaction.onPointerUp} onPointerCancel={interaction.onPointerCancel} onClick={event => { const value = hit(event); if (metric === "genres" && value?.matches[0]) openGenre(value.matches[0].key, seasons[value.index].key, interaction.ref.current); }}>
               <title id={id + "-chart-title"}>{"Seasonal top " + metric + ", all time"}</title>
               <desc id={id + "-chart-description"}>{series.length + " series selected from each season's top five with at least 11 plays. Lower-volume periods appear as gaps. Select a genre line or legend entry to view its songs."}</desc>
-              {Array.from({ length: Math.round(ceiling / step) + 1 }, (_, i) => i * step).map(value => <g key={value} pointerEvents="none"><line x1={coordinates.left} x2={coordinates.right} y1={y(value)} y2={y(value)} stroke="var(--line)" strokeDasharray="3 6" /><text x="30" y={y(value) + 4} textAnchor="end" fill="var(--mute)" fontSize="13">{number(value)}</text></g>)}
-              {seasons.map((season, i) => <g key={season.key} pointerEvents="none">{(i % Math.max(1, Math.ceil(seasons.length / Math.max(2, Math.floor(plotWidth / 120)))) === 0 || i === seasons.length - 1) && <text x={x(i)} y="319" textAnchor={i === 0 && seasons.length > 1 ? "start" : i === seasons.length - 1 && seasons.length > 1 ? "end" : "middle"} fill="var(--mute)" fontSize="13">{season.label.split(" ")[0]}<tspan x={x(i)} dy="17">{season.label.split(" ")[1]}</tspan></text>}</g>)}
+              {Array.from({ length: Math.round(ceiling / step) + 1 }, (_, i) => i * step).map(value => <g key={value} pointerEvents="none"><line x1={coordinates.left} x2={coordinates.right} y1={y(value)} y2={y(value)} stroke="var(--line)" strokeDasharray="3 6" /><text x={coordinates.left - 8} y={y(value) + 4} textAnchor="end" fill="var(--mute)" fontSize="13">{number(value)}</text></g>)}
+              {seasons.map((season, i) => <g key={season.key} pointerEvents="none">{(i === seasons.length - 1 || i % labelStride === 0 && (i === 0 || x(seasons.length - 1) - x(i) >= 90)) && <text x={x(i)} y="319" textAnchor={i === 0 && seasons.length > 1 ? "start" : i === seasons.length - 1 && seasons.length > 1 ? "end" : "middle"} fill="var(--mute)" fontSize="13">{season.label.split(" ")[0]}<tspan x={x(i)} dy="17">{season.label.split(" ")[1]}</tspan></text>}</g>)}
               {inspection && <line x1={x(selectedIndex)} x2={x(selectedIndex)} y1={coordinates.top} y2={coordinates.bottom} stroke="var(--ink)" opacity=".25" pointerEvents="none" />}
               {plotted.map(({ item, phase }) => <SeasonLine key={item.key} item={item} phase={phase} selectedTime={seasons[selectedIndex] ? seasonTime(seasons[selectedIndex].key) : 0} highlighted={highlightKeys.includes(item.source.key)} dimmed={highlightKeys.length > 0 && !highlightKeys.includes(item.source.key)} frames={frames.current} choose={chooseLine} />)}
             </svg>
