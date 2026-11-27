@@ -44,7 +44,7 @@ export async function collectSpotifyPlayback(privateStore: MusicStore, publicSto
   const { request, stats } = await createSpotifyRequester(privateStore, token, new Date().toISOString(), options);
   const [result, recent] = await Promise.all([request("me/player", true), request("me/player/recently-played?limit=50", true)]);
   await writeJson(privateStore, "state/spotify-playback.json", { checkedAt: new Date().toISOString(), data: result?.data || null });
-  if (recent) await writeJson(privateStore, "state/spotify-last-tracks.json", { checkedAt: new Date().toISOString(), data: recent.data });
+  if (recent) await writeJson(privateStore, "state/spotify-last-tracks.json", { checkedAt: new Date().toISOString(), rawRef: recent.rawRef, data: recent.data });
   const playback = await publishMusicPlayback(privateStore, publicStore);
   return { status: playback.status, requests: stats.requests, unavailable: stats.unavailable };
 }

@@ -1,8 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { getStore } from "@netlify/blobs";
-import { blobStore, PRIVATE_STORE, PUBLIC_STORE, readJson, writeJson } from "../../scripts/music/store.ts";
-import { collectSpotify } from "../../scripts/music/spotify.ts";
-import { publishMusic } from "../../scripts/music/publish.ts";
+import { blobStore, PRIVATE_STORE, PUBLIC_STORE, writeJson } from "../../scripts/music/store.ts";
+import { runMusicHistoryJob } from "../../scripts/music/history-job.ts";
 
 export default async (request: Request) => {
   const expected = process.env.MUSIC_JOB_SECRET;
@@ -16,10 +15,7 @@ export default async (request: Request) => {
   if (!claim.modified) return new Response(null, { status: 202 });
   const store = blobStore(PRIVATE_STORE);
   try {
-    const last = await readJson<{ fetchedAt: string }>(store, "state/spotify-full.json");
-    await collectSpotify(store, !last || last.fetchedAt.slice(0, 10) !== new Date().toISOString().slice(0, 10), 200, false, { playback: false });
-    const result = await publishMusic(store, blobStore(PUBLIC_STORE));
-    await writeJson(store, "state/job.json", { ok: true, completedAt: new Date().toISOString(), listens: result.listens, datasets: result.datasets });
+    await runMusicHistoryJob(store, blobStore(PUBLIC_STORE));
   } catch (error) {
     await writeJson(store, "state/job.json", { ok: false, failedAt: new Date().toISOString(), error: error instanceof Error ? error.message : "Music job failed" });
     throw error;

@@ -1,6 +1,6 @@
 import { readFile, writeFile, mkdir, readdir, rename, copyFile, stat, rm } from "node:fs/promises";
 import { createReadStream, createWriteStream, openAsBlob } from "node:fs";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { resolve, dirname, relative, join } from "node:path";
@@ -21,6 +21,10 @@ export interface MusicStore {
 }
 export const PRIVATE_STORE = "music-private-v1";
 export const PUBLIC_STORE = "music-public-v1";
+export const HISTORY_INPUT_REVISION_FILE = "state/history-inputs.json";
+export async function invalidateMusicHistory(store: MusicStore) {
+  await store.set(HISTORY_INPUT_REVISION_FILE, Buffer.from(JSON.stringify({ revision: randomUUID() })));
+}
 export function localStore(root = resolve(".music")): MusicStore {
   const path = (key: string) => { const target = resolve(root, key); const rel = relative(root, target); if (!rel || rel.startsWith("..") || /^[A-Za-z]:/.test(rel)) throw new Error("Invalid music storage key"); return target; };
   return {
@@ -59,7 +63,11 @@ export async function readJson<T>(store: MusicStore, key: string): Promise<T | n
   return JSON.parse(Buffer.from(key.endsWith(".gz") ? gunzipSync(bytes) : bytes).toString("utf8")) as T;
 }
 export async function writeJson(store: MusicStore, key: string, data: unknown) {
+  const historyInput = key.startsWith("listens/") || key.startsWith("catalog/") || key === "public/spotify.json";
+  // Bracket writes so both failures and changes made during publication invalidate its checkpoint.
+  if (historyInput) await invalidateMusicHistory(store);
   const bytes = Buffer.from(JSON.stringify(data)); await store.set(key, key.endsWith(".gz") ? gzipSync(bytes) : bytes);
+  if (historyInput) await invalidateMusicHistory(store);
 }
 export async function archive(store: MusicStore, name: string, bytes: Uint8Array): Promise<string> {
   const key = `raw/${digest(bytes)}/${name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;

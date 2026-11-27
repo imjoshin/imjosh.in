@@ -16,6 +16,7 @@ import savedArtistGenres from "../../content/artist_genres.json" with { type: "j
 import { artistGenreKey, normalizeArtistGenres, parseArtistGenreCatalog, resolveArtistGenres, type ArtistGenreCatalog } from "../../src/lib/music/artist-genres.ts";
 import { ARTIST_IMAGES_FILE, type ArtistImages } from "./artist-images.ts";
 import { spotifyImage } from "../../src/lib/music/entity-links.ts";
+import { nextHistoryRefreshAt } from "./history-fingerprint.ts";
 
 export async function publishMusic(privateStore: MusicStore, publicStore: MusicStore, now = new Date(), artistGenreCatalog: ArtistGenreCatalog = parseArtistGenreCatalog(savedArtistGenres)) {
   const excluded = await readJson<Record<string, { reason: string; excludedAt: string }>>(privateStore, "catalog/excluded-imports.json") || {};
@@ -184,5 +185,5 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
   await immutable("entities", { ...entities, entities: Object.fromEntries(Object.entries(entities.entities).filter(([key]) => visible.has(key))) });
   manifest.notes.push("Tracks with known kids genres and identified Disney music are excluded from all summaries. Unclassified genres remain unknown.", "Soundtrack charts follow the selected listening period: daily for the last 30 days, monthly for the last year or a calendar year, and yearly for all time. Each bucket contributes its top five, with single plays qualifying for the last 30 days and at least 11 plays required for other periods. Song files retain all approved matching plays in the selected window, including low-volume buckets.");
   await writeJson(publicStore, "manifest.json", manifest);
-  return { listens: verifiedRows.length, datasets: Object.keys(manifest.files).length, manifest };
+  return { listens: verifiedRows.length, datasets: Object.keys(manifest.files).length, manifest, nextRefreshAt: nextHistoryRefreshAt(verifiedRows, now) };
 }

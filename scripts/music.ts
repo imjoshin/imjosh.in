@@ -2,7 +2,7 @@ import { readFile, mkdir, writeFile, readdir, rm } from "node:fs/promises";
 import { resolve, join, dirname } from "node:path";
 import { homedir } from "node:os";
 import { randomBytes } from "node:crypto";
-import { localStore, blobStore, PRIVATE_STORE, PUBLIC_STORE, readJson, writeJson, fileDigest, type MusicStore } from "./music/store.ts";
+import { localStore, blobStore, PRIVATE_STORE, PUBLIC_STORE, readJson, writeJson, fileDigest, invalidateMusicHistory, type MusicStore } from "./music/store.ts";
 import { importMusic, importDirectory } from "./music/import.ts";
 import { authorizeSpotify } from "./music/auth.ts";
 import { collectSpotify } from "./music/spotify.ts";
@@ -57,7 +57,9 @@ async function copyStore(source: MusicStore, target: MusicStore, prefix = "", sk
       const bytes = await source.get(key);
       if (bytes) {
         if (key.startsWith("raw/") && digest(bytes) !== key.split("/")[1]) throw new Error(`Archive checksum failed: ${key}`);
+        if (merge && key.startsWith("catalog/")) await invalidateMusicHistory(target);
         await target.set(key, bytes); count++;
+        if (merge && key.startsWith("catalog/")) await invalidateMusicHistory(target);
       }
     }));
   }

@@ -1,6 +1,6 @@
 # Music job performance proposals
 
-Status: proposed work, not implemented. This document does not change production schedules.
+Status: the initial idle-history fingerprint guard is implemented locally. The remaining optimizations and slower publication schedules below are proposals. The one-minute and ten-minute scheduler frequencies are unchanged.
 
 ## Audit evidence
 
@@ -32,7 +32,9 @@ The audit scripts and detailed measurement reports remain in ignored `.music/`. 
 
 ## What runs today
 
-The ten-minute scheduler starts [`music-update-background`](netlify/functions/music-update-background.mts). Its normal path:
+The ten-minute scheduler starts [`music-update-background`](netlify/functions/music-update-background.mts). Since the audit, a private successful-publication fingerprint check runs first, reusing the minute worker's archived recent-history observation when fresh. Unchanged runs return before the expensive path below. Daily maintenance, changed inputs, failed jobs, and time-window/calendar deadlines still trigger an update. See [`history-job.ts`](scripts/music/history-job.ts) and `docs/music.md` for the implemented contract.
+
+The expensive update path:
 
 1. Acquires the history-worker lock and reads the daily full-sync marker.
 2. Uses the shared cached Spotify access token, refreshing it under a separate token lock when necessary.
@@ -42,7 +44,7 @@ The ten-minute scheduler starts [`music-update-background`](netlify/functions/mu
 6. Loads history again, applies source precedence, metadata, and publication exclusions, and rebuilds every summary, ranking, entity total, recommendation, artist-history chart, soundtrack chart, and song-list payload.
 7. Reads previous public payloads to compare their JSON, writes changed immutable files, and switches the manifest last.
 
-There is no overall change guard to avoid a rebuild when collection produces no new canonical listens. Individual payload reuse saves writes after the calculations and comparison reads have already happened.
+The initial guard detects changes in recent Spotify play identities and publication inputs. Once it elects to update, the complete rebuild and individual payload comparison reads still occur. It does not yet detect which individual aggregate datasets are affected or replace their payload comparison reads with fingerprints.
 
 Once per UTC day, the same worker also collects full Spotify snapshots: profile, devices and queue, three ranges of top tracks/artists, saved tracks/albums/shows/episodes/audiobooks, followed artists, and playlists with their items. This work is already daily. Separating it would isolate its latency and failures, rather than reduce its existing frequency.
 
@@ -73,9 +75,11 @@ Why: the replay made 232 listening-partition reads. Multiple aggregate functions
 
 ### 3. Avoid rebuilding when inputs and time-dependent outputs are unchanged
 
+- [x] Add a private successful-publication checkpoint and skip the expensive history path when a fresh recent-play observation and all publication inputs are unchanged.
+- [x] Reuse the minute worker's archived recent history; request and reuse a single first page when that observation is stale or unavailable.
+- [x] Advance the fingerprint only after publication succeeds, retaining retry behavior after failures.
+- [x] Invalidate the guard for private input revisions, deployment/committed genre changes, manifest changes, failed jobs, daily maintenance, and calculated calendar/window deadlines.
 - [ ] Detect actual changes to canonical listening partitions, rather than treating returned recent-play rows as new events.
-- [ ] Track relevant metadata, genre, image, import-exclusion, and publication-policy revisions.
-- [ ] Account for Eastern calendar boundaries, rolling-window expirations, and other date-dependent outputs even when there are no new plays.
 - [ ] Skip unaffected datasets and reuse their existing references.
 
 Why: quiet periods currently trigger the same complete rebuild and comparison work. A change guard must preserve rolling-window accuracy and must not delay applying privacy or content-exclusion changes.

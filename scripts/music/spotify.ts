@@ -7,12 +7,13 @@ import { artistGenreKey, parseArtistGenreCatalog, resolveArtistGenres } from "..
 import { createSpotifyRequester } from "./spotify-request.ts";
 import { spotifyAccessToken } from "./spotify-token.ts";
 import { ARTIST_IMAGES_FILE, collectArtistImages, rememberArtistImages } from "./artist-images.ts";
+import type { SpotifyRecentPage } from "./history-fingerprint.ts";
 
 type Row = Record<string, any>;
 export interface GenreEntry { genres: string[]; provider: string; fetchedAt: string; artistId: string | null }
 export type GenreIndex = Record<string, GenreEntry>;
 
-export async function collectSpotify(store: MusicStore, full = false, genreBudget = 10000, backfill = false, options: { playback?: boolean; fetch?: typeof fetch } = {}) {
+export async function collectSpotify(store: MusicStore, full = false, genreBudget = 10000, backfill = false, options: { playback?: boolean; fetch?: typeof fetch; recentPage?: SpotifyRecentPage } = {}) {
   const token = await spotifyAccessToken(store, options);
   const fetchedAt = new Date().toISOString(), runId = fetchedAt.replace(/[:.]/g, "-");
   const genreIndex = await readJson<GenreIndex>(store, "catalog/genres.json") || {};
@@ -38,9 +39,14 @@ export async function collectSpotify(store: MusicStore, full = false, genreBudge
   const last = await readJson<{ latest: string | null }>(store, "state/spotify-recent.json");
   let recentPath: string | null = "me/player/recently-played?limit=50", latest: string | null = null, oldest: string | null = null, returned = 0;
   const seenRecent = new Set<string>();
+  let firstPage = options.recentPage;
   while (recentPath) {
-    const recent = await request(recentPath); if (!recent) break;
-    if (!returned) await writeJson(store, "state/spotify-last-tracks.json", { checkedAt: fetchedAt, data: recent.data });
+    const supplied = !!firstPage;
+    const checkedAt = firstPage?.checkedAt || fetchedAt;
+    const recent = firstPage || await request(recentPath); firstPage = undefined;
+    if (!recent) break;
+    // A supplied page is already saved. Do not overwrite a newer minute-worker observation.
+    if (!returned && !supplied) await writeJson(store, "state/spotify-last-tracks.json", { checkedAt, rawRef: recent.rawRef, data: recent.data });
     const rows: Row[] = recent.data.items || [];
     const normalized = rows.map(row => spotifyListen(row, recent.rawRef)).filter((l): l is NonNullable<typeof l> => !!l);
     const fresh = normalized.filter(l => !seenRecent.has(l.id)); if (!fresh.length) break;
