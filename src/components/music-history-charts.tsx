@@ -5,6 +5,7 @@ import type { MusicDataset } from "@/lib/music/types";
 import { chartPointAt } from "@/lib/music/chart-interaction";
 import { MusicChartTooltip } from "./music-chart-tooltip";
 import { MusicNumber, useMusicLineMotion, useMusicPresence } from "./music-motion";
+import { useMusicChartInteraction } from "./use-music-chart-interaction";
 
 const number = (value: number) => new Intl.NumberFormat("en-US").format(value);
 const monthLabel = (value: string) => new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}-01T12:00:00Z`));
@@ -17,6 +18,7 @@ export function ListeningChart({ data }: { data: MusicDataset }) {
   const months = data.stats.months;
   const index = active === null || !months.length ? null : Math.max(0, months.findIndex(month => month.month === active));
   const selected = index === null ? null : months[index];
+  const interaction = useMusicChartInteraction(active !== null, () => setActive(null), inspect);
   const maximum = Math.max(1, ...months.map(m => m.plays));
   const points = useMusicLineMotion(months.map((month, i) => ({ t: monthTime(month.month), x: months.length === 1 ? 300 : 12 + i / (months.length - 1) * 576, y: 166 - month.plays / maximum * 142 })), 180);
   const dots = useMusicPresence(months.length <= 24 ? months.map(month => ({ key: month.month })) : []);
@@ -38,9 +40,9 @@ export function ListeningChart({ data }: { data: MusicDataset }) {
   }
   return <figure className="panel rounded-[24px] p-5 sm:p-7">
     <figcaption className="flex items-start justify-between gap-4"><div><p className="music-label">The listening curve</p><h2 className="mt-2 font-display text-[36px] leading-none">A little more <em className="text-accent">volume.</em></h2></div><span className="pt-1 text-[13px] text-muted">Recorded plays</span></figcaption>
-    <div className="music-chart-surface mt-7" role="group" tabIndex={0} aria-label="Monthly listening chart" aria-describedby={`${helpId}${selected ? ` ${tooltipId}` : ""}`} onFocus={() => setActive(value => value ?? months.at(-1)?.month ?? null)} onBlur={() => setActive(null)} onKeyDown={key} onPointerLeave={event => { if (event.pointerType !== "touch" && document.activeElement !== event.currentTarget) setActive(null); }}>
+    <div ref={interaction.ref} className="music-chart-surface mt-7" role="group" tabIndex={0} aria-label="Monthly listening chart" aria-describedby={`${helpId}${selected ? ` ${tooltipId}` : ""}`} onBlur={() => setActive(null)} onKeyDown={key} onPointerLeave={event => { if (event.pointerType !== "touch" && document.activeElement !== event.currentTarget) setActive(null); }}>
       <p id={helpId} className="sr-only">Use Left and Right to explore months, Home and End to jump, and Escape to dismiss details.</p>
-      <svg viewBox="0 0 600 190" role="img" aria-label={`Recorded listening by month. ${months.map(m => `${monthLabel(m.month)}: ${m.plays}`).join(". ")}`} className="w-full overflow-visible" onPointerMove={event => { if (event.pointerType !== "touch") inspect(event); }} onPointerDown={inspect}>
+      <svg viewBox="0 0 600 190" role="img" aria-label={`Recorded listening by month. ${months.map(m => `${monthLabel(m.month)}: ${m.plays}`).join(". ")}`} className="w-full overflow-visible" onPointerMove={interaction.onPointerMove} onPointerDown={interaction.onPointerDown} onPointerUp={interaction.onPointerUp} onPointerCancel={interaction.onPointerCancel}>
         <defs><linearGradient id={id} x1="0" y1="0" x2="0" y2="1"><stop stopColor="var(--acc)" stopOpacity=".3" /><stop offset="1" stopColor="var(--acc)" stopOpacity="0" /></linearGradient></defs>
         {[24, 95, 166].map(value => <line key={value} x1="12" x2="588" y1={value} y2={value} stroke="var(--line)" strokeDasharray="3 6" />)}
         {line && <><path d={`${line} L ${points.at(-1)!.x},180 L ${points[0].x},180 Z`} fill={`url(#${id})`} /><path d={line} fill="none" stroke="var(--acc)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />{dots.map(({ item, phase }) => <circle key={item.key} className="music-point" data-phase={phase} cx={point(item.key).x} cy={point(item.key).y} r="3.5" fill="var(--bg)" stroke="var(--acc)" strokeWidth="2" />)}</>}
@@ -56,16 +58,17 @@ export function ListeningChart({ data }: { data: MusicDataset }) {
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 export function WeekdayChart({ data }: { data: MusicDataset }) {
   const [active, setActive] = useState<number | null>(null);
+  const interaction = useMusicChartInteraction(active !== null, () => setActive(null));
   const tooltipId = useId(), maximum = Math.max(1, ...data.stats.weekdays);
   const select = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     if (event.key === "Escape") { event.preventDefault(); setActive(null); return; }
     const next = event.key === "ArrowLeft" ? (index + 6) % 7 : event.key === "ArrowRight" ? (index + 1) % 7 : event.key === "Home" ? 0 : event.key === "End" ? 6 : undefined;
-    if (next !== undefined) { event.preventDefault(); event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>("button")[next]?.focus(); }
+    if (next !== undefined) { event.preventDefault(); event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>("button")[next]?.focus(); setActive(next); }
   };
   return <figure className="panel flex flex-col rounded-[24px] p-5 sm:p-7">
     <figcaption><p className="music-label">A weekly rhythm</p><h2 className="mt-2 font-display text-[36px] leading-none">Day by <em className="text-accent">day.</em></h2></figcaption>
-    <div className="music-chart-surface mt-8 flex min-h-40 flex-1 items-end gap-3" role="group" aria-label="Listening by weekday" data-inspecting={active !== null || undefined} onPointerLeave={event => { if (event.pointerType !== "touch" && !event.currentTarget.contains(document.activeElement)) setActive(null); }}>
-      {weekdays.map((day, i) => <button key={day} type="button" className="music-day-column flex min-h-40 min-w-0 flex-1 flex-col items-stretch justify-end gap-3 rounded-md text-center" data-active={active === i || undefined} onPointerEnter={() => setActive(i)} onFocus={() => setActive(i)} onBlur={() => setActive(null)} onClick={() => setActive(i)} onKeyDown={event => select(event, i)} aria-label={`${day}: ${number(data.stats.weekdays[i])} recorded plays`} aria-describedby={active === i ? tooltipId : undefined}>
+    <div ref={interaction.ref} className="music-chart-surface mt-8 flex min-h-40 flex-1 items-end gap-3" role="group" aria-label="Listening by weekday" data-inspecting={active !== null || undefined} onPointerDown={interaction.onPointerDown} onPointerCancel={interaction.onPointerCancel} onPointerLeave={event => { if (event.pointerType !== "touch" && !event.currentTarget.contains(document.activeElement)) setActive(null); }}>
+      {weekdays.map((day, i) => <button key={day} type="button" className="music-day-column flex min-h-40 min-w-0 flex-1 flex-col items-stretch justify-end gap-3 rounded-md text-center" data-active={active === i || undefined} onPointerEnter={event => { if (event.pointerType !== "touch") setActive(i); }} onBlur={() => setActive(null)} onClick={() => setActive(i)} onKeyDown={event => select(event, i)} aria-label={`${day}: ${number(data.stats.weekdays[i])} recorded plays`} aria-describedby={active === i ? tooltipId : undefined}>
         <span className="music-day-bar block" style={{ height: `${Math.max(2, data.stats.weekdays[i] / maximum * 120)}px` }} aria-hidden="true" /><span className="text-[12px] text-muted">{day.slice(0, 3)}</span>
       </button>)}
       {active !== null && <MusicChartTooltip id={tooltipId} title={weekdays[active]} rows={[{ key: weekdays[active], label: "Recorded plays", value: data.stats.weekdays[active] }]} x={(active + .5) / 7 * 100} secondary={share(data.stats.weekdays[active], data.stats.plays)} />}
