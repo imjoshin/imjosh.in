@@ -167,5 +167,6 @@ export interface MusicPlaybackSnapshot {
   status?: "playing" | "stopped" | "unknown";
   /** Legacy observations may include an expiry, which current playback ignores. */
   expiresAt?: string;
+  artistImages?: { name: string; image: string | null }[];
   track: { key: string; name: string; artists: string[]; album: string | null; url: string | null; image: string | null } | null;
 }

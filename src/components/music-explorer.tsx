@@ -102,6 +102,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
   }, []);
   const featureReady = Boolean(featured) || fallbackReady;
   const artistImages = [
+    ...(playback?.artistImages || []),
     ...Object.values(spotify?.ranges || {}).flatMap(range => range.artists),
     ...(stats?.topArtists || []),
   ];

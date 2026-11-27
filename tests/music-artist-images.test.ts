@@ -7,7 +7,7 @@ import { publishMusic } from "../scripts/music/publish.ts";
 import { readJson, saveListens, writeJson, type MusicStore } from "../scripts/music/store.ts";
 import { musicTrack } from "../src/lib/music/normalize.ts";
 import { musicEntityKey } from "../src/lib/music/entity-links.ts";
-import type { Listen, MusicDataset, MusicEntityDataset, MusicSoundtrackDataset, SpotifySnapshot } from "../src/lib/music/types.ts";
+import type { Listen, MusicDataset, MusicEntityDataset, MusicPlaybackSnapshot, MusicSoundtrackDataset, SpotifySnapshot } from "../src/lib/music/types.ts";
 
 const now = new Date("2026-11-27T15:00:00Z"), artistId = "a".repeat(22);
 const photo = (name: string) => `https://i.scdn.co/image/${name}`;
@@ -143,6 +143,8 @@ test("publication uses Spotify photos first and saved photos throughout rankings
     assert.equal(entities.entities[musicEntityKey("artist", "Artist")].image, expected);
     assert.equal(entities.entities[musicEntityKey("artist", "Playing")].image, photo("playing"));
     assert.equal(entities.entities[musicEntityKey("artist", "Playing")].plays, 0);
+    const playback = (await readJson<MusicPlaybackSnapshot>(published, manifest.files.playback))!;
+    assert.deepEqual(playback.artistImages, [{ name: "Playing", image: photo("playing") }]);
     const soundtrack = (await readJson<MusicSoundtrackDataset>(published, manifest.files["all/soundtrack/all"]))!;
     assert.equal(soundtrack.metrics.artists.series[0].image, expected);
     const songs = (await readJson<MusicEntityDataset>(published, soundtrack.songFiles!.artists!.artist))!;
@@ -154,4 +156,19 @@ test("publication uses Spotify photos first and saved photos throughout rankings
   assert.equal((await readJson<SpotifySnapshot>(published, fallback.files.spotify))!.ranges.short_term.artists[0].image, photo("cached"));
   await writeJson(store, "public/spotify.json", { generatedAt: now.toISOString(), ranges: { short_term: { tracks: [], artists: [{ key: artistId, name: "Artist", artists: [], image: photo("provider"), url: null, plays: 0, msPlayed: 0 }] } }, playlists: [] });
   await verify(photo("provider"));
+});
+
+test("now playing carries its photo when the artist drops out of longer periods' top 100", async () => {
+  const store = memory(), published = memory();
+  const olderFavorites = Array.from({ length: 101 }, (_, i) => listens(`Older favorite ${i}`, 2).map(listen => ({ ...listen, playedAt: "2026-08-26T15:00:00Z" }))).flat();
+  await saveListens(store, [...olderFavorites, ...listens("Playing", 1)]);
+  await writeJson(store, ARTIST_IMAGES_FILE, entry("Playing", "playing"));
+  await writeJson(store, "state/spotify-playback.json", { checkedAt: now.toISOString(), data: { is_playing: true, currently_playing_type: "track", device: { is_private_session: false }, item: { type: "track", name: "Current", artists: [{ name: "Playing", id: artistId }] } } });
+  const { manifest } = await publishMusic(store, published, now);
+  for (const period of ["30d", "365d", "all", "2026"]) {
+    const history = (await readJson<MusicDataset>(published, manifest.files[`all/${period}`]))!;
+    assert.equal(history.stats.topArtists.some(artist => artist.name === "Playing"), period === "30d");
+    const playback = (await readJson<MusicPlaybackSnapshot>(published, manifest.files.playback))!;
+    assert.deepEqual(playback.artistImages, [{ name: "Playing", image: photo("playing") }], period);
+  }
 });

@@ -93,8 +93,10 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     if (prior?.version === 1) playback = prior;
   }
   if (playback.track) favorites.push({ kind: "track", ...playback.track });
-  await immutable("playback", playback);
   const entities = aggregateEntities(verifiedRows, favorites, entityMetadata, now);
+  // Playback artwork belongs to the current artist, independent of any period's top 100.
+  playback = { ...playback, artistImages: (playback.track?.artists || []).map(name => ({ name, image: entities.entities[musicEntityKey("artist", name)]?.image || null })) };
+  await immutable("playback", playback);
   for (const dataset of Object.values(result.datasets)) {
     for (const [kind, ranked] of [["track", dataset.stats.topTracks], ["artist", dataset.stats.topArtists], ["album", dataset.stats.topAlbums]] as const) {
       for (const item of ranked) {
