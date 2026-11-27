@@ -117,6 +117,7 @@ export interface SoundtrackSeries {
   name: string;
   artists: string[];
   url?: string | null;
+  image?: string | null;
   /** Qualifying plays per bucket, including buckets outside this series' top five; lower counts are zero. */
   plays: number[];
 }

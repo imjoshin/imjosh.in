@@ -11,6 +11,8 @@ import { musicEntityKey } from "../../src/lib/music/entity-links.ts";
 import { publicSpotifyPlayback, type SpotifyPlaybackSource } from "../../src/lib/music/playback.ts";
 import savedArtistGenres from "../../content/artist_genres.json" with { type: "json" };
 import { artistGenreKey, normalizeArtistGenres, parseArtistGenreCatalog, resolveArtistGenres, type ArtistGenreCatalog } from "../../src/lib/music/artist-genres.ts";
+import { ARTIST_IMAGES_FILE, type ArtistImages } from "./artist-images.ts";
+import { spotifyImage } from "../../src/lib/music/entity-links.ts";
 
 export async function publishMusic(privateStore: MusicStore, publicStore: MusicStore, now = new Date(), artistGenreCatalog: ArtistGenreCatalog = parseArtistGenreCatalog(savedArtistGenres)) {
   const excluded = await readJson<Record<string, { reason: string; excludedAt: string }>>(privateStore, "catalog/excluded-imports.json") || {};
@@ -56,8 +58,11 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     await writeJson(publicStore, file, value); manifest.files[key] = file; return file;
   }
   const spotify = await readJson<SpotifySnapshot>(privateStore, "public/spotify.json");
+  const artistImages = await readJson<ArtistImages>(privateStore, ARTIST_IMAGES_FILE) || {};
   const favorites: MusicEntityRef[] = [];
   const entityMetadata: MusicEntityMetadata[] = [];
+  // Seed fallbacks first; actual Spotify imagery below takes precedence when supplied.
+  for (const [key, item] of Object.entries(artistImages)) entityMetadata.push({ kind: "artist", name: item.name, url: `https://open.spotify.com/artist/${item.spotifyArtistId}`, image: item.images.find(image => spotifyImage(image.url))?.url, genres: genres[key]?.genres || [] });
   // Whitelist recording metadata. The entity publisher never serializes catalog/provider payloads.
   for (const t of Object.values(catalog)) {
     const names = (t.artists || []).map((a: any) => a.name).filter(Boolean);
@@ -65,7 +70,7 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     const albumArtists = albumCredits.length ? albumCredits : names;
     entityMetadata.push({ kind: "track", name: t.name || "", artists: names, url: t.external_urls?.spotify || (t.id ? `https://open.spotify.com/track/${t.id}` : null), image: t.album?.images?.[0]?.url, genres: [...genreByTrack.get(musicTrack(t.name || "", names).key) || []], album: t.album?.name, albumArtists });
     if (t.album?.name) entityMetadata.push({ kind: "album", name: t.album.name, artists: albumArtists, url: t.album.external_urls?.spotify || (t.album.id ? `https://open.spotify.com/album/${t.album.id}` : null), image: t.album.images?.[0]?.url, genres: normalizeArtistGenres(t.album.genres || []) });
-    for (const a of t.artists || []) if (a.name) entityMetadata.push({ kind: "artist", name: a.name, url: a.external_urls?.spotify || (a.id ? `https://open.spotify.com/artist/${a.id}` : null), genres: genres[artistGenreKey(a.name)]?.genres || [] });
+    for (const a of t.artists || []) if (a.name) entityMetadata.push({ kind: "artist", name: a.name, url: a.external_urls?.spotify || (a.id ? `https://open.spotify.com/artist/${a.id}` : null), image: a.images?.find((image: { url?: string }) => spotifyImage(image.url))?.url, genres: genres[artistGenreKey(a.name)]?.genres || [] });
   }
   for (const [name, item] of Object.entries(spotifyGenres)) if (item.artistId) entityMetadata.push({ kind: "artist", name, url: `https://open.spotify.com/artist/${item.artistId}`, genres: genres[artistGenreKey(name)]?.genres || [] });
   for (const [key, item] of Object.entries(artistGenreCatalog.artists)) if (item.spotifyArtistId) entityMetadata.push({ kind: "artist", name: item.name, url: `https://open.spotify.com/artist/${item.spotifyArtistId}`, genres: genres[key]?.genres || [] });
@@ -74,6 +79,7 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     for (const range of Object.values(spotify.ranges)) {
       range.tracks = range.tracks.filter(t => !kids(t.artists) && !isDisneyMusic({ title: t.name, artists: t.artists }) && !disneyTracks.has(musicTrack(t.name, t.artists).key) && ![...genreByTrack.get(musicTrack(t.name, t.artists).key) || []].some(isKidsGenre));
       range.artists = range.artists.filter(a => !kids([a.name]) && !isDisneyMusic({ artists: [a.name] }));
+      for (const artist of range.artists) artist.image = spotifyImage(artist.image) || artistImages[artistGenreKey(artist.name)]?.images.find(image => spotifyImage(image.url))?.url || null;
       favorites.push(...range.tracks.map(t => ({ kind: "track" as const, name: t.name, artists: t.artists, url: t.url, image: t.image })), ...range.artists.map(a => ({ kind: "artist" as const, name: a.name, url: a.url, image: a.image })));
       entityMetadata.push(...range.artists.map(a => ({ kind: "artist" as const, name: a.name, url: a.url, image: a.image, genres: genres[artistGenreKey(a.name)]?.genres || [] })));
     }
@@ -119,7 +125,11 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
       }
     }
   }
-  for (const dataset of Object.values(soundtrack)) for (const metric of ["artists", "albums"] as const) for (const line of dataset.metrics[metric].series) line.url = entities.entities[musicEntityKey(metric === "artists" ? "artist" : "album", line.name, line.artists)]?.url || null;
+  for (const dataset of Object.values(soundtrack)) for (const metric of ["artists", "albums"] as const) for (const line of dataset.metrics[metric].series) {
+    const entity = entities.entities[musicEntityKey(metric === "artists" ? "artist" : "album", line.name, line.artists)];
+    line.url = entity?.url || null;
+    line.image = entity?.image || null;
+  }
   for (const [key, value] of Object.entries({ ...result.datasets, ...soundtrack })) {
     await immutable(key, value);
   }

@@ -1,11 +1,12 @@
-import { gzipSync } from "node:zlib";
-import { archive, readJson, writeJson, saveListens, type MusicStore } from "./store.ts";
+import { readJson, writeJson, saveListens, type MusicStore } from "./store.ts";
 import type { SpotifyCredentials } from "./auth.ts";
 import { spotifyListen, clean } from "../../src/lib/music/normalize.ts";
 import { isKidsGenre } from "../../src/lib/music/genres.ts";
 import type { RankedMusic, SpotifySnapshot } from "../../src/lib/music/types.ts";
 import savedArtistGenres from "../../content/artist_genres.json" with { type: "json" };
 import { artistGenreKey, parseArtistGenreCatalog, resolveArtistGenres } from "../../src/lib/music/artist-genres.ts";
+import { createSpotifyRequester } from "./spotify-request.ts";
+import { ARTIST_IMAGES_FILE, collectArtistImages, rememberArtistImages } from "./artist-images.ts";
 
 type Row = Record<string, any>;
 export interface GenreEntry { genres: string[]; provider: string; fetchedAt: string; artistId: string | null }
@@ -22,25 +23,11 @@ export async function collectSpotify(store: MusicStore, full = false, genreBudge
   const genreIndex = await readJson<GenreIndex>(store, "catalog/genres.json") || {};
   const artists = new Map<string, Row>();
   const tracks = new Map<string, Row>();
-  const unavailable: { endpoint: string; status: number }[] = [];
-  let requests = 0;
-  async function request(path: string): Promise<{ data: Row; rawRef: string } | null> {
-    const url = new URL(path, "https://api.spotify.com/v1/");
-    if (url.origin !== "https://api.spotify.com" || !url.pathname.startsWith("/v1/")) throw new Error("Invalid Spotify pagination URL");
-    for (let attempt = 0; attempt < 3; attempt++) {
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${token.access_token}` }, signal: AbortSignal.timeout(30000) }); requests++;
-      if (res.status === 429) { const wait = Math.min(Number(res.headers.get("retry-after") || 5), 45); await new Promise(r => setTimeout(r, wait * 1000)); continue; }
-      if ([403, 404].includes(res.status)) { unavailable.push({ endpoint: url.pathname, status: res.status }); return null; }
-      if (!res.ok) throw new Error(`Spotify ${url.pathname} returned ${res.status}`);
-      const data = res.status === 204 ? {} : await res.json();
-      const rawRef = await archive(store, `spotify-${runId}-${requests}.json.gz`, gzipSync(Buffer.from(JSON.stringify({ url: url.href, fetchedAt, data }))));
-      return { data, rawRef };
-    }
-    throw new Error("Spotify rate limit persisted. Collected pages remain archived; retry later.");
-  }
+  const { request, stats } = await createSpotifyRequester(store, token.access_token, fetchedAt);
+  const observedArtists: Row[] = [];
   function remember(t: Row) {
     if (!t?.id) return; tracks.set(t.id, t);
-    for (const artist of t.artists || []) if (artist.id) artists.set(artist.id, { ...artists.get(artist.id), ...artist });
+    for (const artist of t.artists || []) if (artist.id) { artists.set(artist.id, { ...artists.get(artist.id), ...artist }); observedArtists.push(artist); }
   }
   async function pages(path: string, nested?: string): Promise<Row[]> {
     const rows: Row[] = []; let next: string | null = path;
@@ -80,7 +67,7 @@ export async function collectSpotify(store: MusicStore, full = false, genreBudge
       const topTracks = await pages(`me/top/tracks?limit=50&time_range=${range}`);
       const topArtists = await pages(`me/top/artists?limit=50&time_range=${range}`);
       for (const t of topTracks) remember(t);
-      for (const a of topArtists) if (a.id) artists.set(a.id, a);
+      for (const a of topArtists) if (a.id) { artists.set(a.id, a); observedArtists.push(a); }
       // Keep the complete provider rankings privately; filter only when publishing below.
       await writeJson(store, `snapshots/spotify/${range}.json`, { fetchedAt, tracks: topTracks, artists: topArtists });
     }
@@ -106,6 +93,12 @@ export async function collectSpotify(store: MusicStore, full = false, genreBudge
       if (p.public === true) snapshot.playlists.push({ id: p.id, name: clean(p.name), image: p.images?.[0]?.url || null, url: p.external_urls?.spotify || `https://open.spotify.com/playlist/${p.id}`, tracks: p.items?.total ?? p.tracks?.total ?? items.length });
     }
   }
+  await writeJson(store, "catalog/spotify-tracks.json.gz", { ...(await readJson<Record<string, Row>>(store, "catalog/spotify-tracks.json.gz") || {}), ...Object.fromEntries(tracks) });
+  // Fetch missing images before optional genre enrichment can consume the rate budget.
+  const imageCollection = await collectArtistImages(store, observedArtists, request, new Date(fetchedAt));
+  for (const artist of observedArtists) if (Array.isArray(artist.genres)) {
+    genreIndex[artistGenreKey(clean(artist.name))] = { genres: artist.genres, provider: "spotify-artist", artistId: artist.id, fetchedAt };
+  }
   let genreRequests = 0;
   for (const [id, artist] of artists) {
     const name = clean(artist.name).toLowerCase();
@@ -113,13 +106,15 @@ export async function collectSpotify(store: MusicStore, full = false, genreBudge
     if (Array.isArray(artist.genres)) genreIndex[name] = { genres: artist.genres, provider: "spotify-artist", artistId: id, fetchedAt };
     else if ((!previous || Date.parse(previous.fetchedAt) < Date.now() - 30 * 86400000) && genreRequests < genreBudget) {
       genreRequests++;
-      const detail = await request(`artists/${id}`);
-      if (detail) genreIndex[name] = { genres: detail.data.genres || [], provider: "spotify-artist", artistId: id, fetchedAt };
+      const detail = await request(`artists/${id}`, true);
+      if (detail) { genreIndex[name] = { genres: detail.data.genres || [], provider: "spotify-artist", artistId: id, fetchedAt }; observedArtists.push(detail.data); }
       if (genreRequests % 50 === 0) await writeJson(store, "catalog/genres.json", genreIndex);
     }
   }
   await writeJson(store, "catalog/genres.json", genreIndex);
-  await writeJson(store, "catalog/spotify-tracks.json.gz", { ...(await readJson<Record<string, Row>>(store, "catalog/spotify-tracks.json.gz") || {}), ...Object.fromEntries(tracks) });
+  for (const artist of observedArtists) if (imageCollection.eligible.has(artistGenreKey(clean(artist.name)))) rememberArtistImages(imageCollection.catalog, artist, fetchedAt);
+  await writeJson(store, ARTIST_IMAGES_FILE, imageCollection.catalog);
+  const artistImages = { artists: Object.keys(imageCollection.catalog).length, requested: imageCollection.requested };
   if (snapshot) {
     const effectiveGenres = resolveArtistGenres(genreIndex, parseArtistGenreCatalog(savedArtistGenres));
     const ranked = (item: Row, artist = false): RankedMusic => ({ key: item.id, name: clean(item.name), artists: artist ? [] : (item.artists || []).map((a: Row) => clean(a.name)), image: (artist ? item.images : item.album?.images)?.[0]?.url || null, url: item.external_urls?.spotify || null, plays: 0, msPlayed: 0 });
@@ -134,7 +129,8 @@ export async function collectSpotify(store: MusicStore, full = false, genreBudge
     for (const range of ["short_term", "medium_term", "long_term"]) { const raw = await readJson<{ tracks: Row[]; artists: Row[] }>(store, `snapshots/spotify/${range}.json`); snapshot.ranges[range] = { tracks: (raw?.tracks || []).filter(t => !isKids(t)).slice(0, 12).map(t => ranked(t)), artists: (raw?.artists || []).filter(a => !isKids(a, true)).slice(0, 12).map(a => ranked(a, true)) }; }
     await writeJson(store, "public/spotify.json", snapshot);
   }
-  await writeJson(store, "state/spotify.json", { fetchedAt, full, requests, unavailable });
+  const { requests, unavailable } = stats;
+  await writeJson(store, "state/spotify.json", { fetchedAt, full, requests, unavailable, artistImages });
   if (full) await writeJson(store, "state/spotify-full.json", { fetchedAt });
-  return { requests, tracks: tracks.size, artists: artists.size, unavailable: unavailable.length };
+  return { requests, tracks: tracks.size, artists: artists.size, unavailable: unavailable.length, artistImages };
 }

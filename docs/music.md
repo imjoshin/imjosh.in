@@ -63,6 +63,16 @@ npm run music:aggregate
 
 Full sync paginates supported top tracks/artists for every period, saved tracks/albums/shows/episodes/audiobooks, followed artists, playlists and contents, and artist genres. Unsupported endpoints are recorded. Rate limits are honored. The first genre collection can take time; production genre requests are bounded and checkpointed. Failed collections retain all completed raw pages and the last public summary.
 
+## Artist image catalog
+
+`catalog/artist_images.json` in the private music store, mirrored locally at `.music/catalog/artist_images.json`, keeps Spotify artist IDs, names, image URLs and dimensions, and retrieval dates. It is runtime metadata, separate from the committed genre catalog. Local sync and the scheduled worker update the same catalog; `music:pull --all` includes it, and `music:push` merges by retrieval date so an older local photo cannot replace a newer production photo.
+
+Image collection covers artists with **more than 50 cumulative recorded plays** across the available platforms, after source deduplication and the existing public-history exclusions, plus all credited artists in active, non-private Now Playing playback regardless of play count. It does not create listening events. Fresh Spotify images replace the artist's saved value. Empty or unavailable responses preserve existing images. Archived ranking photos bootstrap missing entries, then missing photos are requested from the artist endpoint, prioritizing Now Playing. Artists without a known Spotify ID use name search only when it identifies one unambiguous matching artist, treating `and` and `&` spellings as equivalent. Ambiguous names are left unresolved.
+
+Optional artist requests retry rate limits, server errors, and network failures up to three attempts, honoring `Retry-After` and backing off between attempts. Long or persistent rate limits save a shared cooldown and defer further optional lookups without failing collection or publication. Empty artist-image responses wait a day before another lookup; failed lookups wait 15 minutes, or one minute for Now Playing. Images remain unavailable if Spotify supplies none and the catalog has no prior photo.
+
+Publication prefers supplied Spotify images and falls back to the saved catalog for artist rankings, soundtrack chart metadata, lazy song details, hover cards, and the Now Playing artists. It publishes only the existing approved entity metadata, never the complete catalog or its lookup state. Artists below the collection threshold can still display a photo already supplied by a Spotify ranking.
+
 ## Local artist genre catalog
 
 `content/artist_genres.json` is the committed primary source for artist genres, separate from Spotify's private `catalog/genres.json`. Publishing and scheduled collection use this file's nonempty, usable labels first and fall back to Spotify when the artist is absent or has no usable labels. This resolution applies to history, soundtrack graphs, genre song lists, hover metadata, and kids filtering. Scheduled jobs only read this file; new classifications reach production with the next code deployment.

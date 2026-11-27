@@ -11,6 +11,7 @@ import type { MusicManifest } from "../src/lib/music/types.ts";
 import type { Listen } from "../src/lib/music/types.ts";
 import { deduplicate, digest } from "../src/lib/music/normalize.ts";
 import { generateArtistGenres, parseGenreOptions, pullArtistGenreInputs } from "./music/artist-genres.ts";
+import { ARTIST_IMAGES_FILE, mergeArtistImages, type ArtistImages } from "./music/artist-images.ts";
 
 const args = process.argv.slice(2), command = args.shift();
 const flag = (name: string) => { const index = args.indexOf(name); return index >= 0 ? args[index + 1] : undefined; };
@@ -37,6 +38,9 @@ async function copyStore(source: MusicStore, target: MusicStore, prefix = "", sk
       if (merge && key.startsWith("listens/")) {
         const a = await readJson<Listen[]>(source, key) || [], b = await readJson<Listen[]>(target, key) || [];
         await writeJson(target, key, deduplicate([...b, ...a])); count++; return;
+      }
+      if (merge && key === ARTIST_IMAGES_FILE) {
+        await writeJson(target, key, mergeArtistImages(await readJson<ArtistImages>(target, key) || {}, await readJson<ArtistImages>(source, key) || {})); count++; return;
       }
       if (merge && (key === "catalog/genres.json" || key === "catalog/spotify-tracks.json.gz" || key === "catalog/google-tracks.json.gz" || key === "catalog/excluded-imports.json")) {
         await writeJson(target, key, { ...await readJson<Record<string, unknown>>(target, key), ...await readJson<Record<string, unknown>>(source, key) }); count++; return;

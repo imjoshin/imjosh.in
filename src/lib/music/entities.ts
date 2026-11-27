@@ -5,7 +5,11 @@ import { directSpotifyUrl, musicEntityKey, spotifyImage } from "./entity-links.t
 export interface MusicEntityMetadata extends MusicEntityRef { genres?: string[]; album?: string | null; albumArtists?: string[] }
 /** Only entities in approved listening history or public affinity rankings are seeded. Catalog membership is private. */
 export function aggregateEntities(input: Listen[], favorites: MusicEntityRef[] = [], metadata: MusicEntityMetadata[] = [], now = new Date(), timezone = MUSIC_TIMEZONE): MusicEntityDataset {
-  const details = new Map(metadata.map(item => [musicEntityKey(item.kind, item.name, item.artists), item]));
+  const details = new Map<string, MusicEntityMetadata>();
+  for (const item of metadata) {
+    const key = musicEntityKey(item.kind, item.name, item.artists), previous = details.get(key);
+    details.set(key, { ...previous, ...item, url: item.url || previous?.url, image: spotifyImage(item.image) || previous?.image });
+  }
   const entities = new Map<string, MusicEntity>(), tracks = new Map<string, Set<string>>();
   const dates = new Intl.DateTimeFormat("en-CA", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit" });
   function ensure(ref: MusicEntityRef) {
