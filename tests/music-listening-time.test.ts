@@ -72,12 +72,11 @@ test("calendar denominators cover full historical years and stop current years a
   assert.equal(new Set([spring.startDate, spring.endDate]).size, 2);
 });
 
-test("duration labels show zero below a minute and preserve unknown, minute, and hour values", () => {
+test("duration labels distinguish unknown, zero, seconds, minutes, and hours", () => {
   assert.equal(formatListeningTime(null), "Unavailable");
-  assert.equal(formatListeningTime(0), "0");
-  assert.equal(formatListeningTime(500), "0");
-  assert.equal(formatListeningTime(30000), "0");
-  assert.equal(formatListeningTime(59999), "0");
+  assert.equal(formatListeningTime(0), "0 min");
+  assert.equal(formatListeningTime(500), "<1 sec");
+  assert.equal(formatListeningTime(30000), "30 sec");
   assert.equal(formatListeningTime(60000), "1 min");
   assert.equal(formatListeningTime(90000), "1.5 min");
   assert.equal(formatListeningTime(3660000), "1 hr 1 min");

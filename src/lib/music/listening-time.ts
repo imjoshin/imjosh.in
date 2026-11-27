@@ -32,7 +32,9 @@ export function averageListeningTime(data: MusicDataset, by: "weekday" | "hour",
 
 export function formatListeningTime(ms: number | null): string {
   if (ms === null) return "Unavailable";
-  if (ms < 60000) return "0";
+  if (ms === 0) return "0 min";
+  if (ms < 1000) return "<1 sec";
+  if (ms < 60000) return `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(ms / 1000)} sec`;
   if (ms < 3600000) return `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }).format(ms / 60000)} min`;
   const minutes = Math.round(ms / 60000);
   return `${Math.floor(minutes / 60)} hr${minutes % 60 ? ` ${minutes % 60} min` : ""}`;

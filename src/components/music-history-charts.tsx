@@ -103,7 +103,7 @@ export function WeekdayChart({ data }: { data: MusicDataset }) {
   });
   const values = weekdays.map((_, i) => averageListeningTime(data, "weekday", i).average);
   const maximum = Math.max(0, ...values.map(value => value ?? 0));
-  const unit = 60000;
+  const unit = maximum > 0 && maximum < 60000 ? 1000 : 60000;
   const tooltipId = useId(), scale = playCountScale(maximum / unit);
   const select = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     if (event.key === "Escape") { event.preventDefault(); setSelection(null); return; }
@@ -111,7 +111,7 @@ export function WeekdayChart({ data }: { data: MusicDataset }) {
     if (next !== undefined) { event.preventDefault(); event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>("button")[next]?.focus(); choose(next, "keyboard"); }
   };
   return <figure data-analytics-section="weekday" data-analytics-chart="weekday" data-analytics-metric="average_listening_time" data-analytics-period={data.period} className="music-history-chart panel flex flex-col rounded-[24px] p-5 sm:p-7">
-    <figcaption className="flex flex-wrap items-start justify-between gap-4"><div><p className="music-label">A weekly rhythm</p><h2 className="mt-2 font-display text-[36px] leading-none">Day by <em className="text-accent">day.</em></h2></div><span className="pt-1 text-[13px] text-muted">Average minutes per day</span></figcaption>
+    <figcaption className="flex flex-wrap items-start justify-between gap-4"><div><p className="music-label">A weekly rhythm</p><h2 className="mt-2 font-display text-[36px] leading-none">Day by <em className="text-accent">day.</em></h2></div><span className="pt-1 text-[13px] text-muted">Average {unit === 1000 ? "seconds" : "minutes"} per day</span></figcaption>
     <div className="mt-8 grid flex-1 grid-cols-[max-content_minmax(0,1fr)] items-end gap-x-3">
     <div className="mb-[30px] flex h-[120px]"><PlayCountAxis scale={scale} /></div>
     <div ref={interaction.ref} className="music-chart-surface flex min-h-40 items-end gap-3" role="group" aria-label="Average measured listening time by weekday" data-analytics-method={active !== null ? selection?.method : undefined} data-inspecting={active !== null || undefined} onPointerMove={interaction.onPointerMove} onPointerDown={interaction.onPointerDown} onPointerUp={interaction.onPointerUp} onPointerCancel={interaction.onPointerCancel} onPointerLeave={event => { if (event.pointerType !== "touch" && !event.currentTarget.contains(document.activeElement)) setSelection(null); }}>
