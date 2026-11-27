@@ -32,7 +32,7 @@ export function useMusicCollection(initial: MusicCollection, period: string) {
     if (!latest.current.data || latest.current.data.period !== selected) setLoading(true);
     const timeout = setTimeout(() => request.abort(), 20000);
     const read: MusicJsonReader = async <T,>(file: string, signal: AbortSignal) => {
-      const response = await fetch(useApi ? `/api/music?file=${encodeURIComponent(file)}` : `/music/${file}`, { signal, cache: file === "manifest.json" ? "no-store" : "force-cache" });
+      const response = await fetch(useApi ? `/api/music?file=${encodeURIComponent(file)}` : `/music/${file}`, { signal, cache: file === "manifest.json" ? "no-cache" : "force-cache" });
       if (!response.ok) throw new Error("Music data is unavailable");
       return response.json() as Promise<T>;
     };

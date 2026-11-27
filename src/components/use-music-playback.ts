@@ -11,7 +11,7 @@ export function useMusicPlayback() {
     let controller: AbortController | null = null;
     const useApi = location.hostname === "imjosh.in" || location.hostname.endsWith(".netlify.app");
     const read: MusicJsonReader = async <T,>(file: string, signal: AbortSignal) => {
-      const response = await fetch(useApi ? `/api/music?file=${encodeURIComponent(file)}` : `/music/${file}`, { signal, cache: "no-store" });
+      const response = await fetch(useApi ? `/api/music?file=${encodeURIComponent(file)}` : `/music/${file}`, { signal, cache: "no-cache" });
       if (!response.ok) throw new Error("Music playback is unavailable");
       return response.json() as Promise<T>;
     };
