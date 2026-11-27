@@ -2,7 +2,7 @@
 
 import { DirectionalLink as Link } from "@/components/navigation-motion";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 export const socialLinks = [
   ["GitHub", "https://github.com/imjoshin"],
@@ -40,17 +40,43 @@ function NavigationLinks({ pathname, mobile = false }: { pathname: string; mobil
         </svg>
         <span className="sr-only"> (opens in a new tab)</span>
       </a>
-      <button type="button" className={`${className} theme-toggle`} onClick={() => {
-        const current = document.documentElement.dataset.theme;
-        const dark = current ? current === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-        const theme = dark ? "light" : "dark";
-        try { localStorage.setItem("imjosh.in:theme", theme); } catch { /* Switching still works when storage is unavailable. */ }
-        document.documentElement.dataset.theme = theme;
-      }}>
-        <span className="theme-toggle-light">Light mode</span>
-        <span className="theme-toggle-dark">Dark mode</span>
-      </button>
     </>
+  );
+}
+
+function ThemeToggle() {
+  const maskId = useId();
+
+  function toggleTheme() {
+    const current = document.documentElement.dataset.theme;
+    const dark = current ? current === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    const theme = dark ? "light" : "dark";
+    try { localStorage.setItem("imjosh.in:theme", theme); } catch { /* Switching still works when storage is unavailable. */ }
+    document.documentElement.dataset.theme = theme;
+  }
+
+  return (
+    <button type="button" className="theme-toggle desktop-nav-link relative inline-flex h-11 w-11 shrink-0 items-center justify-center text-muted hover:text-ink" title="Switch color theme" onClick={toggleTheme}>
+      <svg className="theme-icon" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+        <defs>
+          <mask id={maskId}>
+            <rect x="-12" y="-12" width="48" height="48" fill="white" />
+            <circle className="theme-icon-bite" cx="24" cy="0" r="9" fill="black" stroke="none" />
+          </mask>
+        </defs>
+        <g className="theme-icon-rays">
+          <path d="M12 1v2m0 18v2M1 12h2m18 0h2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+        </g>
+        <g mask={`url(#${maskId})`}>
+          <circle className="theme-icon-disc" cx="12" cy="12" r="5.5" fill="currentColor" stroke="none" />
+        </g>
+        <g className="theme-icon-stars">
+          <path d="M19 2v4m-2-2h4M22 9v2m-1-1h2" />
+        </g>
+      </svg>
+      <span className="theme-toggle-light sr-only">Switch to light mode</span>
+      <span className="theme-toggle-dark sr-only">Switch to dark mode</span>
+    </button>
   );
 }
 
@@ -106,6 +132,7 @@ export function SiteHeader() {
       <Link className="font-display text-[28px] leading-none tracking-[-.01em] italic" href="/" aria-label="imjosh.in home">imjosh.in</Link>
       <nav aria-label="Main navigation" className="hidden items-center gap-7 md:flex lg:gap-9">
         <NavigationLinks pathname={pathname} />
+        <ThemeToggle />
       </nav>
       <details ref={menu} className="group md:hidden">
         <summary className="mobile-menu-toggle flex h-11 w-11 cursor-pointer items-center justify-center text-muted transition-colors hover:text-ink" aria-controls="mobile-navigation">
