@@ -11,7 +11,7 @@ test("the current snapshot contains exactly the authoritative active inventory",
 
 test("2010 keeps the Dell setup alongside the first phone", () => {
   const snapshot = usesAt(2010);
-  assert.deepEqual(snapshot.categories.filter((category) => category.key !== "console").flatMap((category) => category.items.map((item) => item.name)), ["Dell Dimension 2400 (approx.)", 'Dell E773c 17" CRT (approx.)', "Dell SK-8115 (approx.)", "Dell M-UVDEL1 (approx.)", "LG Banter"]);
+  assert.deepEqual(snapshot.categories.filter((category) => category.key !== "console").flatMap((category) => category.items.map((item) => item.name)), ["Dell Dimension 2400", 'Dell E773c 17" CRT', "Dell SK-8115", "Dell M-UVDEL1", "LG Banter"]);
   assert.equal(snapshot.categories.filter((category) => !category.items.length).length, categories.length - 6);
   assert.equal(snapshot.changes[0].date, "2010-06");
 });
@@ -26,8 +26,9 @@ test("same-month replacements retire the old item before adding the new one", ()
 
 test("retired equipment remains available historically and new badges match the selected year", () => {
   assert.equal(usesAt(2023).categories.find((category) => category.key === "mouse")!.items[0].name, "Razer Mamba Wireless");
-  assert.equal(usesAt(2024).categories.find((category) => category.key === "mouse")!.items.length, 0);
-  assert.equal(usesAt(2026).categories.find((category) => category.key === "mouse")!.items[0].isNew, true);
+  assert.equal(usesAt(2024).categories.find((category) => category.key === "mouse")!.items[0].name, "Logitech MX Master 3S");
+  assert.equal(usesAt(2024).categories.find((category) => category.key === "mouse")!.items[0].isNew, true);
+  assert.equal(usesAt(2026).categories.find((category) => category.key === "mouse")!.items[0].isNew, false);
   assert.equal(usesAt(2027).categories.find((category) => category.key === "mouse")!.items[0].isNew, false);
   assert.equal(usesAt(2012).changes.length, 0);
 });
@@ -161,7 +162,7 @@ test("the Dell period references stay approximate and span 2008 through August 2
   const dell = usesItems.filter((item) => item.make === "Dell");
   assert.equal(dell.length, 4);
   assert.ok(dell.every((item) => item.acquireDate === "2008" && !item.active && item.doneDate === "2013-09"));
-  assert.ok(dell.every((item) => item.modelApproximate && itemName(item).endsWith(" (approx.)")));
+  assert.ok(dell.every((item) => item.modelApproximate && itemName(item) === `${item.make} ${item.model}`));
   assert.ok(usesItems.filter((item) => item.make !== "Dell").every((item) => !item.modelApproximate && !itemName(item).endsWith(" (approx.)")));
   assert.deepEqual(dell.map((item) => item.model), ["Dimension 2400", 'E773c 17" CRT', "SK-8115", "M-UVDEL1"]);
   assert.equal(itemSpec(dell.find((item) => item.subtype === "computer")!), "Intel Pentium 4 · 256MB RAM");
@@ -221,7 +222,7 @@ test("over-ear headphones, earbuds and microphones each retain one active item t
   assert.deepEqual(earbuds("2018-06"), ["KZ ZST"]);
   assert.deepEqual(earbuds("2023-03"), ["Google Pixel Buds Pro"]);
   const microphones = (month: string) => usesAt(month).categories.find((category) => category.key === "av")!.items.filter((item) => item.details.subtype === "microphone").map((item) => item.name);
-  assert.deepEqual(microphones("2023-02"), ["Zalman ZM-MIC1"]);
+  assert.deepEqual(microphones("2023-02"), []);
   assert.deepEqual(microphones("2023-03"), ["Shure MV7"]);
 });
 
@@ -233,8 +234,8 @@ test("the approved display order groups microphones and webcams in AV", () => {
   assert.deepEqual(av.items.map((item) => item.name).sort(), ["Logitech Brio 4K", "Shure MV7"].sort());
   assert.equal(av.items.find((item) => item.name === "Shure MV7")!.details.category, "microphone");
   assert.equal(av.items.find((item) => item.name === "Logitech Brio 4K")!.details.category, "desk");
-  assert.equal(usesAt("2014-01").categories.find((category) => category.key === "av")!.hasHistory, false);
-  assert.equal(usesAt("2014-02").categories.find((category) => category.key === "av")!.hasHistory, true);
+  assert.equal(usesAt("2017-10").categories.find((category) => category.key === "av")!.hasHistory, false);
+  assert.equal(usesAt("2017-11").categories.find((category) => category.key === "av")!.hasHistory, true);
 });
 
 test("approved desk equipment has its own category without excluded household gear", () => {

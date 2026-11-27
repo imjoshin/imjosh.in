@@ -1,18 +1,23 @@
 "use client";
 
-import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { itemId, itemName, monthAt, monthIndex, readTimelineMonth, timelineStartYear, usesAt } from "@/lib/uses";
 import { AnimatedDate } from "@/components/animated-date";
 import { AnimatedGearItems } from "@/components/animated-gear-items";
 import { GearDetails } from "@/components/gear-details";
 import { trackEvent } from "@/lib/analytics";
 import { GearCategoryIcon } from "@/components/gear-category-icon";
+import styles from "./uses-explorer.module.css";
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
   const [currentMonth, setCurrentMonth] = useState(initialMonth);
   const [selection, setSelection] = useState({ position: monthIndex(initialMonth), direction: 1 });
+  const heading = useRef<HTMLDivElement>(null);
+  const timeline = useRef<HTMLDivElement>(null);
+  const [headerHeight, setHeaderHeight] = useState<number | null>(null);
+  const [timelineStuck, setTimelineStuck] = useState(false);
 
   useEffect(() => {
     const date = new Date();
@@ -26,6 +31,34 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
     window.addEventListener("popstate", readMonth);
     return () => window.removeEventListener("popstate", readMonth);
   }, []);
+
+  useEffect(() => {
+    const header = document.querySelector<HTMLElement>(".site-header");
+    if (!header) return;
+    const measure = () => setHeaderHeight(header.getBoundingClientRect().height);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const title = heading.current;
+    const controls = timeline.current;
+    if (!title || !controls || headerHeight === null) return;
+    let observer: IntersectionObserver;
+    const observeSticky = () => {
+      observer?.disconnect();
+      const stickyTop = parseFloat(getComputedStyle(controls).top);
+      const gap = parseFloat(getComputedStyle(controls.parentElement!).rowGap) || 0;
+      // Watch the fixed heading origin so expanding the sticky bar cannot toggle its own state.
+      observer = new IntersectionObserver(([entry]) => setTimelineStuck(entry.boundingClientRect.bottom + gap <= stickyTop), { rootMargin: `${gap - stickyTop}px 0px 0px 0px`, threshold: 0 });
+      observer.observe(title);
+    };
+    observeSticky();
+    window.addEventListener("resize", observeSticky);
+    return () => { observer.disconnect(); window.removeEventListener("resize", observeSticky); };
+  }, [headerHeight]);
 
   const maximum = monthIndex(currentMonth);
   const month = monthAt(selection.position);
@@ -64,7 +97,7 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
 
   return (
     <>
-      <div className="flex flex-wrap items-end justify-between gap-6">
+      <div ref={heading} className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex flex-col gap-3">
           <h1 className="page-title">What I <em>use</em></h1>
           <p className="max-w-[34ch] text-[19px] leading-[1.25] text-pretty text-muted">Every piece of gear since {timelineStartYear}. Drag through time.</p>
@@ -72,7 +105,8 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
         <AnimatedDate month={month} direction={selection.direction} />
       </div>
 
-      <div className="panel flex flex-col gap-2 rounded-[20px] px-6 py-5">
+      <div ref={timeline} className={`${styles.timeline} uses-timeline panel flex flex-col gap-2 rounded-[20px] px-6 py-5`} data-stuck={timelineStuck || undefined} style={headerHeight === null ? undefined : { "--uses-header-offset": `${headerHeight}px` } as CSSProperties}>
+        <span aria-hidden="true" className={styles.timelineDate}>{monthLabel}</span>
         <label className="sr-only" htmlFor="gear-date">Month</label>
         <p id="timeline-help" className="sr-only">Drag freely through months. Arrow keys move one month; Shift and arrow keys move one year.</p>
         <input id="gear-date" type="range" min={0} max={maximum} step="any" value={selection.position} aria-valuetext={`Gear at the end of ${monthLabel}`} aria-describedby="timeline-help" className="m-0 h-6 w-full" onKeyDown={onKeyDown} onChange={(event) => selectPosition(Number(event.target.value))} onPointerUp={(event) => selectPosition(Number(event.currentTarget.value), true)} onPointerCancel={(event) => selectPosition(Number(event.currentTarget.value), true)} onKeyUp={(event) => selectPosition(Number(event.currentTarget.value), true)} onBlur={(event) => selectPosition(Number(event.currentTarget.value), true)} />

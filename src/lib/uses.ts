@@ -18,7 +18,7 @@ export function itemCategory(item: UsesItem): GearCategory {
   return item.category;
 }
 
-export function itemName(item: UsesItem) { return `${item.make} ${item.model}${item.modelApproximate ? " (approx.)" : ""}`; }
+export function itemName(item: UsesItem) { return `${item.make} ${item.model}`; }
 export function itemId(item: UsesItem) { return `${item.category}:${item.subtype}:${itemName(item)}:${item.acquireDate}`; }
 
 const gearMonthDate = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" });

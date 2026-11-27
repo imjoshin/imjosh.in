@@ -90,7 +90,7 @@ type Phone = {
 
 type DeskItem = {
     category: "desk";
-    subtype: "desk" | "webcam" | "lighting" | "mount" | "mat" | "switch" | "mixer";
+    subtype: "desk" | "chair" | "webcam" | "lighting" | "mount" | "mat" | "switch" | "mixer";
     make: string;
     model: string;
     description: string;
@@ -418,41 +418,6 @@ export const usesItems: UsesItem[] = [
         ],
         acquireDate: "2026-04",
         active: true,
-    },
-    {
-        category: "desktop",
-        subtype: "monitor",
-        make: "LG",
-        model: '25UM57 25"',
-        size: '25"',
-        resolution: "2560x1080",
-        panelType: "IPS",
-        "producer": "LG",
-        "releaseYear": 2015,
-        "image": {
-            "src": "/gear/lg-25um57.png",
-            "alt": "LG 25UM57 25\" product view",
-            "sourceUrl": "https://www.lg.com/content/dam/channel/wcms/tr/images/monitor/25um57/gallery/large01.jpg",
-            "backgroundRemoved": true
-        },
-        "specs": {
-            "Screen size": "25\"",
-            "Resolution": "2560x1080",
-            "Panel": "IPS",
-            "Refresh rate": "60Hz",
-            "Aspect ratio": "21:9",
-            "Response time": "5ms (GTG)",
-            "Inputs": "2 × HDMI"
-        },
-        "sources": [
-            {
-                "label": "Manufacturer product information",
-                "url": "https://www.lg.com/us/support/products/documents/25UM57%20Spec%20Sheet.pdf"
-            }
-        ],
-        acquireDate: "2015-08",
-        active: false,
-        doneDate: "2021-12",
     },
     {
         category: "desktop",
@@ -990,7 +955,7 @@ export const usesItems: UsesItem[] = [
                 "url": "https://www.logitech.com/en-us/products/mice/mx-master-3s.html"
             }
         ],
-        acquireDate: "2026-03",
+        acquireDate: "2024-08",
         active: true,
     },
 
@@ -1416,35 +1381,6 @@ export const usesItems: UsesItem[] = [
     {
         "category": "microphone",
         "subtype": "microphone",
-        "make": "Zalman",
-        "model": "ZM-MIC1",
-        "description": "Clip-on microphone · Omnidirectional",
-        "producer": "Zalman",
-        "releaseYear": null,
-        "image": {
-            "src": "/gear/zalman-zm-mic1.jpg",
-            "alt": "Zalman ZM-MIC1 product view",
-            "sourceUrl": "https://www.zalman.com/cmm/fms/getImage.do?atchFileId=FILE_000000000009563&fileSn=0"
-        },
-        "specs": {
-            "Design": "Compact clip-on headphone microphone",
-            "Polar pattern": "Omnidirectional",
-            "Sensitivity": "-40 +/- 3 dB",
-            "Impedance": "Up to 2.2 kohm"
-        },
-        "sources": [
-            {
-                "label": "Manufacturer product information",
-                "url": "https://www.zalman.com/EN/Product/ProductDetail.do?productSeq=894"
-            }
-        ],
-        "acquireDate": "2014-02-05",
-        "active": false,
-        "doneDate": "2023-03-06"
-    },
-    {
-        "category": "microphone",
-        "subtype": "microphone",
         "make": "Shure",
         "model": "MV7",
         "description": "Dynamic microphone · USB and XLR",
@@ -1503,6 +1439,32 @@ export const usesItems: UsesItem[] = [
         "doneDate": "2020-07-14"
     },
     {
+        category: "desk",
+        subtype: "chair",
+        make: "IKEA",
+        model: "RENBERGET",
+        description: "Swivel chair · Bomstad black",
+        producer: "IKEA",
+        releaseYear: null,
+        image: {
+            src: "/gear/ikea-renberget-black.jpg",
+            alt: "IKEA RENBERGET swivel chair in Bomstad black",
+            sourceUrl: "https://www.ikea.com/us/en/images/products/renberget-swivel-chair-bomstad-black__1020135_pe831794_s5.jpg",
+        },
+        specs: {
+            Type: "Swivel office chair",
+            Color: "Bomstad black",
+            "Seat height": "Adjustable",
+            "Tilt tension": "Adjustable",
+        },
+        sources: [
+            { label: "IKEA RENBERGET product information supplied by Josh", url: "https://www.ikea.com/us/en/p/renberget-swivel-chair-bomstad-black-40611094/" },
+        ],
+        acquireDate: "2018-09",
+        active: false,
+        doneDate: "2021-11",
+    },
+    {
         "category": "desk",
         "subtype": "desk",
         "make": "VIVO",
@@ -1530,6 +1492,34 @@ export const usesItems: UsesItem[] = [
         ],
         "acquireDate": "2020-07-14",
         "active": true
+    },
+    {
+        category: "desk",
+        subtype: "chair",
+        make: "Secretlab",
+        model: "TITAN Evo",
+        description: "Cookies & Cream · SoftWeave Plus fabric",
+        producer: "Secretlab",
+        releaseYear: 2021,
+        image: {
+            src: "/gear/secretlab-titan-evo-cookies-cream.jpg",
+            alt: "Secretlab TITAN Evo chair in Cookies & Cream",
+            sourceUrl: "https://blog.secretlab.co/stories/domidul/uploads/2021/11/SW_Post6_blog4.jpg",
+        },
+        specs: {
+            Type: "Gaming chair",
+            Color: "Cookies & Cream",
+            Upholstery: "SoftWeave Plus fabric",
+            "Lumbar support": "4-way L-ADAPT system",
+            Armrests: "4D with CloudSwap tops",
+            Recline: "Up to 165°",
+        },
+        sources: [
+            { label: "Secretlab TITAN Evo launch, July 2021", url: "https://blog.secretlab.co/stories/the-all-new-secretlab-titan-evo-2022/" },
+            { label: "Secretlab Cookies & Cream photo and upholstery", url: "https://blog.secretlab.co/stories/which-softweave-plus-color-is-right-for-you/" },
+        ],
+        acquireDate: "2021-11",
+        active: true,
     },
     {
         "category": "desk",
@@ -1638,63 +1628,6 @@ export const usesItems: UsesItem[] = [
     },
     {
         "category": "desk",
-        "subtype": "mat",
-        "make": "Ergodriven",
-        "model": "Topo Mini",
-        "description": "Standing desk mat · Obsidian Black",
-        "producer": "Ergodriven",
-        "releaseYear": 2017,
-        "image": {
-            "src": "/gear/ergodriven-topo-mini.jpg",
-            "alt": "Ergodriven Topo Mini product view",
-            "sourceUrl": "https://cdn.shopify.com/s/files/1/1117/2112/products/Black_Topo_Mini_-_Top_2048x2048.jpg?v=1572561395&width=1000"
-        },
-        "specs": {
-            "Type": "Anti-fatigue standing desk mat",
-            "Size": "Mini",
-            "Surface": "Raised non-flat terrain",
-            "Color": "Obsidian Black"
-        },
-        "sources": [
-            {
-                "label": "Manufacturer product information",
-                "url": "https://ergodriven.com/products/topo?variant=31072677331062"
-            }
-        ],
-        "acquireDate": "2024-04-29",
-        "active": true
-    },
-    {
-        "category": "desk",
-        "subtype": "lighting",
-        "make": "HumanCentric",
-        "model": "Video Conference Lighting Double Kit",
-        "description": "Two adjustable monitor-mounted lights",
-        "producer": "HumanCentric",
-        "releaseYear": null,
-        "image": {
-            "src": "/gear/humancentric-video-lights.jpg",
-            "alt": "HumanCentric Video Conference Lighting Double Kit product view",
-            "sourceUrl": "https://cdn.shopify.com/s/files/1/0750/2813/products/P2_f3b6152c-9f1b-4bdb-b9f8-77059e127a00.jpg?v=1660844722&width=1000"
-        },
-        "specs": {
-            "Kit": "Double light kit, 301-1038-P2-B",
-            "Power": "USB-C",
-            "Adjustments": "Brightness and color temperature",
-            "Mounting": "Webcam-style monitor or laptop mounts",
-            "Light width": "8 inches each"
-        },
-        "sources": [
-            {
-                "label": "Manufacturer product information",
-                "url": "https://www.humancentric.com/products/remote-office-video-conference-light-bar-double"
-            }
-        ],
-        "acquireDate": "2024-09-23",
-        "active": true
-    },
-    {
-        "category": "desk",
         "subtype": "mount",
         "make": "VIVO",
         "model": "STAND-V257R",
@@ -1753,62 +1686,6 @@ export const usesItems: UsesItem[] = [
         "active": true
     },
 
-    {
-        "category": "desk",
-        "subtype": "mixer",
-        "make": "Cooidea",
-        "model": "2-Channel Stereo Mixer",
-        "description": "Two-input stereo mixer · 3.5mm AUX",
-        "producer": "Cooidea",
-        "releaseYear": null,
-        "image": {
-            "src": "/gear/cooidea-mixer.jpg",
-            "alt": "Cooidea 2-Channel Stereo Mixer product view",
-            "sourceUrl": "https://m.media-amazon.com/images/I/61rF7pKG%2BSL._AC_SS600_.jpg"
-        },
-        "specs": {
-            "Type": "Stereo audio mixer",
-            "Channels": "2 inputs, 1 output",
-            "Connections": "3.5 mm AUX",
-            "Housing": "Metal"
-        },
-        "sources": [
-            {
-                "label": "Product information",
-                "url": "https://www.amazon.com/dp/B0DDH2DH5H"
-            }
-        ],
-        "acquireDate": "2025-12-29",
-        "active": true
-    },
-    {
-        "category": "desk",
-        "subtype": "mixer",
-        "make": "LZSIG",
-        "model": "LMIX1 4-Channel Stereo Mixer",
-        "description": "Four-input stereo line mixer",
-        "producer": "LZSIG",
-        "releaseYear": null,
-        "image": {
-            "src": "/gear/lzsig-mixer.jpg",
-            "alt": "LZSIG LMIX1 4-Channel Stereo Mixer product view",
-            "sourceUrl": "https://m.media-amazon.com/images/I/712kC2bCelL.jpg"
-        },
-        "specs": {
-            "Type": "Stereo line mixer",
-            "Channels": "4 inputs",
-            "Input connections": "1/4-inch and 1/8-inch TS / TRS",
-            "Output connections": "1/4-inch and 1/8-inch TS / TRS"
-        },
-        "sources": [
-            {
-                "label": "Product information",
-                "url": "https://www.amazon.com/dp/B096462RCT"
-            }
-        ],
-        "acquireDate": "2026-03-19",
-        "active": true
-    },
 
     // ── Phone ──────────────────────────────────────────────────────
     {

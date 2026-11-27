@@ -2,7 +2,7 @@
 
 The product records and per-image source URLs are in `content/uses.ts`. Images are stored locally so the Uses page does not depend on third-party image hosts at runtime. Product photos illustrate the model; confirmed color variants are recorded below. Copyright remains with the respective image owners. Custom PC photos illustrate the named cases; the popover explicitly identifies them as case photos.
 
-The Dell desktop, monitor, keyboard and mouse were used from 2008 until September 2013. Josh remembers a Pentium 4 tower with 256MB RAM but does not recall the exact models. At his request, real Dell products from the period provide approximate model names and photos. `modelApproximate` adds an “(approx.)” label wherever the products appear, and the details explain that the exact model is not recalled. Peripheral specifications describe the reference products, rather than a confirmed identification of his equipment. The 2008 date retains year precision instead of assigning an acquisition month.
+The Dell desktop, monitor, keyboard and mouse were used from 2008 until September 2013. Josh remembers a Pentium 4 tower with 256MB RAM but does not recall the exact models. At his request, real Dell products from the period provide approximate model names and photos. `modelApproximate` retains that provenance, and the details explain that the exact model is not recalled. Display names omit the “(approx.)” qualifier at Josh’s request. Peripheral specifications describe the reference products, rather than a confirmed identification of his equipment. The 2008 date retains year precision instead of assigning an acquisition month.
 
 The Dimension 2400 reference is documented in Dell’s August 2003 setup guide and original owner’s manual. Its product photo comes from the ManualsLib model catalog. Processor and memory remain Josh’s remembered configuration; no clock speed, storage, graphics card or operating system is inferred.
 
@@ -18,9 +18,8 @@ The Polar White DS Lite photo is the published transparent derivative by User:Ha
 
 ## Background removal
 
-The built-in imagegen tool produced transparent cutouts for these nine assets from the original photos, preserving product design and screen content:
+The built-in imagegen tool produced transparent cutouts for these eight assets from the original photos, preserving product design and screen content:
 
-- `public/gear/lg-25um57.png`
 - `public/gear/lg-29um67.png`
 - `public/gear/lg-34gp63a.png`
 - `public/gear/lg-banter-black.png`
@@ -65,8 +64,10 @@ The AV display category groups microphones and webcams; Audio contains headphone
 
 The black IKEA BEKANT corner desk was acquired in September 2018 and retired when the VIVO frame arrived on July 14, 2020, based on Josh’s supplied history. Its image comes from IKEA’s product catalog. The details identify the left-hand black-stained ash photo as a reference because the exact side and finish variant are unrecorded; height-adjustment type and dimensions are not inferred.
 
-The approved Amazon-backed additions use local, model-specific product photos with source URLs on each record. The Canon, LG, Samsung, Shure, Logitech, VIVO, Ergodriven and HumanCentric assets come from manufacturer sources. The Sennheiser and Pixel Buds photos come from retailer product imagery; the KZ image comes from its brand storefront. The Upperizon and AOOCOO images come from the exact public product listings. Photos retain their source backgrounds and are not generated substitutes. Release years stay unconfirmed unless verified independently of the purchase date.
+Josh bought the IKEA RENBERGET swivel chair in Bomstad black with the desk in September 2018 and supplied its IKEA product link to identify the model. IKEA’s product photo illustrates it; its release year remains unconfirmed. The Secretlab TITAN Evo in Cookies & Cream replaced it in November 2021. Secretlab’s July 2021 launch announcement documents the release year, SoftWeave Plus fabric and features, and its color guide supplies the official photo. Chair size is unspecified. Both chairs appear in Desk with month-level ownership dates.
 
-The Upperizon export specifies 120Hz, 400 nits and 100% sRGB. Its current listing advertises different values, so the timeline preserves the purchased specifications and uses a dimension view without the conflicting marketing labels. Manufacturer setup imagery for the stacked VIVO mount illustrates the accessory, not Josh’s complete setup. The Cooidea and LZSIG mixer images come from their exact product listings; only the verified connection and channel details are included.
+The approved Amazon-backed additions use local, model-specific product photos with source URLs on each record. The Canon, LG, Samsung, Shure, Logitech and VIVO assets come from manufacturer sources. The Sennheiser and Pixel Buds photos come from retailer product imagery; the KZ image comes from its brand storefront. The Upperizon and AOOCOO images come from the exact public product listings. Photos retain their source backgrounds and are not generated substitutes. Release years stay unconfirmed unless verified independently of the purchase date.
+
+The Upperizon export specifies 120Hz, 400 nits and 100% sRGB. Its current listing advertises different values, so the timeline preserves the purchased specifications and uses a dimension view without the conflicting marketing labels. Manufacturer setup imagery for the stacked VIVO mount illustrates the accessory, not Josh’s complete setup.
 
 Ownership dates for the additions use the order timestamp converted to Eastern time. Josh confirmed the January 2026 desktop display replacement, retention of the portable monitor, independent replacement histories for over-ear headphones, earbuds and microphones, and ownership of the black VIVO frame only. No financial records or order identifiers are published.
