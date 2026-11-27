@@ -186,8 +186,6 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-period-presets button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--bg); }
 .music-year-filter { --music-year-thumb: #ffffff60; flex: 1; min-width: 0; border-left: 1px solid var(--line); padding-left: 28px; }
 .music-year-filter[data-active="true"] { --music-year-thumb: #fff; }
-.music-year-value { transition: color .2s; }
-.music-year-filter[data-active="true"] .music-year-value { color: var(--ink); }
 .music-year-slider { appearance: none; display: block; width: 100%; height: 28px; margin: 0; background: transparent; touch-action: pan-y; }
 .music-year-slider::-webkit-slider-runnable-track { height: 3px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 24%, transparent); }
 .music-year-slider::-moz-range-track { height: 3px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 24%, transparent); }

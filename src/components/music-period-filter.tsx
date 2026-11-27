@@ -24,7 +24,6 @@ export function MusicPeriodFilter({ period, periods, onChange }: { period: strin
   return <>
     <div className="music-period-presets" role="group" aria-label="Listening history presets">{presets.map(([value, label]) => <button key={value} type="button" aria-pressed={period === value} onClick={() => { setRememberedYear(year); finishScrubbing(); onChange(value); }}>{label}</button>)}</div>
     {year && <div className="music-year-filter" data-active={active}>
-      <div className="flex items-baseline justify-between gap-3 text-[13px] text-muted"><label htmlFor="music-history-year">Year</label><output htmlFor="music-history-year" className="music-year-value tabular-nums">{year}</output></div>
       <input id="music-history-year" className="music-year-slider" type="range" min={0} max={Math.max(0, years.length - 1)} step={1} value={index} aria-label="Listening history year" aria-valuetext={year} onPointerDown={() => selectYear(index)} onChange={event => selectYear(Number(event.currentTarget.value))} onPointerUp={finishScrubbing} onPointerCancel={finishScrubbing} onKeyDown={event => { if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "PageUp", "PageDown"].includes(event.key) && !active) selectYear(index); }} onKeyUp={finishScrubbing} onBlur={finishScrubbing} />
       <div aria-hidden="true" className="flex justify-between text-[12px] tabular-nums text-muted"><span>{years[0]}</span><span>{years.length > 1 ? years.at(-1) : ""}</span></div>
     </div>}
