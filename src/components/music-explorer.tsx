@@ -13,7 +13,6 @@ import { useMusicCollection } from "./use-music-collection";
 import { spotifyEntityUrl } from "@/lib/music/entity-links";
 
 const periodLabels: Record<string, string> = { all: "All time", "30d": "Last 30 days", "365d": "Last year" };
-const dateLabel = (value: string) => new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${value.slice(0, 10)}T12:00:00Z`));
 const safeImage = (value: string | null) => value && /^https:\/\/(i\.scdn\.co|image-cdn[^/]*\.spotifycdn\.com)\//.test(value) ? value : undefined;
 
 function Cover({ item, className = "" }: { item: RankedMusic; className?: string }) {
@@ -99,7 +98,6 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
 
     <section aria-labelledby="music-history-title" className="music-history flex min-w-0 flex-col gap-6"><div ref={historyHeading}><p className="music-label">The bigger picture</p><h2 id="music-history-title" className="mt-2 font-display text-[42px] leading-none">Listening <em className="text-accent">history.</em></h2></div><div className="music-history-filters" data-stuck={filtersStuck || undefined} role="group" aria-label="Filter listening history" style={headerHeight === null ? undefined : { "--music-header-offset": `${headerHeight}px` } as CSSProperties}><MusicPeriodFilter period={period} periods={manifest?.periods || ["all", "30d", "365d"]} onChange={filter} /></div>
       <div className="flex w-full min-w-0 flex-col gap-6"><div aria-live="polite" className={error || !loading && !stats?.plays ? "text-[13px] text-muted" : "sr-only"}>{loading ? "Loading listening history…" : error ? "The latest update is unavailable. Showing the saved collection." : stats?.plays ? `Showing listening history for ${periodLabels[current?.period || period] || period}.` : "Historical imports are being collected. The archive will grow as new plays arrive."}</div>
-      {stats?.firstListen && stats.lastListen && <p className="text-[13px] text-muted">Available records: {dateLabel(stats.firstListen)} through {dateLabel(stats.lastListen)}.</p>}
       <div aria-busy={loading} className="flex flex-col gap-5">
         <div className="music-stat-grid">{[["Recorded plays", stats?.plays || 0], ["Different artists", stats?.artists || 0], ["Different tracks", stats?.tracks || 0], ["Measured hours", Math.round((stats?.msPlayed || 0) / 3600000)]].map(([label, value]) => <div key={label} className="panel rounded-[20px] p-5 sm:p-6"><p className="music-label">{label}</p><p className="mt-3 font-display text-[clamp(44px,5vw,64px)] leading-none tabular-nums">{label === "Measured hours" && !stats?.durationKnown ? <span className="text-muted">Pending</span> : <MusicNumber value={Number(value)} />}</p></div>)}</div>
         {current && <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]"><ListeningChart data={current} /><WeekdayChart data={current} /></div>}

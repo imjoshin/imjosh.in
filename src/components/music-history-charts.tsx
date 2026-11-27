@@ -3,6 +3,7 @@
 import { useId, useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { MusicDataset } from "@/lib/music/types";
 import { chartPointAt } from "@/lib/music/chart-interaction";
+import { listeningChartBuckets } from "@/lib/music/listening-chart";
 import { MusicChartTooltip } from "./music-chart-tooltip";
 import { MusicNumber, useMusicLineMotion, useMusicPresence } from "./music-motion";
 import { useMusicChartInteraction } from "./use-music-chart-interaction";
@@ -18,7 +19,7 @@ export function ListeningChart({ data }: { data: MusicDataset }) {
   const [active, setActive] = useState<string | null>(null);
   const months = data.stats.months;
   const daily = data.period === "30d";
-  const buckets = daily ? (data.stats.days || []).map(day => ({ key: day.date, plays: day.plays })) : months.map(month => ({ key: month.month, plays: month.plays }));
+  const buckets = listeningChartBuckets(data);
   const label = daily ? dayLabel : monthLabel;
   const index = active === null || !buckets.length ? null : Math.max(0, buckets.findIndex(bucket => bucket.key === active));
   const selected = index === null ? null : buckets[index];
