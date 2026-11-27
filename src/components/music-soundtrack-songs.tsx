@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { MusicChartGranularity, MusicSongsDataset, SeasonalMetric } from "@/lib/music/types";
+import type { MusicSongsDataset, SoundtrackMetric } from "@/lib/music/types";
 import { MusicArtists, MusicLink } from "./music-entity-link";
 
 const number = (value: number) => new Intl.NumberFormat("en-US").format(value);
-export interface SongSelection { metric: SeasonalMetric; key: string; name: string; artists: string[]; season: string | null; granularity?: MusicChartGranularity }
+export interface SongSelection { metric: SoundtrackMetric; key: string; name: string; artists: string[]; bucket: string | null; period: string }
 
-export function MusicSeasonSongs({ selection, file, api, seasonLabel, close }: { selection: SongSelection; file?: string; api: boolean; seasonLabel?: string; close: () => void }) {
+export function MusicSoundtrackSongs({ selection, file, api, bucketLabel, rangeLabel, close }: { selection: SongSelection; file?: string; api: boolean; bucketLabel?: string; rangeLabel: string; close: () => void }) {
   const [loaded, setLoaded] = useState<{ file: string; data: MusicSongsDataset } | null>(null);
   const [failed, setFailed] = useState(false);
   const cache = useRef(new Map<string, MusicSongsDataset>());
@@ -27,19 +27,17 @@ export function MusicSeasonSongs({ selection, file, api, seasonLabel, close }: {
       .then(async response => {
         if (!response.ok) throw new Error("Song details unavailable");
         const data = await response.json() as MusicSongsDataset;
-        // Older genre files remain usable during a rolling source/data release.
-        const metric = data.metric || (data.genre ? "genres" : undefined), key = data.key || data.genre;
-        if (data.version !== 1 || !Array.isArray(data.tracks) || !data.entities || metric !== selection.metric || key !== selection.key) throw new Error("Invalid song details");
+        const metric = data.metric, key = data.key;
+        if (data.version !== 1 || !Array.isArray(data.tracks) || !data.entities || metric !== selection.metric || key !== selection.key || data.period !== selection.period) throw new Error("Invalid song details");
         if (request.signal.aborted) return;
-        const normalized = { ...data, metric, key } as MusicSongsDataset;
-        cache.current.set(file, normalized);
+        cache.current.set(file, data);
         while (cache.current.size > 8) cache.current.delete(cache.current.keys().next().value!);
-        setLoaded({ file, data: normalized });
+        setLoaded({ file, data });
       }).catch(() => { if (!cancelled) setFailed(true); })
       .finally(() => clearTimeout(timeout));
     return () => { cancelled = true; request.abort(); clearTimeout(timeout); };
-  }, [file, api, selection.metric, selection.key]);
-  useEffect(() => { scroller.current?.scrollTo({ top: 0 }); }, [selection.metric, selection.key, selection.season]);
+  }, [file, api, selection.metric, selection.key, selection.period]);
+  useEffect(() => { scroller.current?.scrollTo({ top: 0 }); }, [selection.metric, selection.key, selection.bucket]);
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
       const header = document.querySelector(".site-header")?.getBoundingClientRect();
@@ -50,21 +48,21 @@ export function MusicSeasonSongs({ selection, file, api, seasonLabel, close }: {
       panel.current?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "auto" });
     });
     return () => cancelAnimationFrame(frame);
-  }, [selection.metric, selection.key, selection.season]);
-  const data = loaded?.data.metric === selection.metric && loaded.data.key === selection.key ? loaded.data : null;
-  const songs = (data?.tracks || []).map(track => ({ ...track, count: selection.season ? (selection.granularity === "year" ? track.years?.[selection.season] : track.seasons[selection.season]) || 0 : track.plays, entity: data!.entities[track.key] })).filter(track => track.count > 0 && track.entity).sort((a, b) => b.count - a.count || a.entity.name.localeCompare(b.entity.name) || a.key.localeCompare(b.key));
+  }, [selection.metric, selection.key, selection.bucket]);
+  const data = loaded && loaded.file === file && loaded.data.metric === selection.metric && loaded.data.key === selection.key && loaded.data.period === selection.period ? loaded.data : null;
+  const songs = (data?.tracks || []).map(track => ({ ...track, count: selection.bucket ? track.buckets[selection.bucket] || 0 : track.plays, entity: data!.entities[track.key] })).filter(track => track.count > 0 && track.entity).sort((a, b) => b.count - a.count || a.entity.name.localeCompare(b.entity.name) || a.key.localeCompare(b.key));
   const updating = !!file && loaded?.file !== file && !failed;
-  return <aside ref={panel} className="music-season-songs" role="region" aria-label={`${selection.name} songs`} onKeyDown={event => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); close(); } }}>
-    <div className="music-season-songs-inner">
+  return <aside ref={panel} className="music-soundtrack-songs" role="region" aria-label={`${selection.name} songs`} onKeyDown={event => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); close(); } }}>
+    <div className="music-soundtrack-songs-inner">
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0"><p className="music-label">{selection.season ? seasonLabel : "All time"}</p><h3 ref={heading} tabIndex={-1} className="mt-2 break-words font-display text-[28px] leading-none">{selection.name}</h3>{selection.artists.length > 0 && <p className="mt-2 text-[12px] text-muted"><MusicArtists names={selection.artists} details={data?.entities} /></p>}</div>
+        <div className="min-w-0"><p className="music-label">{selection.bucket ? bucketLabel : rangeLabel}</p><h3 ref={heading} tabIndex={-1} className="mt-2 break-words font-display text-[28px] leading-none">{selection.name}</h3>{selection.artists.length > 0 && <p className="mt-2 text-[12px] text-muted"><MusicArtists names={selection.artists} details={data?.entities} /></p>}</div>
         <button type="button" className="shrink-0 rounded-md px-2 py-1 text-[13px] text-muted hover:text-ink" onClick={close} aria-label="Close song list">Close</button>
       </div>
       <p className="mt-3 text-[13px] text-muted" aria-live="polite">{data ? `${number(songs.reduce((sum, song) => sum + song.count, 0))} plays · ${number(songs.length)} songs` : "Songs in this selection"}</p>
-      <div ref={scroller} className="music-season-song-list mt-4" role="region" tabIndex={0} aria-label="Selected songs" aria-busy={updating}>
+      <div ref={scroller} className="music-soundtrack-song-list mt-4" role="region" tabIndex={0} aria-label="Selected songs" aria-busy={updating}>
         {updating && <p role="status" className="pb-3 text-[13px] text-muted">{data ? "Updating songs…" : "Loading songs…"}</p>}
         {failed ? <p role="status" className="text-[13px] text-muted">Song details are unavailable. Close and select this entry to retry.</p> : !file ? <p className="text-[13px] text-muted">Song details are being updated.</p> : data && !songs.length ? <p className="text-[13px] text-muted">No recorded songs for this selection.</p> : null}
-        <ol>{songs.map(song => <li key={song.key} className="music-season-song">
+        <ol>{songs.map(song => <li key={song.key} className="music-soundtrack-song">
           <span className="music-cover h-9 w-9 shrink-0 rounded-md" aria-hidden="true">{song.entity.image ? <img src={song.entity.image} width="36" height="36" alt="" loading="lazy" /> : <span className="text-[24px]">{song.entity.name.slice(0, 1)}</span>}</span>
           <div className="min-w-0 flex-1"><MusicLink entity={song.entity} details={song.entity} className="block w-fit max-w-full truncate text-[14px] font-medium">{song.entity.name}</MusicLink><p className="mt-1 truncate text-[12px] text-muted"><MusicArtists names={song.entity.artists || []} details={data?.entities} /></p></div>
           <span className="shrink-0 text-[13px] tabular-nums text-muted">{number(song.count)}<span className="sr-only"> plays</span></span>

@@ -217,9 +217,9 @@ test("scheduled publication uses committed genres everywhere, falls back to Spot
   assert.equal(stats?.stats.genreUnknown, 0);
   const entities = await readJson<MusicEntityDataset>(publicStore, first.manifest.files.entities);
   assert.deepEqual(Object.values(entities!.entities).find(e => e.kind === "track")?.genres, ["indie pop", "synthpop"]);
-  const seasons = await readJson<{ metrics: { genres: { series: { name: string }[] } } }>(publicStore, first.manifest.files["all/seasons"]);
-  assert.ok(seasons?.metrics.genres.series.some(s => s.name === "synthpop"));
-  assert.ok(Object.keys(first.manifest.files).some(key => key.startsWith("all/genre/")));
+  const soundtrack = await readJson<{ metrics: { genres: { series: { name: string }[] } } }>(publicStore, first.manifest.files["all/soundtrack/all"]);
+  assert.ok(soundtrack?.metrics.genres.series.some(s => s.name === "synthpop"));
+  assert.ok(Object.keys(first.manifest.files).some(key => key.startsWith("all/soundtrack/all/genre/")));
   catalog.artists.artist.genres = ["children's music"];
   const filtered = await publishMusic(privateStore, publicStore, now, catalog);
   assert.equal((await readJson<MusicDataset>(publicStore, filtered.manifest.files["all/all"]))?.stats.plays, 0);

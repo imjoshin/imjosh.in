@@ -109,51 +109,47 @@ export interface MusicManifest {
   notes: string[];
 }
 
-export type SeasonalMetric = "genres" | "artists" | "albums";
-export type MusicChartGranularity = "year" | "season";
-export interface MusicSeason { key: string; label: string }
-export interface SeasonalSeries {
+export type SoundtrackMetric = "genres" | "artists" | "albums";
+export type MusicChartGranularity = "day" | "month" | "year";
+export interface MusicBucket { key: string; label: string }
+export interface SoundtrackSeries {
   key: string;
   name: string;
   artists: string[];
   url?: string | null;
-  /** Recorded plays for every period, including periods outside this series' top five. */
+  /** Qualifying plays per bucket, including buckets outside this series' top five; lower counts are zero. */
   plays: number[];
 }
-export interface SeasonalMetricData {
-  series: SeasonalSeries[];
+export interface SoundtrackMetricData {
+  series: SoundtrackSeries[];
   classifiedPlays: number;
   unclassifiedPlays: number;
 }
-export interface MusicSeasonalDataset {
+export interface MusicSoundtrackDataset {
   version: 1;
   generatedAt: string;
   timezone: string;
   platform: MusicPlatform | "all";
-  seasons: MusicSeason[];
-  metrics: Record<SeasonalMetric, SeasonalMetricData>;
-  /** Calendar-year totals ranked independently of the seasonal cutoff. Absent in older summaries. */
-  annual?: { years: MusicSeason[]; metrics: Record<SeasonalMetric, SeasonalMetricData> };
+  period: string;
+  granularity: MusicChartGranularity;
+  buckets: MusicBucket[];
+  metrics: Record<SoundtrackMetric, SoundtrackMetricData>;
   minimumPlays?: number;
-  songFiles?: Partial<Record<SeasonalMetric, Record<string, string>>>;
-  /** Kept for clients opened before artist and album song lists were added. */
-  genreFiles?: Record<string, string>;
+  songFiles?: Partial<Record<SoundtrackMetric, Record<string, string>>>;
 }
 
 export interface MusicSongCounts {
   key: string;
   plays: number;
-  seasons: Record<string, number>;
-  years?: Record<string, number>;
+  buckets: Record<string, number>;
 }
 
 export interface MusicSongsDataset {
   version: 1;
   generatedAt: string;
-  metric: SeasonalMetric;
+  period: string;
+  metric: SoundtrackMetric;
   key: string;
-  /** Legacy genre clients use this field instead of metric/key. */
-  genre?: string;
   tracks: MusicSongCounts[];
   entities: Record<string, MusicEntity>;
 }

@@ -7,7 +7,7 @@ import { aggregateMusic } from "../src/lib/music/aggregate.ts";
 import { publishMusic } from "../scripts/music/publish.ts";
 import { readJson, saveListens, writeJson, type MusicStore } from "../scripts/music/store.ts";
 import { spotifyListen } from "../src/lib/music/normalize.ts";
-import type { MusicDataset, MusicEntityDataset, MusicManifest, MusicPlaybackSnapshot, MusicSeasonalDataset, SpotifySnapshot } from "../src/lib/music/types.ts";
+import type { MusicDataset, MusicEntityDataset, MusicManifest, MusicPlaybackSnapshot, MusicSoundtrackDataset, SpotifySnapshot } from "../src/lib/music/types.ts";
 
 const now = new Date("2026-11-26T20:00:00Z");
 const source = (): SpotifyPlaybackSource => ({ checkedAt: now.toISOString(), data: { is_playing: true, currently_playing_type: "track", progress_ms: 30000, device: { is_private_session: false, id: "PRIVATE-DEVICE", name: "PRIVATE-NAME" }, item: { type: "track", id: "aaaaaaaaaaaaaaaaaaaaaa", name: "Song", duration_ms: 200000, artists: [{ name: "Artist" }], album: { name: "Album", images: [{ url: "https://i.scdn.co/image/cover" }] } } } });
@@ -69,8 +69,8 @@ test("publication shows kids and Disney playback while keeping history, charts, 
     assert.equal(history?.stats.plays, 0);
     assert.deepEqual(history?.stats.topTracks, []); assert.deepEqual(history?.stats.topArtists, []); assert.deepEqual(history?.stats.topAlbums, []);
     assert.deepEqual(history?.stats.months, []); assert.equal(history?.stats.weekdays.reduce((sum, count) => sum + count, 0), 0);
-    const seasons = await readJson<MusicSeasonalDataset>(publicStore, manifest.files["all/seasons"]);
-    for (const metric of Object.values(seasons!.metrics)) assert.deepEqual(metric.series, []);
+    const soundtrack = await readJson<MusicSoundtrackDataset>(publicStore, manifest.files["all/soundtrack/all"]);
+    for (const metric of Object.values(soundtrack!.metrics)) assert.deepEqual(metric.series, []);
     const favorites = await readJson<SpotifySnapshot>(publicStore, manifest.files.spotify);
     assert.deepEqual(favorites?.ranges.short_term.tracks, []);
     const entities = await readJson<MusicEntityDataset>(publicStore, manifest.files.entities);
@@ -114,10 +114,11 @@ test("publication keeps the last playback across unavailable updates until Spoti
 
 test("a refresh loads a complete collection, caches unchanged files, and rejects incomplete revisions", async () => {
   const all = aggregateMusic([], now), cache = new Map<string, unknown>();
-  const names = ["1", "2", "3", "4", "5"].map(value => `datasets/${value.repeat(24)}.json`);
-  const manifest: MusicManifest = { ...all.manifest, files: { "all/30d": names[0], "all/all": names[4], spotify: names[1], "all/seasons": names[2], playback: names[3] } };
-  const payloads = new Map<string, unknown>([["manifest.json", manifest], [names[0], all.datasets["all/30d"]], [names[1], { generatedAt: now.toISOString(), ranges: {}, playlists: [] }], [names[2], { version: 1, seasons: [], metrics: {} }], [names[3], publicSpotifyPlayback(source(), now)], [names[4], all.datasets["all/all"]]]);
+  const names = ["1", "2", "3", "4", "5", "6"].map(value => `datasets/${value.repeat(24)}.json`);
+  const manifest: MusicManifest = { ...all.manifest, files: { "all/30d": names[0], "all/all": names[4], spotify: names[1], "all/soundtrack/30d": names[2], "all/soundtrack/all": names[5], playback: names[3] } };
+  const payloads = new Map<string, unknown>([["manifest.json", manifest], [names[0], all.datasets["all/30d"]], [names[1], { generatedAt: now.toISOString(), ranges: {}, playlists: [] }], [names[2], { version: 1, platform: "all", period: "30d", granularity: "day", buckets: [], metrics: {} }], [names[3], publicSpotifyPlayback(source(), now)], [names[4], all.datasets["all/all"]]]);
   const calls: string[] = [];
+  payloads.set(names[5], { version: 1, platform: "all", period: "all", granularity: "year", buckets: [], metrics: {} });
   const reader: MusicJsonReader = async <T,>(file: string) => { calls.push(file); if (!payloads.has(file)) throw new Error("Missing dataset"); return payloads.get(file) as T; };
   const signal = new AbortController().signal;
   const initial = await readMusicCollection(reader, "30d", signal, cache);
@@ -127,6 +128,10 @@ test("a refresh loads a complete collection, caches unchanged files, and rejects
   assert.equal(again.data, initial.data); assert.deepEqual(calls, ["manifest.json"]);
   const allTime = await readMusicCollection(reader, "all", signal, cache);
   assert.equal(allTime.data?.period, "all");
+  assert.equal(allTime.soundtrack?.period, "all");
+  assert.equal(allTime.soundtrack?.granularity, "year");
+  payloads.set(names[5], { ...allTime.soundtrack, period: "30d" });
+  await assert.rejects(readMusicCollection(reader, "all", signal, new Map()), /Soundtrack history does not match/);
   payloads.set("manifest.json", { ...manifest, files: { ...manifest.files, playback: "datasets/ffffffffffffffffffffffff.json" } });
   await assert.rejects(readMusicCollection(reader, "30d", signal, cache), /Missing dataset/);
   assert.equal(initial.data?.period, "30d");

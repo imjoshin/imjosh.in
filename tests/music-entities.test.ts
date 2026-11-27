@@ -4,9 +4,9 @@ import { aggregateEntities } from "../src/lib/music/entities.ts";
 import { directSpotifyUrl, musicEntityKey, spotifyEntityUrl } from "../src/lib/music/entity-links.ts";
 import { musicTrack, spotifyListen } from "../src/lib/music/normalize.ts";
 import { aggregateMusic } from "../src/lib/music/aggregate.ts";
-import { aggregateSeasons } from "../src/lib/music/seasons.ts";
+import { aggregateSoundtrack } from "../src/lib/music/soundtrack.ts";
 import type { Listen } from "../src/lib/music/types.ts";
-import type { MusicDataset, MusicEntityDataset, MusicSongsDataset, MusicManifest, MusicSeasonalDataset } from "../src/lib/music/types.ts";
+import type { MusicDataset, MusicEntityDataset, MusicSongsDataset, MusicManifest, MusicSoundtrackDataset } from "../src/lib/music/types.ts";
 import { publishMusic } from "../scripts/music/publish.ts";
 import { readJson, saveListens, writeJson, type MusicStore } from "../scripts/music/store.ts";
 
@@ -33,12 +33,12 @@ test("entity totals join platforms, deduplicate credits, and use Eastern calenda
   for (const value of ["PRIVATE-RAW", "privateSession", "2024-01-01T02", "Kids", "Disney", "2030-"]) assert.equal(text.includes(value), false);
 });
 
-test("album totals combine guest tracks using actual album artists across rankings, seasons, and hover cards", () => {
+test("album totals combine guest tracks using actual album artists across rankings, soundtrack, and hover cards", () => {
   const rows = [...Array.from({ length: 11 }, (_, i) => event("solo-" + i, "2026-11-24T12:00:00Z")), event("guest", "2026-11-25T12:00:00Z", ["Artist", "Guest"])];
   const album = aggregateEntities(rows, [], [], now).entities[musicEntityKey("album", "Album", ["Artist"])];
   assert.equal(album.plays, 12); assert.equal(album.tracks, 2);
   assert.equal(aggregateMusic(rows, now).datasets["all/all"].stats.topAlbums.length, 1);
-  assert.deepEqual(aggregateSeasons(rows, now)["all/seasons"].metrics.albums.series[0].plays, [12]);
+  assert.deepEqual(aggregateSoundtrack(rows, now)["all/soundtrack/all"].metrics.albums.series[0].plays, [12]);
 });
 
 test("affinity metadata supplies zero-recorded-history cards without publishing the private library", () => {
@@ -80,14 +80,13 @@ test("publication supplies direct links and lazy genre, artist, and album song d
   assert.equal(stats.topTracks[0].url, `https://open.spotify.com/track/${trackId}`);
   assert.equal(stats.topArtists[0].url, `https://open.spotify.com/artist/${artistId}`);
   assert.equal(stats.topAlbums[0].url, `https://open.spotify.com/album/${albumId}`);
-  const seasonal = (await readJson<MusicSeasonalDataset>(publicStore, manifest.files["all/seasons"]))!;
-  assert.equal(seasonal.metrics.albums.series[0].url, stats.topAlbums[0].url);
+  const soundtrack = (await readJson<MusicSoundtrackDataset>(publicStore, manifest.files["all/soundtrack/all"]))!;
+  assert.equal(soundtrack.metrics.albums.series[0].url, stats.topAlbums[0].url);
   const entities = (await readJson<MusicEntityDataset>(publicStore, manifest.files.entities))!;
   assert.equal(Object.values(entities.entities).length, 3);
   assert.equal(JSON.stringify(entities).includes("PRIVATE-CATALOG-FIELD"), false);
-  assert.equal(seasonal.genreFiles!.indie, seasonal.songFiles!.genres!.indie);
   for (const [metric, key] of [["genres", "indie"], ["artists", "artist"], ["albums", musicEntityKey("album", "Album", ["Artist"])]] as const) {
-    const songFile = seasonal.songFiles![metric]![key];
+    const songFile = soundtrack.songFiles![metric]![key];
     assert.ok(Object.values(manifest.files).includes(songFile));
     const songs = (await readJson<MusicSongsDataset>(publicStore, songFile))!;
     assert.equal(songs.metric, metric); assert.equal(songs.key, key);
@@ -99,31 +98,29 @@ test("publication supplies direct links and lazy genre, artist, and album song d
   }
 });
 
-test("annual-only soundtrack entries publish song files, direct links, and year-specific counts", async () => {
+test("Yearly soundtrack entries publish song files, direct links, and year-specific counts", async () => {
   const memory = (): MusicStore => {
     const values = new Map<string, Uint8Array>();
     return { async get(key) { return values.get(key) || null; }, async set(key, value) { values.set(key, value); }, async list(prefix) { return [...values.keys()].filter(key => key.startsWith(prefix)); } };
   };
   const privateStore = memory(), publicStore = memory();
-  await saveListens(privateStore, ["2025-03-15T12:00:00Z", "2025-06-15T12:00:00Z"].flatMap((date, season) => Array.from({ length: 6 }, (_, i) => {
-    const row = event(`${season}-${i}`, date); row.track.genres = ["indie"]; return row;
+  await saveListens(privateStore, ["2025-03-15T12:00:00Z", "2025-06-15T12:00:00Z"].flatMap((date, month) => Array.from({ length: 6 }, (_, i) => {
+    const row = event(`${month}-${i}`, date); row.track.genres = ["indie"]; return row;
   })));
   const artistId = "aaaaaaaaaaaaaaaaaaaaaa";
   await writeJson(privateStore, "catalog/spotify-tracks.json.gz", { track: { name: "Song", artists: [{ id: artistId, name: "Artist" }] } });
   await publishMusic(privateStore, publicStore, now);
   const manifest = (await readJson<MusicManifest>(publicStore, "manifest.json"))!;
-  const data = (await readJson<MusicSeasonalDataset>(publicStore, manifest.files["all/seasons"]))!;
+  const data = (await readJson<MusicSoundtrackDataset>(publicStore, manifest.files["all/soundtrack/all"]))!;
   const entities = (await readJson<MusicEntityDataset>(publicStore, manifest.files.entities))!;
   for (const metric of ["genres", "artists", "albums"] as const) {
-    assert.equal(data.metrics[metric].series.length, 0);
-    const line = data.annual!.metrics[metric].series[0];
+    const line = data.metrics[metric].series[0];
     assert.deepEqual(line.plays, [12]);
     const songs = (await readJson<MusicSongsDataset>(publicStore, data.songFiles![metric]![line.key]))!;
     assert.equal(songs.tracks[0].plays, 12);
-    assert.deepEqual(songs.tracks[0].years, { "2025": 12 });
-    assert.deepEqual(songs.tracks[0].seasons, { "2025-spring": 6, "2025-summer": 6 });
+    assert.deepEqual(songs.tracks[0].buckets, { "2025": 12 });
   }
-  assert.equal(data.annual!.metrics.artists.series[0].url, `https://open.spotify.com/artist/${artistId}`);
+  assert.equal(data.metrics.artists.series[0].url, `https://open.spotify.com/artist/${artistId}`);
   assert.ok(entities.entities[musicEntityKey("artist", "Artist")]);
 });
 

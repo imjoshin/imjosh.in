@@ -7,11 +7,11 @@ import { zipSync, strToU8 } from "fflate";
 import { spotifyListen, googleListen, googleLibraryTrack, musicTrack, deduplicate, aggregationListens, digest } from "../src/lib/music/normalize.ts";
 import { aggregateMusic } from "../src/lib/music/aggregate.ts";
 import { isKidsGenre, isDisneyMusic } from "../src/lib/music/genres.ts";
-import { aggregateSeasons, musicSeason } from "../src/lib/music/seasons.ts";
+import { aggregateSoundtrack } from "../src/lib/music/soundtrack.ts";
 import { importMusic } from "../scripts/music/import.ts";
 import { localStore, allListens, readJson, writeJson, saveListens } from "../scripts/music/store.ts";
 import { publishMusic } from "../scripts/music/publish.ts";
-import type { Listen, MusicDataset, MusicEntityDataset, MusicManifest, MusicSeasonalDataset } from "../src/lib/music/types.ts";
+import type { Listen, MusicDataset, MusicEntityDataset, MusicManifest, MusicSoundtrackDataset } from "../src/lib/music/types.ts";
 
 const exportRow = { ts: "2026-06-02T15:03:00Z", ms_played: 180000, master_metadata_track_name: "A Song", master_metadata_album_artist_name: "An Artist", master_metadata_album_album_name: "An Album", spotify_track_uri: "spotify:track:abc123", ip_addr: "PRIVATE-IP", username: "PRIVATE-NAME" };
 const listen = (overrides: Partial<Listen> = {}): Listen => ({ ...spotifyListen(exportRow, "private/source")!, ...overrides });
@@ -124,51 +124,9 @@ test("Disney credits and soundtrack albums are excluded without altering private
   const rows = [...Array.from({ length: 11 }, (_, i) => listen({ id: `allowed-${i}` })), ...disney.map((track, i) => listen({ id: `disney-${i}`, track }))];
   const before = JSON.stringify(rows);
   for (const data of Object.values(aggregateMusic(rows, now).datasets)) assert.equal(data.stats.plays, 11);
-  const seasons = aggregateSeasons(rows, now)["all/seasons"];
-  assert.deepEqual(seasons.metrics.artists.series.map(s => s.name), ["An Artist"]);
+  const soundtrack = aggregateSoundtrack(rows, now)["all/soundtrack/all"];
+  assert.deepEqual(soundtrack.metrics.artists.series.map(s => s.name), ["An Artist"]);
   assert.equal(JSON.stringify(rows), before);
-});
-
-test("seasons use Eastern boundaries and December belongs to the following winter", () => {
-  assert.equal(musicSeason(new Date("2024-12-01T04:59:59Z")).label, "2024 Fall");
-  assert.equal(musicSeason(new Date("2024-12-01T05:00:00Z")).label, "2025 Winter");
-  assert.equal(musicSeason(new Date("2025-03-01T04:59:59Z")).label, "2025 Winter");
-  assert.equal(musicSeason(new Date("2025-03-01T05:00:00Z")).label, "2025 Spring");
-  assert.equal(musicSeason(new Date("2025-06-01T04:00:00Z")).label, "2025 Summer");
-  const rows = ["2024-09-01T12:00:00Z", "2025-03-01T12:00:00Z"].flatMap((playedAt, season) => Array.from({ length: 11 }, (_, i) => listen({ id: season + ":" + i, playedAt })));
-  const result = aggregateSeasons(rows, now)["all/seasons"];
-  assert.deepEqual(result.seasons.map(s => s.label), ["2024 Fall", "2025 Winter", "2025 Spring"]);
-  assert.deepEqual(result.metrics.artists.series[0].plays, [11, 0, 11]);
-});
-
-test("seasonal charts select the union of EACH season's top five and preserve every selected timeline", () => {
-  const dates = ["2024-03", "2024-06", "2024-09", "2024-12", "2025-03", "2025-06", "2025-09", "2025-12"];
-  const rows: Listen[] = [];
-  const add = (season: number, name: string, times: number) => { for (let i = 0; i < times; i++) rows.push(listen({ id: `${season}-${name}-${i}`, playedAt: `${dates[season]}-15T12:00:00Z`, track: musicTrack(name, [name, name], { album: name, genres: [name, name.toUpperCase(), ` ${name} `] }) })); };
-  for (let season = 0; season < dates.length; season++) {
-    for (let winner = 0; winner < 5; winner++) add(season, `winner-${season}-${winner}`, 12);
-    add(season, "never-a-seasonal-leader", 3);
-    if (season) add(season, "winner-0-0", 1);
-  }
-  rows.push(listen({ id: "unknown", playedAt: "2025-03-15T12:00:00Z", track: musicTrack("Unclassified", []) }));
-  rows.push(listen({ id: "future", playedAt: "2030-01-01T12:00:00Z" }));
-  rows.push(listen({ id: "private", privateSession: true }));
-  rows.push(listen({ id: "kids", track: musicTrack("Kids", ["Kids"], { genres: ["kids music"] }) }));
-  rows.push(listen({ id: "disney", track: musicTrack("Disney song", ["Disney"]) }));
-  const google = { ...rows[0], id: "google", platform: "google-play-music" as const, source: "takeout" as const };
-  rows.push(google);
-  const datasets = aggregateSeasons(rows, now);
-  for (const metric of ["genres", "artists", "albums"] as const) {
-    const data = datasets["all/seasons"].metrics[metric];
-    assert.equal(data.series.length, 40, metric);
-    assert.ok(!data.series.some(s => s.name === "never-a-seasonal-leader"));
-    assert.deepEqual(data.series.find(s => s.name === "winner-0-0")!.plays, [13, 0, 0, 0, 0, 0, 0, 0]);
-    assert.equal(data.unclassifiedPlays, 1);
-    assert.equal(datasets["spotify/seasons"].metrics[metric].series.find(s => s.name === "winner-0-0")!.plays[0], 12);
-    assert.equal(datasets["google-play-music/seasons"].metrics[metric].series.length, 0);
-  }
-  assert.equal(datasets["all/seasons"].seasons.length, 8);
-  assert.equal(aggregateSeasons([], now)["all/seasons"].metrics.genres.series.length, 0);
 });
 
 test("ZIP import preserves unsupported data and original bytes, reports malformed files, and publishes only aggregates", async t => {
@@ -188,8 +146,8 @@ test("ZIP import preserves unsupported data and original bytes, reports malforme
     const data = (await readJson<MusicDataset>(publicStore, file))!;
     const text = JSON.stringify(data); for (const secret of ["PRIVATE-IP", "PRIVATE-NAME", "rawRef", "private/source", "2026-06-02T15:03:00"]) assert.equal(text.includes(secret), false);
   }
-  const seasonal = await readJson<MusicSeasonalDataset>(publicStore, manifest.files["all/seasons"]);
-  assert.deepEqual(seasonal!.metrics.genres.series, []);
+  const soundtrack = await readJson<MusicSoundtrackDataset>(publicStore, manifest.files["all/soundtrack/all"]);
+  assert.deepEqual(soundtrack!.metrics.genres.series, []);
   // Updating only genre metadata must remove historical plays and provider rankings too.
   await writeJson(store, "catalog/genres.json", { "an artist": { genres: ["children's music"], provider: "test", fetchedAt: now.toISOString(), artistId: null } });
   await writeJson(store, "public/spotify.json", { generatedAt: now.toISOString(), ranges: { short_term: { tracks: [{ key: "song", name: "A Song", artists: ["An Artist"] }], artists: [{ key: "artist", name: "An Artist", artists: [] }] } }, playlists: [] });
@@ -216,7 +174,7 @@ test("ZIP import preserves unsupported data and original bytes, reports malforme
   await writeJson(store, "catalog/excluded-imports.json", { [raw[0]]: { reason: "User excluded this export", excludedAt: now.toISOString() } });
   await publishMusic(store, publicStore, now);
   const excluded = (await readJson<MusicManifest>(publicStore, "manifest.json"))!;
-  assert.equal((await readJson<MusicSeasonalDataset>(publicStore, excluded.files["all/seasons"]))!.seasons.length, 0);
+  assert.equal((await readJson<MusicSoundtrackDataset>(publicStore, excluded.files["all/soundtrack/all"]))!.buckets.length, 0);
   assert.equal((await allListens(store)).length, 1);
   const stream = await store.getStream!(raw[0]);
   await publicStore.setStream!("private-test-copy.zip", stream!, digest(bytes));

@@ -9,7 +9,7 @@ test("chart inspection clamps to available periods and works with a single point
   assert.equal(nearestChartIndex(.8, 1), 0);
 });
 
-test("seasonal hit testing retains overlapping series and ignores distant points and zero-only gaps", () => {
+test("soundtrack hit testing retains overlapping series and ignores distant points and zero-only gaps", () => {
   const series = Array.from({ length: 40 }, (_, i) => ({ key: `artist-${i}`, plays: [i < 3 ? 4 : 12, 0] }));
   assert.deepEqual(nearestChartSeries(series, 0, 4.1, .3).map(line => line.key), ["artist-0", "artist-1", "artist-2"]);
   assert.equal(nearestChartSeries(series, 0, 7, .3).length, 0);

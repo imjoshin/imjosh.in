@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
-import { type MusicDataset, type MusicEntityKind, type MusicManifest, type MusicSeasonalDataset, type RankedMusic, type SpotifySnapshot } from "@/lib/music/types";
+import { type MusicDataset, type MusicEntityKind, type MusicManifest, type MusicSoundtrackDataset, type RankedMusic, type SpotifySnapshot } from "@/lib/music/types";
 import { MusicSwap } from "./music-swap";
-import { MusicSeasonChart } from "./music-season-chart";
+import { MusicSoundtrackChart } from "./music-soundtrack-chart";
 import { ListeningChart, WeekdayChart } from "./music-history-charts";
 import { MusicNumber, useMusicListMotion } from "./music-motion";
 import { MusicArtists, MusicHoverProvider, MusicLink } from "./music-entity-link";
@@ -40,11 +40,11 @@ function Rotation({ items }: { items: RankedMusic[] }) {
   </article>)}</div></div>;
 }
 
-interface Props { initialManifest: MusicManifest | null; initialData: MusicDataset | null; initialSpotify: SpotifySnapshot | null; initialSeasons: MusicSeasonalDataset | null }
-export function MusicExplorer({ initialManifest, initialData, initialSpotify, initialSeasons }: Props) {
+interface Props { initialManifest: MusicManifest | null; initialData: MusicDataset | null; initialSpotify: SpotifySnapshot | null; initialSoundtrack: MusicSoundtrackDataset | null }
+export function MusicExplorer({ initialManifest, initialData, initialSpotify, initialSoundtrack }: Props) {
   const [period, setPeriod] = useState("30d");
   const [tab, setTab] = useState<"tracks" | "artists" | "albums">("tracks");
-  const { manifest, data, spotify, seasons, playback, error, loading, api } = useMusicCollection({ manifest: initialManifest, data: initialData, spotify: initialSpotify, seasons: initialSeasons, playback: null }, period);
+  const { manifest, data, spotify, soundtrack, playback, error, loading, api } = useMusicCollection({ manifest: initialManifest, data: initialData, spotify: initialSpotify, soundtrack: initialSoundtrack, playback: null }, period);
   const [headerHeight, setHeaderHeight] = useState<number | null>(null);
   const historyHeading = useRef<HTMLDivElement>(null);
   const [filtersStuck, setFiltersStuck] = useState(false);
@@ -103,7 +103,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
         {current && <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]"><ListeningChart data={current} /><WeekdayChart data={current} /></div>}
         <section className="panel rounded-[24px] p-5 sm:p-7" aria-labelledby="music-ranking-title"><div className="mb-5 flex flex-wrap items-center justify-between gap-4"><h2 id="music-ranking-title" className="font-display text-[36px] leading-none">The <em className="text-accent">favorites.</em></h2><div role="group" aria-label="Rank music by" className="music-tabs">{(["tracks", "artists", "albums"] as const).map(t => <button key={t} aria-pressed={tab === t} onClick={() => setTab(t)} className="capitalize">{t}</button>)}</div></div><Ranking kind={tab === "tracks" ? "track" : tab === "albums" ? "album" : "artist"} resetKey={`${period}:${current?.period}`} items={rankings.map(item => ({ ...item, key: `${tab}:${item.key}` }))} empty={stats?.plays ? "More metadata is needed for this view." : "The first chapters of this collection are still coming in."} /></section>
       </div>
-      <MusicSeasonChart data={seasons} api={api} loading={!seasons && loading} error={!seasons && error} />
+      <MusicSoundtrackChart data={soundtrack} period={period} api={api} loading={loading} error={error} />
       </div>
     </section>
     {spotify?.playlists.length ? <section aria-labelledby="music-playlists-title"><p className="music-label">Mixtapes, more or less</p><h2 id="music-playlists-title" className="mt-2 font-display text-[42px]">In the <em className="text-accent">collection.</em></h2><div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{spotify.playlists.slice(0, 9).map(p => <a key={p.id} className="panel flex items-center gap-4 rounded-[18px] p-4 hover:border-accent" href={p.url} target="_blank" rel="noopener noreferrer"><span className="music-playlist-icon" aria-hidden="true">♫</span><span className="min-w-0"><span className="block truncate font-medium">{p.name}</span><span className="mt-1 block text-[13px] text-muted"><MusicNumber value={p.tracks} /> tracks · Spotify</span></span><span className="sr-only"> (opens in a new tab)</span></a>)}</div></section> : null}

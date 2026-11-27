@@ -1,7 +1,7 @@
 export const nearestChartIndex = (fraction: number, count: number) => Math.max(0, Math.min(count - 1, Math.round(fraction * (count - 1))));
 
 export interface MusicChartPoint { t: number; x: number; y: number }
-/** Interpolate by the actual month/season, preserving every vertex when period boundaries change. */
+/** Interpolate by the bucket's date, preserving every vertex when period boundaries change. */
 export function chartPointAt(points: MusicChartPoint[], t: number): MusicChartPoint {
   if (!points.length) return { t, x: 0, y: 0 };
   if (t <= points[0].t) return { ...points[0], t };

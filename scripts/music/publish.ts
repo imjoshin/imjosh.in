@@ -1,5 +1,5 @@
 import { aggregateMusic } from "../../src/lib/music/aggregate.ts";
-import { aggregateSeasonSongs, aggregateSeasons, soundtrackSeries } from "../../src/lib/music/seasons.ts";
+import { aggregateSoundtrackSongs, aggregateSoundtrack } from "../../src/lib/music/soundtrack.ts";
 import { digest, musicTrack } from "../../src/lib/music/normalize.ts";
 import { allListens, readJson, writeJson, type MusicStore } from "./store.ts";
 import type { GenreIndex } from "./spotify.ts";
@@ -97,13 +97,12 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
       }
     }
   }
-  const seasonal = aggregateSeasons(verifiedRows, now);
-  const songGroups = aggregateSeasonSongs(verifiedRows, seasonal, now);
-  for (const [key, dataset] of Object.entries(seasonal)) {
+  const soundtrack = aggregateSoundtrack(verifiedRows, now);
+  const songGroups = aggregateSoundtrackSongs(verifiedRows, soundtrack, now);
+  for (const [key, dataset] of Object.entries(soundtrack)) {
     dataset.songFiles = { genres: {}, artists: {}, albums: {} };
-    dataset.genreFiles = dataset.songFiles.genres;
     for (const metric of ["genres", "artists", "albums"] as const) {
-      for (const line of soundtrackSeries(dataset, metric)) {
+      for (const line of dataset.metrics[metric].series) {
         const tracks = songGroups[key][metric][line.key] || [];
         const details: Record<string, MusicEntity> = {};
         for (const track of tracks) {
@@ -115,13 +114,13 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
             if (entities.entities[artistKey]) details[artistKey] = entities.entities[artistKey];
           }
         }
-        const payload: MusicSongsDataset = { version: 1, generatedAt: now.toISOString(), metric, key: line.key, ...(metric === "genres" ? { genre: line.key } : {}), tracks, entities: details };
-        dataset.songFiles[metric]![line.key] = await immutable(`${dataset.platform}/${metric.slice(0, -1)}/${digest(line.key).slice(0, 24)}`, payload);
+        const payload: MusicSongsDataset = { version: 1, generatedAt: now.toISOString(), period: dataset.period, metric, key: line.key, tracks, entities: details };
+        dataset.songFiles[metric]![line.key] = await immutable(`${key}/${metric.slice(0, -1)}/${digest(line.key).slice(0, 24)}`, payload);
       }
     }
   }
-  for (const dataset of Object.values(seasonal)) for (const metric of ["artists", "albums"] as const) for (const line of [...dataset.metrics[metric].series, ...(dataset.annual?.metrics[metric].series || [])]) line.url = entities.entities[musicEntityKey(metric === "artists" ? "artist" : "album", line.name, line.artists)]?.url || null;
-  for (const [key, value] of Object.entries({ ...result.datasets, ...seasonal })) {
+  for (const dataset of Object.values(soundtrack)) for (const metric of ["artists", "albums"] as const) for (const line of dataset.metrics[metric].series) line.url = entities.entities[musicEntityKey(metric === "artists" ? "artist" : "album", line.name, line.artists)]?.url || null;
+  for (const [key, value] of Object.entries({ ...result.datasets, ...soundtrack })) {
     await immutable(key, value);
   }
   // Count the complete approved history, but send hover details only for displayed music.
@@ -140,11 +139,11 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
       for (const item of ranked) include({ kind, ...item });
     }
   }
-  for (const dataset of Object.values(seasonal)) for (const metric of ["artists", "albums"] as const) {
-    for (const line of soundtrackSeries(dataset, metric)) include({ kind: metric === "artists" ? "artist" : "album", ...line });
+  for (const dataset of Object.values(soundtrack)) for (const metric of ["artists", "albums"] as const) {
+    for (const line of dataset.metrics[metric].series) include({ kind: metric === "artists" ? "artist" : "album", ...line });
   }
   await immutable("entities", { ...entities, entities: Object.fromEntries(Object.entries(entities.entities).filter(([key]) => visible.has(key))) });
-  manifest.notes.push("Tracks with known kids genres and identified Disney music are excluded from all summaries. Unclassified genres remain unknown.", "Soundtrack charts rank calendar years and seasons independently, retaining the union of each period's top five with at least 11 plays. Lower-volume entries are omitted from the graph. Genre, artist, and album song files retain all approved matching plays, including low-volume periods. Winter spans December through February and uses the January year.");
+  manifest.notes.push("Tracks with known kids genres and identified Disney music are excluded from all summaries. Unclassified genres remain unknown.", "Soundtrack charts follow the selected listening period: daily for the last 30 days, monthly for the last year or a calendar year, and yearly for all time. Each bucket contributes its top five with at least 11 plays. Song files retain all approved matching plays in the selected window, including low-volume buckets.");
   await writeJson(publicStore, "manifest.json", manifest);
   return { listens: verifiedRows.length, datasets: Object.keys(manifest.files).length, manifest };
 }
