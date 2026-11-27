@@ -5,7 +5,7 @@ import type { MusicDataset } from "@/lib/music/types";
 import { chartPointAt, musicLinePath } from "@/lib/music/chart-interaction";
 import { listeningChartBuckets } from "@/lib/music/listening-chart";
 import { MusicChartTooltip } from "./music-chart-tooltip";
-import { MusicNumber, useMusicLineMotion, useMusicPresence } from "./music-motion";
+import { useMusicLineMotion, useMusicPresence } from "./music-motion";
 import { useMusicChartInteraction } from "./use-music-chart-interaction";
 
 const number = (value: number) => new Intl.NumberFormat("en-US").format(value);
@@ -17,7 +17,6 @@ const dateTime = (date: string) => Date.parse(`${date.length === 7 ? `${date}-01
 export function ListeningChart({ data }: { data: MusicDataset }) {
   const id = useId().replaceAll(":", ""), tooltipId = `${id}-tooltip`, helpId = `${id}-help`;
   const [active, setActive] = useState<string | null>(null);
-  const months = data.stats.months;
   const daily = data.period === "30d";
   const buckets = listeningChartBuckets(data);
   const label = daily ? dayLabel : monthLabel;
@@ -56,7 +55,6 @@ export function ListeningChart({ data }: { data: MusicDataset }) {
       {selected && selectedPoint && <MusicChartTooltip id={tooltipId} title={label(selected.key)} rows={[{ key: selected.key, label: "Recorded plays", value: selected.plays }]} x={selectedPoint.x / 6} preferTop secondary={share(selected.plays, data.stats.plays)} />}
     </div>
     <div className="mt-1 flex justify-between text-[13px] text-muted"><span>{buckets[0] ? label(buckets[0].key) : daily ? "Daily history is on its way" : "History is on its way"}</span><span>{buckets.length > 1 ? label(buckets.at(-1)!.key) : ""}</span></div>
-    <details className="mt-3 text-[13px] text-muted"><summary className="cursor-pointer">View monthly counts</summary><ul className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1">{months.map(m => <li key={m.month} className="flex justify-between gap-2"><span>{monthLabel(m.month)}</span><span><MusicNumber value={m.plays} /></span></li>)}</ul></details>
   </figure>;
 }
 
@@ -78,6 +76,5 @@ export function WeekdayChart({ data }: { data: MusicDataset }) {
       </button>)}
       {active !== null && <MusicChartTooltip id={tooltipId} title={weekdays[active]} rows={[{ key: weekdays[active], label: "Recorded plays", value: data.stats.weekdays[active] }]} x={(active + .5) / 7 * 100} preferTop secondary={share(data.stats.weekdays[active], data.stats.plays)} />}
     </div>
-    <p className="mt-5 text-[13px] text-muted">Eastern Time.</p>
   </figure>;
 }
