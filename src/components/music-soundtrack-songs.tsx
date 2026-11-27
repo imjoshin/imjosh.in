@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { MusicSongsDataset, SoundtrackMetric } from "@/lib/music/types";
+import { musicPlaceholderStyle } from "@/lib/music/placeholder";
 import { MusicArtists, MusicLink } from "./music-entity-link";
 
 const number = (value: number) => new Intl.NumberFormat("en-US").format(value);
@@ -63,7 +64,7 @@ export function MusicSoundtrackSongs({ selection, file, api, bucketLabel, rangeL
         {updating && <p role="status" className="pb-3 text-[13px] text-muted">{data ? "Updating songs…" : "Loading songs…"}</p>}
         {failed ? <p role="status" className="text-[13px] text-muted">Song details are unavailable. Close and select this entry to retry.</p> : !file ? <p className="text-[13px] text-muted">Song details are being updated.</p> : data && !songs.length ? <p className="text-[13px] text-muted">No recorded songs for this selection.</p> : null}
         <ol>{songs.map(song => <li key={song.key} className="music-soundtrack-song">
-          <span className="music-cover h-9 w-9 shrink-0 rounded-md" aria-hidden="true">{song.entity.image ? <img src={song.entity.image} width="36" height="36" alt="" loading="lazy" /> : <span className="text-[24px]">{song.entity.name.slice(0, 1)}</span>}</span>
+          <span className="music-cover h-9 w-9 shrink-0 rounded-md" style={song.entity.image ? undefined : musicPlaceholderStyle(song.entity.name)} aria-hidden="true">{song.entity.image ? <img src={song.entity.image} width="36" height="36" alt="" loading="lazy" /> : <span className="text-[24px]">{song.entity.name.slice(0, 1)}</span>}</span>
           <div className="min-w-0 flex-1"><MusicLink entity={song.entity} details={song.entity} className="block w-fit max-w-full truncate text-[14px] font-medium">{song.entity.name}</MusicLink><p className="mt-1 truncate text-[12px] text-muted"><MusicArtists names={song.entity.artists || []} details={data?.entities} /></p></div>
           <span className="shrink-0 text-[13px] tabular-nums text-muted">{number(song.count)}<span className="sr-only"> plays</span></span>
         </li>)}</ol>

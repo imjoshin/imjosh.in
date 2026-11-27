@@ -12,13 +12,14 @@ import { findMusicArtistPhoto, MusicArtistBackground } from "./music-artist-back
 import { MusicPeriodFilter } from "./music-period-filter";
 import { useMusicCollection } from "./use-music-collection";
 import { spotifyEntityUrl } from "@/lib/music/entity-links";
+import { musicPlaceholderStyle } from "@/lib/music/placeholder";
 
 const periodLabels: Record<string, string> = { all: "All time", "30d": "Last 30 days", "365d": "Last year" };
 const safeImage = (value: string | null) => value && /^https:\/\/(i\.scdn\.co|image-cdn[^/]*\.spotifycdn\.com)\//.test(value) ? value : undefined;
 
 function Cover({ item, className = "" }: { item: RankedMusic; className?: string }) {
   const image = safeImage(item.image);
-  return <span className={`music-cover ${className}`}>{image ? <img src={image} alt="" loading="lazy" width="160" height="160" /> : <span aria-hidden="true">{item.name.slice(0, 1)}</span>}</span>;
+  return <span className={`music-cover ${className}`} style={image ? undefined : musicPlaceholderStyle(item.name)}>{image ? <img src={image} alt="" loading="lazy" width="160" height="160" /> : <span aria-hidden="true">{item.name.slice(0, 1)}</span>}</span>;
 }
 
 function Ranking({ items, empty, kind, resetKey }: { items: RankedMusic[]; empty: string; kind: MusicEntityKind; resetKey: string }) {
