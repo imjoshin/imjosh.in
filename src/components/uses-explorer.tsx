@@ -118,31 +118,35 @@ export function UsesExplorer({ initialMonth }: { initialMonth: string }) {
         </div>
       </div>
 
-      <section aria-label={`Equipment in ${monthLabel}`} className="@container">
-        <div className="flex flex-wrap justify-center gap-[14px] [--gear-columns:1] @min-[514px]:[--gear-columns:2] @min-[778px]:[--gear-columns:3] @min-[1042px]:[--gear-columns:4]">
-          {inventory.categories.map((category) => (
-            <article key={category.key} className="panel flex min-h-[120px] w-[calc((100%+14px)/var(--gear-columns)-14px)] min-w-0 shrink-0 flex-col gap-[14px] rounded-[20px] px-[22px] py-5">
-              <h2 className="eyebrow flex items-center gap-2.5"><GearCategoryIcon category={category.key} />{category.label}</h2>
-              <AnimatedGearItems items={category.items} emptyLabel={category.hasHistory ? "nothing currently" : "nothing yet"} month={month} direction={selection.direction} />
-            </article>
-          ))}
-        </div>
-      </section>
+      <div className={styles.inventoryLayout}>
+        <section aria-label={`Equipment in ${monthLabel}`} className="@container min-w-0 self-start">
+          <div className="flex flex-wrap justify-center gap-[14px] [--gear-columns:1] @min-[514px]:[--gear-columns:2] @min-[778px]:[--gear-columns:3]">
+            {inventory.categories.map((category) => (
+              <article key={category.key} className="panel flex min-h-[120px] w-[calc((100%+14px)/var(--gear-columns)-14px)] min-w-0 shrink-0 flex-col gap-[14px] rounded-[20px] px-[22px] py-5">
+                <h2 className="eyebrow flex items-center gap-2.5"><GearCategoryIcon category={category.key} />{category.label}</h2>
+                <AnimatedGearItems items={category.items} emptyLabel={category.hasHistory ? "nothing currently" : "nothing yet"} month={month} direction={selection.direction} />
+              </article>
+            ))}
+          </div>
+        </section>
 
-      <section className="panel flex flex-col gap-[14px] rounded-[20px] p-6" aria-labelledby="changes-title">
-        <h2 id="changes-title" className="eyebrow">Changes in {selectedYear}</h2>
-        <p className="sr-only" role="status">Showing {inventory.categories.reduce((sum, category) => sum + category.items.length, 0)} items in {monthLabel} and {changes.length} changes in {selectedYear}.</p>
-        {changes.length ? <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-x-7 gap-y-[10px]">
-          {changes.map((event) => <li key={`${event.date}:${event.op}:${itemId(event.item)}`} className={`grid grid-cols-[80px_18px_minmax(0,1fr)] items-baseline gap-2 text-base ${event.op === "+" ? "text-accent" : "text-muted"}`}>
-            <time dateTime={event.date} className="text-[13px] text-muted">{event.date.length === 4 ? event.date : months[Number(event.date.slice(5, 7)) - 1]}</time>
-            <span className="font-semibold" aria-label={event.op === "+" ? "Acquired" : "Retired"}>{event.op === "+" ? "+" : "−"}</span>
-            <GearDetails key={`${itemId(event.item)}:${selectedYear}`} item={event.item} className="flex items-start gap-2">
-              <span className="mt-[3px]"><GearCategoryIcon category={event.item.category === "microphone" ? "microphone" : event.category} muted={event.op === "-"} /></span>
-              <span className={event.op === "-" ? "line-through" : ""}>{itemName(event.item)}</span>
-            </GearDetails>
-          </li>)}
-        </ul> : <p className="font-display text-2xl text-muted italic">A quiet year. Nothing in, nothing out.</p>}
-      </section>
+        <section className={`${styles.changes} panel flex min-w-0 flex-col gap-[14px] rounded-[20px] p-6`} aria-labelledby="changes-title">
+          <h2 id="changes-title" className="eyebrow">Changes in {selectedYear}</h2>
+          <p className="sr-only" role="status">Showing {inventory.categories.reduce((sum, category) => sum + category.items.length, 0)} items in {monthLabel} and {changes.length} changes in {selectedYear}.</p>
+          <div key={selectedYear} className={styles.changesBody}>
+            {changes.length ? <ul className={`${styles.changesList} grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-x-7 gap-y-[10px]`}>
+              {changes.map((event) => <li key={`${event.date}:${event.op}:${itemId(event.item)}`} className={`${styles.changeEvent} grid grid-cols-[80px_18px_minmax(0,1fr)] items-baseline gap-2 text-base ${event.op === "+" ? "text-accent" : "text-muted"}`}>
+                <time dateTime={event.date} className={`${styles.changeDate} text-[13px] text-muted`}>{event.date.length === 4 ? event.date : months[Number(event.date.slice(5, 7)) - 1]}</time>
+                <span className={`${styles.changeMarker} font-semibold`} aria-label={event.op === "+" ? "Acquired" : "Retired"}>{event.op === "+" ? "+" : "−"}</span>
+                <GearDetails key={`${itemId(event.item)}:${selectedYear}`} item={event.item} className={`${styles.changeItem} flex items-start gap-2`}>
+                  <span className="mt-[3px]"><GearCategoryIcon category={event.item.category === "microphone" ? "microphone" : event.category} muted={event.op === "-"} /></span>
+                  <span className={event.op === "-" ? "line-through" : ""}>{itemName(event.item)}</span>
+                </GearDetails>
+              </li>)}
+            </ul> : <p className="font-display text-2xl text-muted italic">A quiet year. Nothing in, nothing out.</p>}
+          </div>
+        </section>
+      </div>
       <noscript><p className="text-muted">You’re viewing the latest gear. Enable JavaScript to explore earlier months.</p></noscript>
     </>
   );
