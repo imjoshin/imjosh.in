@@ -50,7 +50,7 @@ export function useMusicCollection(initial: MusicCollection, period: string) {
   }, []);
   useEffect(() => {
     void refresh();
-    const interval = setInterval(() => { if (document.visibilityState === "visible") void refresh(); }, 60000);
+    const interval = setInterval(() => { if (document.visibilityState === "visible") void refresh(); }, 20000);
     const visible = () => { if (document.visibilityState === "visible") void refresh(); };
     const online = () => { void refresh(); };
     document.addEventListener("visibilitychange", visible); addEventListener("online", online);
