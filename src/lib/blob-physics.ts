@@ -5,7 +5,7 @@ export const BLOB_SEPARATED_BLEND = .07;
 export const BLOB_RADIUS_BLEND = .6;
 export const MAX_BLOB_PARTICLES = 128;
 export const MIN_FRAGMENT_VOLUME = 1 / 32;
-export const POINTER_GRAVITY_BOOST = 5;
+export const POINTER_GRAVITY_BOOST = 10;
 export const VELOCITY_SPLIT_SPEED = 1.1;
 
 export type RootBlob = Readonly<{ radius: number; volume: number }>;

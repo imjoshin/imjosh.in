@@ -1,6 +1,6 @@
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
-import { BlobSimulation, MIN_FRAGMENT_VOLUME, POINTER_GRAVITY_BOOST, VELOCITY_SPLIT_SPEED } from "../src/lib/blob-physics.ts";
+import { BlobSimulation, MIN_FRAGMENT_VOLUME, VELOCITY_SPLIT_SPEED } from "../src/lib/blob-physics.ts";
 
 function advance(simulation: BlobSimulation, seconds: number, step = 1 / 120) {
   for (let elapsed = 0; elapsed < seconds - 1e-8; elapsed += step) simulation.step(Math.min(step, seconds - elapsed));
@@ -100,7 +100,7 @@ test("pointer gravity attracts particles individually rather than translating th
   assert.ok(new Set(attracted.particles.map((particle) => particle.mass)).size > 1);
 });
 
-test("right-drag gravity multiplies only the cursor force by five", () => {
+test("right-drag gravity multiplies only the cursor force by ten", () => {
   const idle = fixture([[0, 0, 0]]);
   const normal = fixture([[0, 0, 0]]);
   const boosted = fixture([[0, 0, 0]]);
@@ -110,7 +110,7 @@ test("right-drag gravity multiplies only the cursor force by five", () => {
   for (const axis of [0, 1]) {
     const ordinary = normal.particles[0].velocity[axis] - idle.particles[0].velocity[axis];
     const stronger = boosted.particles[0].velocity[axis] - idle.particles[0].velocity[axis];
-    assert.ok(Math.abs(stronger / ordinary - POINTER_GRAVITY_BOOST) < 1e-10);
+    assert.ok(Math.abs(stronger / ordinary - 10) < 1e-10);
   }
 });
 
