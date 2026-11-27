@@ -184,7 +184,7 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-now-playing-art img { width: 100%; height: 100%; object-fit: cover; }
 .music-now-playing .music-swap[data-phase="out"] > .music-swap-content { animation: music-toast-song-away .15s ease-in both; }
 .music-now-playing .music-swap[data-phase="in"] > .music-swap-content { animation: music-toast-song-arrive .3s ease-out both; }
-.music-now-playing-dismiss { position: absolute; z-index: 2; top: 8px; right: 6px; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: var(--mute); font-size: 24px; }
+.music-now-playing-dismiss { position: absolute; z-index: 2; top: 8px; right: 6px; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: var(--mute); font-size: 24px; text-shadow: 0 1px 3px #0002; }
 .music-now-playing-dismiss:hover { color: var(--acc); }
 .music-scrolling-text { min-width: 0; overflow: clip; overflow-clip-margin: 6px; white-space: nowrap; }
 .music-scrolling-text-content { display: block; width: max-content; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
