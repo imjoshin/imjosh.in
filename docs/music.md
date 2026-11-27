@@ -2,6 +2,14 @@
 
 `/music/` stays a static Next.js page. It renders a saved summary and fetches compact JSON datasets. Netlify Functions collect and serve data independently of Next.js. No public endpoint can retrieve raw listens or credentials.
 
+## Artist recommendations
+
+Directly beneath the featured record, "Artists I think you should check out" introduces the top five artists by recorded plays over the last six calendar months. The rolling cutoff uses Eastern wall time, honors daylight saving time, and clamps to the last day of shorter months. Each artist includes their most-played song across the complete all-time collection, followed by their two most-played songs in the last six months excluding that lifetime favorite. Each song’s count is labeled for its ranking period. Songs outside the global top 100 remain eligible. Artists with fewer eligible songs show only the available distinct songs. Ties sort by normalized identity. Collaborating artists each receive credit once per play.
+
+The compact `recommendations` manifest dataset uses the same public exclusions as history, with approved song metadata and cached artist photos. Optional Spotify metadata never gates publication. It refreshes with the collection, independently of the selected listening-history period. Older manifests retain bundled recommendations until the publisher supplies the dataset; without saved recommendations, the section renders an empty state.
+
+The chosen Spotlight layout features one large artist card alongside four smaller cards. On desktop, the lead photograph fills the available space above the artist introduction, keeping the three songs at the bottom of the card. Artist photographs use centered cover cropping, horizontally and vertically. Only artist names and song titles open hover details or link to Spotify; artwork, play counts, and row whitespace are noninteractive. The section supports both themes and narrow screens. Without JavaScript, the saved Spotlight layout and Spotify links remain available.
+
 ## Data model and storage
 
 `.music/` is private ignored local storage. Production uses `music-private-v1` in Netlify Blobs:

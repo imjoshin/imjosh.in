@@ -1,6 +1,7 @@
 import { aggregateMusic } from "../../src/lib/music/aggregate.ts";
 import { aggregateSoundtrackSongs, aggregateSoundtrack } from "../../src/lib/music/soundtrack.ts";
 import { aggregateArtistHistory } from "../../src/lib/music/artist-history.ts";
+import { aggregateRecommendations } from "../../src/lib/music/recommendations.ts";
 import { publicSpotifyRecentTracks, recentTracksFromListens } from "../../src/lib/music/recent-tracks.ts";
 import { digest, musicTrack } from "../../src/lib/music/normalize.ts";
 import { allListens, readJson, writeJson, type MusicStore } from "./store.ts";
@@ -98,6 +99,16 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
   if (playback.track) favorites.push({ kind: "track", ...playback.track });
   favorites.push(...playback.recentTracks!.map(track => ({ kind: "track" as const, ...track })));
   const entities = aggregateEntities(verifiedRows, favorites, entityMetadata, now);
+  const recommendations = aggregateRecommendations(verifiedRows, now);
+  for (const artist of recommendations.artists) {
+    const entity = entities.entities[musicEntityKey("artist", artist.name)];
+    artist.url = entity?.url || null; artist.image = entity?.image || null;
+    for (const track of artist.tracks) {
+      const song = entities.entities[track.key];
+      track.url = song?.url || track.url; track.image = song?.image || track.image;
+    }
+  }
+  await immutable("recommendations", recommendations);
   const artistHistory = aggregateArtistHistory(verifiedRows, now);
   for (const group of artistHistory.groups) for (const artist of group.artists) {
     const entity = entities.entities[musicEntityKey("artist", artist.name)];
@@ -157,6 +168,10 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
     if (entity?.album) include({ kind: "album", name: entity.album, artists: entity.albumArtists?.length ? entity.albumArtists : ref.artists });
   }
   for (const ref of favorites) include(ref);
+  for (const artist of recommendations.artists) {
+    include({ kind: "artist", name: artist.name });
+    for (const track of artist.tracks) include({ kind: "track", ...track });
+  }
   for (const group of artistHistory.groups) for (const artist of group.artists) include({ kind: "artist", name: artist.name });
   for (const dataset of Object.values(result.datasets)) {
     for (const [kind, ranked] of [["track", dataset.stats.topTracks], ["artist", dataset.stats.topArtists], ["album", dataset.stats.topAlbums]] as const) {

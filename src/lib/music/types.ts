@@ -99,6 +99,21 @@ export interface MusicDataset {
   stats: MusicStats;
 }
 
+export interface MusicRecommendedTrack extends RankedMusic {
+  period: "all" | "6m";
+}
+export interface MusicRecommendedArtist extends RankedMusic {
+  tracks: MusicRecommendedTrack[];
+}
+export interface MusicRecommendationsDataset {
+  version: 1;
+  generatedAt: string;
+  timezone: string;
+  period: "6m";
+  platform: "all";
+  artists: MusicRecommendedArtist[];
+}
+
 export interface MusicArtistSeason {
   key: string;
   label: string;

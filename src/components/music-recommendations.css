@@ -1,0 +1,58 @@
+.music-picks { min-width: 0; scroll-margin-top: 110px; }
+.music-picks-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+.music-picks-heading h2 { margin-top: 12px; font-family: var(--font-display); font-size: clamp(36px, 4.4vw, 58px); line-height: .98; letter-spacing: -.025em; }
+.music-picks-heading h2 em { color: var(--acc); }
+.music-picks-heading > p { flex: none; padding-bottom: 3px; color: var(--mute); font-size: 14px; line-height: 1.65; }
+.music-picks-grid { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 16px; }
+.music-pick { position: relative; display: grid; grid-template-columns: 82px minmax(0, 1fr); align-content: start; gap: 0 14px; min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); }
+.music-pick-art { position: relative; display: grid; place-items: center; overflow: hidden; background: linear-gradient(135deg, color-mix(in srgb, var(--music-placeholder-color, var(--acc)) 30%, var(--bg)), var(--bg)); color: var(--acc); font-family: var(--font-display); font-size: 60px; }
+.music-pick-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center center; }
+.music-pick-portrait { align-self: start; overflow: hidden; border-radius: 50%; }
+.music-pick-portrait > .music-pick-art { width: 100%; aspect-ratio: 1; }
+.music-pick-intro { min-width: 0; min-height: 96px; padding: 5px 0 18px; }
+.music-pick-intro h3 { font-family: var(--font-display); font-size: 30px; line-height: 1.02; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.music-pick-intro h3 a:hover { color: var(--acc); }
+.music-pick-count { margin-top: 9px; color: var(--mute); font-size: 12px; line-height: 1.5; }
+.music-pick-eyebrow { display: none; }
+.music-pick-songs { grid-column: 1 / -1; min-width: 0; padding: 14px 0 0; border-top: 1px solid var(--line); }
+.music-pick-start { margin-bottom: 6px; color: var(--mute); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.music-pick-songs ol { display: grid; gap: 2px; list-style: none; }
+.music-pick-song { display: flex; align-items: center; gap: 9px; min-width: 0; padding: 8px 0; }
+.music-pick-song > .music-pick-art { width: 32px; height: 32px; flex: none; border-radius: 5px; font-size: 21px; }
+.music-pick-song-copy { display: grid; min-width: 0; gap: 4px; }
+.music-pick-song-title { font-size: 14px; line-height: 1.35; }
+.music-pick-song-name { overflow-wrap: anywhere; font-weight: 500; }
+.music-pick-song-name:hover { color: var(--acc); }
+.music-pick-song-plays { color: var(--mute); font-size: 11px; line-height: 1.4; }
+.music-picks-footnote { margin-top: 16px; font-size: 12px; color: var(--mute); }
+
+/* Let the lead portrait absorb spare height, keeping the songs at the card's bottom. */
+.music-pick:first-child { grid-row: span 2; display: flex; flex-direction: column; padding: 10px; }
+.music-pick:first-child .music-pick-portrait { position: relative; flex: 1 1 0; align-self: stretch; min-height: 240px; border-radius: 13px; }
+.music-pick:first-child .music-pick-portrait > .music-pick-art { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; }
+.music-pick:first-child .music-pick-intro { flex: none; padding: 22px 14px 18px; }
+.music-pick:first-child h3 { font-size: 48px; }
+.music-pick:first-child .music-pick-songs { flex: none; margin: auto 14px 0; padding-bottom: 10px; }
+.music-pick:first-child .music-pick-eyebrow { display: block; margin-bottom: 9px; color: var(--acc); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+
+@media (max-width: 1000px) {
+  .music-picks-heading { align-items: flex-start; }
+  .music-picks-heading > p { max-width: 24ch; }
+  .music-pick { grid-template-columns: 56px minmax(0, 1fr); padding: 14px; gap: 0 10px; }
+  .music-pick-intro h3 { font-size: 25px; }
+}
+@media (max-width: 700px) {
+  .music-picks-heading { display: block; }
+  .music-picks-heading > p { margin-top: 16px; max-width: none; }
+  .music-picks-title-break { display: none; }
+  .music-picks-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .music-pick { display: flex; flex-direction: column; padding: 12px; }
+  .music-pick-portrait { width: 64px; margin-bottom: 14px; }
+  .music-pick-intro { min-height: 91px; }
+  .music-pick-songs { width: 100%; margin-top: auto; }
+  .music-pick-song { gap: 7px; }
+  .music-pick-song > .music-pick-art { width: 28px; height: 28px; }
+  .music-pick:first-child { grid-column: 1 / -1; grid-row: auto; }
+  .music-pick:first-child .music-pick-portrait { flex: none; width: 100%; height: 220px; min-height: 0; }
+  .music-pick:first-child .music-pick-songs { width: auto; }
+}
