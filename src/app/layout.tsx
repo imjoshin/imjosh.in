@@ -9,7 +9,7 @@ import socialImage from "../../public/social.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://imjosh.in"),
-  title: { default: "I'm Joshin' - Josh Johnson", template: "%s - Josh Johnson" },
+  title: { default: "Josh Johnson", template: "%s | Josh Johnson" },
   description: "Hey! I’m Josh Johnson. I’m passionate about solving interesting problems and currently work at Tern.",
   alternates: { canonical: "/" },
   openGraph: { type: "website", siteName: "imjosh.in", locale: "en_US", images: [{ url: socialImage.src, width: socialImage.width, height: socialImage.height, alt: "I'm Joshin' - Josh Johnson" }] },
