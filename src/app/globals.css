@@ -148,6 +148,9 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 
 .music-label { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--mute); }
 .music-feature { isolation: isolate; background: linear-gradient(125deg, var(--panel) 35%, color-mix(in srgb, var(--acc) 12%, var(--panel))); }
+@media (scripting: enabled) {
+  .music-feature[data-pending] { visibility: hidden; }
+}
 .music-artist-background { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; mask-image: linear-gradient(110deg, #0006, #000 75%); }
 .music-artist-background > .music-swap { mask-image: radial-gradient(ellipse farthest-corner, #000 15%, #000a 55%, transparent 100%); }
 .music-artist-background .music-swap-content { position: absolute; inset: -24px; filter: var(--music-photo-filter); }
