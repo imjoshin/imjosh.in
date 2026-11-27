@@ -93,9 +93,10 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
     applyLocation(); addEventListener("popstate", applyLocation);
     return () => removeEventListener("popstate", applyLocation);
   }, []);
-  useEffect(() => { if (manifest && !manifest.periods.includes(period)) setPeriod("30d"); }, [manifest, period]);
+  // A static build can have a placeholder manifest without historical years. Validate against the live collection.
+  useEffect(() => { if (ready && manifest && !manifest.periods.includes(period)) setPeriod("30d"); }, [manifest, period, ready]);
   useEffect(() => {
-    if (pendingChart !== "favorites" || !ready || headerHeight === null) return;
+    if (pendingChart !== "favorites" || !ready || data?.period !== period || headerHeight === null) return;
     let cancelled = false, frame = 0;
     // The collection commits all datasets together. Wait for font layout before measuring the destination.
     void document.fonts.ready.then(() => {
@@ -109,7 +110,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
       });
     });
     return () => { cancelled = true; cancelAnimationFrame(frame); };
-  }, [pendingChart, ready, headerHeight]);
+  }, [pendingChart, ready, data?.period, period, headerHeight]);
   function filter(nextPeriod: string, replace = false) {
     if (nextPeriod === period) return;
     trackEvent("music_period_change", { period: nextPeriod, method: replace ? "scrub" : "select" });

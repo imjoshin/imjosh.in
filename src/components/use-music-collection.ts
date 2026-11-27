@@ -59,5 +59,5 @@ export function useMusicCollection(initial: MusicCollection, period: string) {
     return () => { ++generation.current; controller.current?.abort(); clearInterval(interval); document.removeEventListener("visibilitychange", visible); removeEventListener("online", online); };
   }, [refresh]);
   useEffect(() => { if (priorPeriod.current !== period) { priorPeriod.current = period; void refresh(); } }, [period, refresh]);
-  return { ...collection, loading, error, api, ready: ready && collection.data?.period === period && !loading && !error };
+  return { ...collection, loading, error, api, ready: ready && !loading && !error };
 }
