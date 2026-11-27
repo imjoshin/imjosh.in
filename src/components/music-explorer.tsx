@@ -96,6 +96,15 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
 
     <section className="music-feature panel relative grid min-h-[340px] overflow-hidden rounded-[28px] md:grid-cols-[1.05fr_1fr]" aria-label="Featured music">
       <div className="music-feature-backdrop" aria-hidden="true">
+        {/* Derive alpha from the blurred, tinted image while preserving its color and existing transparency. */}
+        <svg className="absolute" width="0" height="0" focusable="false">
+          <defs>
+            <filter id="music-photo-luminance" colorInterpolationFilters="sRGB">
+              <feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="luminance" />
+              <feComposite in="SourceGraphic" in2="luminance" operator="in" />
+            </filter>
+          </defs>
+        </svg>
         <MusicSwap identity={artistPhoto || "empty"} className="h-full w-full">
           {artistPhoto && <img src={artistPhoto} alt="" width="640" height="640" onError={event => { event.currentTarget.style.visibility = "hidden"; }} />}
         </MusicSwap>

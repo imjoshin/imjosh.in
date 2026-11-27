@@ -149,8 +149,8 @@ html[data-pew-mode]:has(.home-page) :is(a, summary) { cursor: pointer; }
 .music-feature { isolation: isolate; background: linear-gradient(125deg, var(--panel) 35%, color-mix(in srgb, var(--acc) 12%, var(--panel))); }
 .music-feature-backdrop { position: absolute; inset: 0; pointer-events: none; mask-image: linear-gradient(110deg, #0006, #000 75%); }
 .music-feature-backdrop > .music-swap { mask-image: radial-gradient(ellipse farthest-corner, #000 15%, #000a 55%, transparent 100%); }
-.music-feature-backdrop .music-swap-content { position: absolute; inset: -24px; }
-.music-feature-backdrop img { width: 100%; height: 100%; object-fit: cover; object-position: center 38%; opacity: light-dark(.1, .14); filter: blur(10px) grayscale(1) sepia(1) saturate(1.6) hue-rotate(205deg); }
+.music-feature-backdrop .music-swap-content { position: absolute; inset: -24px; filter: url("#music-photo-luminance"); }
+.music-feature-backdrop img { width: 100%; height: 100%; object-fit: cover; object-position: center 38%; opacity: light-dark(.14, .2); filter: blur(10px) grayscale(1) sepia(1) saturate(1.6) hue-rotate(205deg); }
 .music-record-scene { min-height: 426px; padding: 48px 24px; position: relative; z-index: 1; display: grid; place-items: center; isolation: isolate; }
 .music-record { width: min(330px, 85%); aspect-ratio: 1; border-radius: 50%; position: relative; display: grid; place-items: center; background: repeating-radial-gradient(circle, transparent 0 2px, #ffffff0b 2px 3px), conic-gradient(from 20deg, #18161e, #625d72 12%, #18161e 23%, #08070c 43%, #625d72 62%, #17151e 73%, #09080d); border: 1px solid #ffffff35; transform: rotate(-12deg); animation: music-record-spin 48s linear infinite; }
 @keyframes music-record-spin { from { transform: rotate(-12deg); } to { transform: rotate(348deg); } }
