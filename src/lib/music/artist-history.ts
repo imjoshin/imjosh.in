@@ -62,10 +62,10 @@ export function aggregateArtistHistory(input: Listen[], now = new Date(), timezo
     return { ...artist, seasonPlays, topSeasons: leaders.filter(set => set.has(artist.key)).length, recentTopSeasons: leaders.slice(recentStart).filter(set => set.has(artist.key)).length, recentPlays: seasonPlays.slice(recentStart).reduce((sum, count) => sum + count, 0), peakShare, peakIndex };
   });
   const tie = (a: { key: string }, b: { key: string }) => a.key.localeCompare(b.key);
-  const favorites = [...ranked].sort((a, b) => b.plays - a.plays || tie(a, b)).slice(0, 5);
+  const favorites = [...ranked].sort((a, b) => b.plays - a.plays || tie(a, b)).slice(0, 10);
   const favoriteKeys = new Set(favorites.map(artist => artist.key));
   const remaining = ranked.filter(artist => !favoriteKeys.has(artist.key));
-  const recent = remaining.filter(artist => artist.recentTopSeasons > 0).sort((a, b) => b.recentTopSeasons - a.recentTopSeasons || b.recentPlays - a.recentPlays || tie(a, b)).slice(0, 5);
+  const recent = remaining.filter(artist => artist.recentTopSeasons > 0).sort((a, b) => b.recentTopSeasons - a.recentTopSeasons || b.recentPlays - a.recentPlays || tie(a, b)).slice(0, 10);
   // Sparse exports must not turn a handful of plays into an apparent major obsession.
   const past = remaining.filter(artist => artist.topSeasons > 0 && artist.recentTopSeasons === 0 && artist.peakIndex >= 0 && ordered[artist.peakIndex].plays >= 100).sort((a, b) => b.peakShare - a.peakShare || b.plays - a.plays || tie(a, b)).slice(0, 10);
   const publicArtist = ({ key, name, plays, topSeasons, seasonPlays }: MusicHistoryArtist): MusicHistoryArtist => ({ key, name, plays, topSeasons, seasonPlays });

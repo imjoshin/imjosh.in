@@ -14,7 +14,7 @@ function plays(count: number, name: string, date: string, genres = ["indie pop"]
   return Array.from({ length: count }, (_, index) => ({ ...spotifyListen({ ts: date, master_metadata_track_name: name, master_metadata_album_artist_name: name, ms_played: 60000 }, "PRIVATE-ORIGINAL")!, id: `${name}:${date}:${index}`, track: musicTrack(name, [name], { genres }) }));
 }
 const fixture = () => [
-  ...Array.from({ length: 5 }, (_, index) => plays(150, `Evergreen ${index}`, "2020-01-15T12:00:00Z")).flat(),
+  ...Array.from({ length: 10 }, (_, index) => plays(150, `Evergreen ${index}`, "2020-01-15T12:00:00Z")).flat(),
   ...plays(40, "Recent main", "2026-11-26T12:00:00Z"), ...plays(30, "Recent second", "2025-04-15T12:00:00Z"),
   ...plays(120, "Past peak", "2018-05-15T12:00:00Z"), ...plays(110, "Past second", "2017-09-15T12:00:00Z"),
   ...plays(4, "Sparse peak", "2019-03-15T12:00:00Z"),
@@ -26,14 +26,17 @@ const memory = (): MusicStore => {
 
 test("artist history separates lifetime favorites, recent leaders, and older significant peaks", () => {
   const data = aggregateArtistHistory(fixture(), now);
-  assert.deepEqual(data.groups[0].artists.map(artist => artist.name), Array.from({ length: 5 }, (_, index) => `Evergreen ${index}`));
+  assert.deepEqual(data.groups[0].artists.map(artist => artist.name), Array.from({ length: 10 }, (_, index) => `Evergreen ${index}`));
   assert.deepEqual(data.groups[1].artists.map(artist => artist.name), ["Recent main", "Recent second"]);
   assert.deepEqual(data.groups[2].artists.map(artist => artist.name), ["Past peak", "Past second"]);
   const displayed = data.groups.flatMap(group => group.artists);
   assert.equal(new Set(displayed.map(artist => artist.key)).size, displayed.length);
   assert.equal(data.recentSeasons, 8);
-  const expanded = aggregateArtistHistory([...fixture(), ...Array.from({ length: 12 }, (_, index) => plays(100, `Past extra ${index}`, `${2000 + index}-01-15T12:00:00Z`)).flat()], now);
-  assert.deepEqual(expanded.groups.map(group => group.artists.length), [5, 2, 10]);
+  const recentDates = ["2025-04-15", "2025-07-15", "2025-10-15", "2026-01-15", "2026-04-15", "2026-07-15"];
+  const expanded = aggregateArtistHistory([...fixture(), ...Array.from({ length: 12 }, (_, index) => plays(20, `Recent extra ${index}`, `${recentDates[Math.floor(index / 2)]}T12:00:00Z`)).flat(), ...Array.from({ length: 12 }, (_, index) => plays(100, `Past extra ${index}`, `${2000 + index}-01-15T12:00:00Z`)).flat()], now);
+  assert.deepEqual(expanded.groups.map(group => group.artists.length), [10, 10, 10]);
+  const expandedArtists = expanded.groups.flatMap(group => group.artists);
+  assert.equal(new Set(expandedArtists.map(artist => artist.key)).size, 30);
   assert.deepEqual(expanded.groups[2].artists.slice(0, 2).map(artist => artist.name), ["Past peak", "Past second"]);
   const aged = aggregateArtistHistory(fixture(), new Date("2029-11-27T15:00:00Z"));
   assert.equal(aged.groups[1].artists.length, 0);
