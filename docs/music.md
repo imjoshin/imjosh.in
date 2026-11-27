@@ -2,6 +2,8 @@
 
 `/music/` stays a static Next.js page. It renders a saved summary and fetches compact JSON datasets. Netlify Functions collect and serve data independently of Next.js. No public endpoint can retrieve raw listens or credentials.
 
+The info control beside the music page title opens an accessible native dialog explaining the collection at a high level. Its provider diagram distinguishes the connected Spotify archive and ongoing collection from pending Google history. Refresh cards describe the one-minute recent-activity job, ten-minute analytics job, and daily Spotify favorites/library refresh. The historical export date comes from the verified November 26, 2026 download below. The dialog supports Escape, backdrop dismissal, restored trigger focus, independent scrolling, both themes, and reduced motion; without JavaScript, an inline disclosure supplies the explanation.
+
 ## Artist recommendations
 
 Directly beneath the featured record, "Artists I think you should check out" introduces the top five artists by recorded plays over the last six calendar months. The rolling cutoff uses Eastern wall time, honors daylight saving time, and clamps to the last day of shorter months. Each artist includes their most-played song across the complete all-time collection, followed by their two most-played songs in the last six months excluding that lifetime favorite. Each song’s count is labeled for its ranking period. Songs outside the global top 100 remain eligible. Artists with fewer eligible songs show only the available distinct songs. Ties sort by normalized identity. Collaborating artists each receive credit once per play.
