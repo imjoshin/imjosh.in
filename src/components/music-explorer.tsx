@@ -41,11 +41,11 @@ function Ranking({ items, empty, kind, resetKey }: { items: RankedMusic[]; empty
 }
 
 function Rotation({ items }: { items: RankedMusic[] }) {
-  const motion = useMusicListMotion(items.slice(1, 7).map((item, i) => ({ ...item, rank: i + 2 })));
-  return <div className="music-collection" style={motion.containerStyle}><div ref={motion.setRoot} className="music-album-grid">{motion.rows.map(({ item, phase }) => <article ref={motion.bind(item.key)} key={item.key} data-analytics-item-rank={item.rank} className="music-album group" data-phase={phase} inert={phase === "exit" ? true : undefined} aria-hidden={phase === "exit" || undefined} style={phase === "exit" ? motion.exitStyle(item.key) : undefined}>
+  const motion = useMusicListMotion(items.slice(1, 7).map((item, i) => ({ ...item, rank: i + 2 })), 0);
+  return <div className="music-album-viewport" role="region" aria-label="Current Spotify mix" tabIndex={0}><div className="music-collection" style={motion.containerStyle}><div ref={motion.setRoot} className="music-album-grid">{motion.rows.map(({ item, phase }) => <article ref={motion.bind(item.key)} key={item.key} data-analytics-item-rank={item.rank} className="music-album group" data-phase={phase} inert={phase === "exit" ? true : undefined} aria-hidden={phase === "exit" || undefined} style={phase === "exit" ? motion.exitStyle(item.key) : undefined}>
     <MusicLink entity={{ kind: "track", name: item.name, artists: item.artists, url: item.url, image: item.image }} analyticsSlot="cover" className="block"><Cover item={item} className="aspect-square w-full rounded-[14px]" /></MusicLink>
     <h3 className="mt-3 truncate font-medium"><MusicLink entity={{ kind: "track", name: item.name, artists: item.artists, url: item.url, image: item.image }}>{item.name}</MusicLink></h3><p className="mt-1 truncate text-[14px] text-muted"><MusicArtists names={item.artists} /></p>
-  </article>)}</div></div>;
+  </article>)}</div></div></div>;
 }
 
 interface Props { initialManifest: MusicManifest | null; initialData: MusicDataset | null; initialSpotify: SpotifySnapshot | null; initialSoundtrack: MusicSoundtrackDataset | null; initialArtistHistory: MusicArtistHistoryDataset | null; initialRecommendations: MusicRecommendationsDataset | null; initialRecentTracks: MusicRecentTrack[] }
