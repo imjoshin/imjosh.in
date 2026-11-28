@@ -121,6 +121,10 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
   playback = { ...playback, artistImages: (playback.track?.artists || []).map(name => ({ name, image: entities.entities[musicEntityKey("artist", name)]?.image || null })) };
   await immutable("playback", playback);
   for (const dataset of Object.values(result.datasets)) {
+    for (const season of dataset.stats.seasonUnique || []) for (const artist of season.artists) {
+      const entity = entities.entities[musicEntityKey("artist", artist.name)];
+      artist.url = entity?.url || null; artist.image = entity?.image || null;
+    }
     for (const [kind, ranked] of [["track", dataset.stats.topTracks], ["artist", dataset.stats.topArtists], ["album", dataset.stats.topAlbums]] as const) {
       for (const item of ranked) {
         const entity = entities.entities[musicEntityKey(kind, item.name, item.artists)];
@@ -175,6 +179,7 @@ export async function publishMusic(privateStore: MusicStore, publicStore: MusicS
   }
   for (const group of artistHistory.groups) for (const artist of group.artists) include({ kind: "artist", name: artist.name });
   for (const dataset of Object.values(result.datasets)) {
+    for (const season of dataset.stats.seasonUnique || []) for (const artist of season.artists) include({ kind: "artist", name: artist.name });
     for (const [kind, ranked] of [["track", dataset.stats.topTracks], ["artist", dataset.stats.topArtists], ["album", dataset.stats.topAlbums]] as const) {
       for (const item of ranked) include({ kind, ...item });
     }

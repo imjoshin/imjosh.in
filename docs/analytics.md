@@ -68,6 +68,7 @@ The source section is retained when a card is rendered directly under `body`, so
 | `listening_curve`, `weekday`, `hourly` | Listening curve, weekday, and hourly chart inspections |
 | `soundtrack` | The soundtrack chart, tooltip links, and legend |
 | `soundtrack_songs` | A selected soundtrack line's song list |
+| `season_unique` | Seasonal artist tables below the soundtrack chart |
 | `now_playing` | The current playback toast |
 | `playlists` | Spotify playlist links |
 
@@ -76,5 +77,7 @@ The source section is retained when a card is rendered directly under `body`, so
 `item_slot` distinguishes covers, titles, artist names, legend entries, and playlists. `item_group` identifies all-time/recent recommendation picks, heatmap groups, and chart tooltip rows. `period`, `metric`, and `bucket` describe the data actually displayed, including while a new period is loading. Featured and rotation data use `spotify_short_term`; recommendations use `6m` or their song-specific window; recent and current playback use `recent` and `current`.
 
 Weekday and hourly charts reuse `chart_view` and `chart_inspect`, with `chart`/`section` set to `weekday` or `hourly`, `metric=average_listening_time`, and the displayed `period`. Hourly inspection uses zero-padded Eastern hour buckets `00` through `23`; weekdays retain their full English names. Tooltips inherit the actual `hover`, `click`, `touch`, or `keyboard` method from the chart surface. Existing visibility, dwell, and repeat limits apply. These are new values for existing reportable parameters and need no additional custom definitions.
+
+Season unique reuses `section_view`, `chart_view`, shared outbound links, `music_item_hover`, and `music_details_view`. The section is `season_unique`; enabled tables have `chart=season_unique`, `metric=artists`, and `bucket`/`item_group` set to `winter`, `spring`, `summer`, or `autumn`. Artist ranks are their displayed positions within that season. Context carries the history dataset's displayed period while a new selection loads and persists through hover-card portals. Disabled placeholders carry no artist metadata or chart exposure marker and cannot produce item interactions. No additional events, parameters, or GA custom definitions are needed.
 
 In GA Explore, select `music_item_hover` or `music_details_view`, then break it down by **Site section**, **Item type**, **Public item name**, **Recording artists**, **Display rank**, **Item placement**, **Item group**, **Listening period**, **Chart metric**, **Soundtrack bucket**, and **Input method**.

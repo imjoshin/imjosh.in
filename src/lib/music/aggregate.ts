@@ -3,6 +3,8 @@ import { aggregationListens } from "./normalize.ts";
 import { isExcludedMusic } from "./genres.ts";
 import { musicEntityKey } from "./entity-links.ts";
 import { listeningTimeCalendar } from "./listening-time.ts";
+import { aggregateSeasonUnique } from "./season-unique.ts";
+import { artistGenreKey } from "./artist-genres.ts";
 
 export const MUSIC_TIMEZONE = "America/New_York";
 export const publicMusicListens = (input: Listen[], now: Date) => aggregationListens(input).filter(l => l.media === "music" && !l.privateSession && !isExcludedMusic(l.track) && Date.parse(l.playedAt) <= now.getTime());
@@ -74,6 +76,11 @@ export function aggregateMusic(input: Listen[], now = new Date(), timezone = MUS
       datasets[key] = { version: 1, generatedAt, timezone, platform, period, stats };
       files[key] = `${platform}-${period}.json`;
     }
+  }
+  const excluded = new Set(datasets["all/all"].stats.topArtists.slice(0, 5).map(artist => artistGenreKey(artist.name)));
+  for (const platform of ["all", ...platforms] as const) {
+    const platformListens = platform === "all" ? listens : listens.filter(listen => listen.platform === platform);
+    for (const period of periods) datasets[`${platform}/${period}`].stats.seasonUnique = aggregateSeasonUnique(platformListens, period, excluded, now, timezone, dateParts);
   }
   return { manifest: { version: 1, generatedAt, timezone, periods, platforms, files, notes: ["Counts reflect available history. Gaps may exist between exports and collection.", "Listening time includes only measured duration. Track length is never substituted.", "Private sessions are excluded. Google uploader names are not treated as recording artists."] }, datasets };
 }

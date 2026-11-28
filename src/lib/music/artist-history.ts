@@ -1,15 +1,11 @@
 import type { Listen, MusicArtistHistoryDataset, MusicHistoryArtist } from "./types.ts";
 import { MUSIC_TIMEZONE, publicMusicListens } from "./aggregate.ts";
 import { artistGenreKey } from "./artist-genres.ts";
+import { musicSeasonAt as seasonAt, musicSeasons } from "./seasons.ts";
 
-const seasonNames = ["Winter", "Spring", "Summer", "Autumn"];
+const seasonNames = musicSeasons.map(season => season.name);
 export const RECENT_ARTIST_SEASONS = 8;
 interface SeasonCounts { year: number; season: number; plays: number; artists: Map<string, number> }
-
-/** Meteorological winter is December of the preceding year through February. */
-function seasonAt(year: number, month: number) {
-  return { year: year + Number(month === 12), season: month === 12 || month <= 2 ? 0 : month <= 5 ? 1 : month <= 8 ? 2 : 3 };
-}
 
 /** Public all-time artist/season counts, never individual events or provider payloads. */
 export function aggregateArtistHistory(input: Listen[], now = new Date(), timezone = MUSIC_TIMEZONE): MusicArtistHistoryDataset {

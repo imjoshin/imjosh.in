@@ -59,3 +59,15 @@ test("average-time tooltips inherit their chart, displayed period, hour, and inp
   assert.equal(analyticsContext(node({ "data-analytics-bucket": "Monday" }, weekday)).chart, "weekday");
   assert.equal(analyticsContext(node({ "data-analytics-bucket": "Monday" }, weekday)).period, "365d");
 });
+
+test("seasonal artist cards retain displayed season, rank, and period through portals", () => {
+  const section = node({ "data-analytics-view": "season_unique", "data-analytics-period": "2025", "data-analytics-metric": "artists" });
+  const season = (bucket: string) => node({ "data-analytics-chart": "season_unique", "data-analytics-bucket": bucket, "data-analytics-item-group": bucket }, section);
+  const artist = { kind: "artist" as const, name: "Seasonal Artist" };
+  const captured = musicInspectionContext(node({ "data-analytics-item-slot": "artist_name" }, node({ "data-analytics-item-rank": 3 }, season("winter"))), artist, "keyboard");
+  assert.deepEqual(analyticsContext(node(analyticsDataAttributes(captured), node())), {
+    section: "season_unique", chart: "season_unique", metric: "artists", period: "2025", bucket: "winter", item_group: "winter",
+    item_type: "artist", item_name: artist.name, item_artists: artist.name, item_rank: 3, item_slot: "artist_name", method: "keyboard",
+  });
+  assert.notDeepEqual(captured, musicInspectionContext(node({ "data-analytics-item-rank": 3 }, season("summer")), artist, "keyboard"));
+});

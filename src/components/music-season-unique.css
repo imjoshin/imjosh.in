@@ -1,0 +1,41 @@
+.music-season-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.music-season-card { --season-color: light-dark(#346a8b, #a1cce7); position: relative; min-width: 0; overflow: hidden; border-radius: 24px; padding: 24px 20px 22px; }
+.music-season-card[data-season="spring"] { --season-color: light-dark(#46783b, #a8cf91); }
+.music-season-card[data-season="summer"] { --season-color: light-dark(#996005, #f1ca74); }
+.music-season-card[data-season="autumn"] { --season-color: light-dark(#a45130, #e6ac8d); }
+.music-season-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.music-season-months { color: var(--mute); font-size: 12px; margin-bottom: 8px; }
+.music-season-icon { display: grid; place-items: center; flex: none; width: 52px; height: 52px; border-radius: 18px 21px 17px 23px; color: var(--season-color); background: color-mix(in srgb, var(--season-color) 10%, transparent); transform: rotate(-6deg); }
+.music-season-icon svg { width: 38px; height: 38px; transform: rotate(6deg); }
+.music-season-card[data-season="spring"] .music-season-icon { border-radius: 24px 24px 13px 24px; transform: rotate(5deg); }
+.music-season-card[data-season="spring"] .music-season-icon svg { transform: rotate(-5deg); }
+.music-season-card[data-season="summer"] .music-season-icon { border-radius: 50%; }
+.music-season-card[data-season="autumn"] .music-season-icon { border-radius: 15px 24px 15px 24px; }
+.music-season-note { margin-top: 15px; color: var(--season-color); font-size: 13px; line-height: 1.5; }
+.music-season-table-wrap { position: relative; min-height: 303px; margin-top: 20px; }
+.music-season-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.music-season-table thead { color: var(--mute); font-size: 12px; }
+.music-season-table thead th { padding-bottom: 9px; text-align: left; font-weight: 400; }
+.music-season-table thead th:last-child { width: 54px; text-align: right; }
+.music-season-table tbody tr { height: 53px; border-top: 1px solid var(--line); }
+.music-season-table tbody th { min-width: 0; text-align: left; font-size: 14px; font-weight: 500; padding-right: 8px; }
+.music-season-table .music-season-rank { width: 26px; color: var(--mute); font-size: 12px; font-variant-numeric: tabular-nums; }
+.music-season-table .music-season-plays { text-align: right; color: var(--mute); font-size: 13px; font-variant-numeric: tabular-nums; }
+.music-season-table .music-entity-link { max-width: 100%; }
+.music-season-table tbody tr:first-child th { color: var(--season-color); }
+.music-season-table .music-season-empty { padding-block: 30px; color: var(--mute); font-size: 14px; line-height: 1.6; text-align: center; }
+.music-season-placeholder { user-select: none; pointer-events: none; filter: blur(4px); opacity: .38; }
+.music-season-placeholder-head { display: flex; justify-content: space-between; padding-bottom: 9px; color: var(--mute); font-size: 12px; }
+.music-season-placeholder-row { display: flex; align-items: center; gap: 12px; height: 53px; border-top: 1px solid var(--line); }
+.music-season-placeholder-row > span { color: var(--mute); font-size: 12px; }
+.music-season-placeholder-row > i { display: block; height: 8px; border-radius: 5px; background: var(--mute); }
+.music-season-placeholder-row > i:last-child { flex: none; width: 22px; margin-left: auto; }
+.music-season-status { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 8px; text-align: center; padding: 16px 6px; }
+.music-season-status p:first-child { font: 25px/1.1 var(--font-display); text-wrap: balance; }
+.music-season-status p:last-child { color: var(--mute); font-size: 13px; line-height: 1.6; text-wrap: balance; }
+.music-season-flourish { display: block; width: 32px; height: 3px; margin: 10px auto 0; border-radius: 50%; background: var(--season-color); opacity: .5; }
+.music-season-card[data-season="spring"] .music-season-flourish { width: 24px; border-radius: 100% 0; transform: rotate(-8deg); }
+.music-season-card[data-season="summer"] .music-season-flourish { width: 24px; height: 5px; border-radius: 0 0 50% 50%; }
+.music-season-card[data-season="autumn"] .music-season-flourish { width: 27px; transform: rotate(-8deg); }
+@media (max-width: 1100px) { .music-season-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 540px) { .music-season-grid { grid-template-columns: minmax(0, 1fr); } .music-season-card { padding-inline: 24px; } }

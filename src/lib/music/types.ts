@@ -81,6 +81,13 @@ export interface MusicListeningTime {
   hoursDurationKnown: number[];
 }
 
+export type MusicSeason = "winter" | "spring" | "summer" | "autumn";
+export interface MusicSeasonUnique {
+  season: MusicSeason;
+  status: "ready" | "incomplete" | "not_applicable";
+  artists: Pick<RankedMusic, "key" | "name" | "plays" | "url" | "image">[];
+}
+
 export interface MusicStats {
   plays: number;
   artists: number;
@@ -100,6 +107,8 @@ export interface MusicStats {
   hours: number[];
   /** Measured duration and calendar-day denominators; absent in older summaries. */
   listeningTime?: MusicListeningTime;
+  /** Seasonal leaders beyond the global all-time top five; absent in older summaries. */
+  seasonUnique?: MusicSeasonUnique[];
   platforms: Partial<Record<MusicPlatform, number>>;
 }
 

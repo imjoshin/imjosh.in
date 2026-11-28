@@ -19,6 +19,7 @@ import { MusicLastTracks } from "./music-last-tracks";
 import { MusicRecommendations } from "./music-recommendations";
 import { trackEvent } from "@/lib/analytics";
 import { MusicIntro } from "./music-info";
+import { MusicSeasonUnique } from "./music-season-unique";
 
 const periodLabels: Record<string, string> = { all: "All time", "30d": "Last 30 days", "365d": "Last year" };
 const safeImage = (value: string | null) => value && /^https:\/\/(i\.scdn\.co|image-cdn[^/]*\.spotifycdn\.com)\//.test(value) ? value : undefined;
@@ -163,6 +164,7 @@ export function MusicExplorer({ initialManifest, initialData, initialSpotify, in
         </div>
       </div>
       <MusicSoundtrackChart data={soundtrack} period={period} api={api} loading={loading} error={error} />
+      <MusicSeasonUnique data={current} period={period} loading={loading} />
       </div>
     </section>
     {spotify?.playlists.length ? <section data-analytics-view="playlists" aria-labelledby="music-playlists-title"><p className="music-label">Mixtapes, more or less</p><h2 id="music-playlists-title" className="mt-2 font-display text-[42px]">In the <em className="text-accent">collection.</em></h2><div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{spotify.playlists.slice(0, 9).map((p, index) => <a data-analytics-hover="music" data-analytics-item-type="playlist" data-analytics-item-name={p.name} data-analytics-item-rank={index + 1} data-analytics-item-slot="playlist" key={p.id} className="panel flex items-center gap-4 rounded-[18px] p-4 hover:border-accent" href={p.url} target="_blank" rel="noopener noreferrer"><span className="music-playlist-icon" aria-hidden="true">♫</span><span className="min-w-0"><span className="block truncate font-medium">{p.name}</span><span className="mt-1 block text-[13px] text-muted"><MusicNumber value={p.tracks} /> tracks · Spotify</span></span><span className="sr-only"> (opens in a new tab)</span></a>)}</div></section> : null}
